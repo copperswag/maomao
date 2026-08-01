@@ -394,10 +394,9 @@
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script>
-    // 动态 API 配置（部署后替换为你的真实后端 API 地址）
+    // 你的 Cloudflare Worker 动态 API 链接
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
-    // 备用静态配置（当接口不可用时降级使用）
     const FALLBACK_ROOMS = [
       { name: "1", hlsUrl: "" },
       { name: "2", hlsUrl: "" },
@@ -524,7 +523,16 @@
       }
 
       if (window.Hls && window.Hls.isSupported()) {
-        const hls = new window.Hls({ enableWorker: true, lowLatencyMode: true });
+        // 低延迟、强容错追帧配置
+        const hls = new window.Hls({
+          enableWorker: true,
+          lowLatencyMode: true,
+          backBufferLength: 15,           // 限制历史切片内存，提升流畅度
+          maxBufferLength: 8,             // 控制向前缓冲时长，减少卡顿累积
+          liveSyncDurationCount: 2,       // 保持在最新 2 个切片播放，降低延迟
+          liveMaxLatencyDurationCount: 5  // 延迟过大时自动跳帧追上直播
+        });
+
         video.hlsInstance = hls;
         hls.loadSource(url);
         hls.attachMedia(video);
@@ -533,13 +541,16 @@
           video.play().catch(function () {});
         });
 
+        // 自动网络/媒体故障恢复机制
         hls.on(window.Hls.Events.ERROR, function (_event, data) {
           if (data && data.fatal) {
             switch (data.type) {
               case window.Hls.ErrorTypes.NETWORK_ERROR:
+                console.warn("网络拉流波动，尝试重新加载...");
                 hls.startLoad();
                 break;
               case window.Hls.ErrorTypes.MEDIA_ERROR:
+                console.warn("媒体切片解析异常，尝试恢复...");
                 hls.recoverMediaError();
                 break;
               default:
@@ -555,7 +566,6 @@
       showCameraMessage(card, "当前浏览器不支持播放", "请换用 Safari、Chrome、Edge 或在手机浏览器中打开。");
     }
 
-    // 从后端动态获取直播数据
     async function loadLiveRoomsData() {
       try {
         const response = await fetch(API_ENDPOINT, { cache: "no-cache" });
@@ -570,7 +580,7 @@
 
     async function initPage() {
       const rooms = await loadLiveRoomsData();
-      liveGrid.innerHTML = ""; // 清空加载骨架
+      liveGrid.innerHTML = "";
       
       rooms.forEach(function (room, index) {
         const card = createCameraCard(room, index + 1);
@@ -580,7 +590,7 @@
 
         window.setTimeout(function () {
           attachHlsPlayer(video, room.hlsUrl, card);
-        }, index * 300);
+        }, index * 350);
       });
     }
 
