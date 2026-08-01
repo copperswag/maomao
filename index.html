@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>毛毛星球云直播</title>
+  <meta name="description" content="毛毛星球云直播：打开网页即可观看毛孩子们的实时画面。" />
+  <style>
+    :root {
+      --bg: #fffdf7;
+      --card: #ffffff;
+      --text: #15202b;
+      --muted: #61717f;
+      --line: rgba(21, 32, 43, 0.08);
+      --brand: #6edc63;
+      --brand-deep: #28b466;
+      --accent: #ffc95e;
+      --shadow: 0 10px 32px rgba(28, 40, 53, 0.08);
+      --radius: 20px;
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(255, 212, 96, 0.28), transparent 28%),
+        radial-gradient(circle at 88% 8%, rgba(110, 220, 99, 0.2), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+
+    .page {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 16px 16px calc(28px + var(--safe-bottom));
+    }
+
+    .hero {
+      padding: 22px 20px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(255, 225, 148, 0.75), rgba(214, 255, 242, 0.92));
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: var(--shadow);
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #ffd86e, #b8ef73 48%, #5fd694);
+      box-shadow: 0 6px 16px rgba(40, 180, 102, 0.18);
+      font-size: 21px;
+    }
+
+    .brand-name {
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .brand-subtitle {
+      color: #4a5f55;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      color: #3d5a45;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .hero h1 {
+      margin: 18px 0 10px;
+      font-size: 26px;
+      line-height: 1.25;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #4a5560;
+      font-size: 14px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .section { margin-top: 18px; }
+
+    .live-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .camera-card {
+      min-width: 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .camera-frame {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(21, 32, 43, 0.88), rgba(40, 180, 102, 0.3)),
+        #101820;
+      aspect-ratio: 16 / 9;
+    }
+
+    .camera-video {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #101820;
+      object-fit: contain;
+    }
+
+    .audio-control-btn {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      z-index: 10;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      border: 0;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(8px);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .audio-control-btn:hover {
+      background: rgba(0, 0, 0, 0.75);
+      transform: scale(1.03);
+    }
+
+    .camera-empty {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      text-align: center;
+      color: #ffffff;
+      background:
+        radial-gradient(circle at 22% 16%, rgba(255, 201, 94, 0.28), transparent 30%),
+        radial-gradient(circle at 80% 70%, rgba(110, 220, 99, 0.2), transparent 28%),
+        rgba(21, 32, 43, 0.72);
+      z-index: 5;
+    }
+
+    .camera-empty[hidden] { display: none; }
+
+    .empty-title {
+      font-weight: 900;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .empty-copy {
+      max-width: 300px;
+      margin: 0 auto;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 12px;
+    }
+
+    .camera-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 11px 12px 12px;
+    }
+
+    .camera-name {
+      min-width: 0;
+      color: #1a2a35;
+      font-size: 14px;
+      font-weight: 900;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .camera-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+      color: var(--brand-deep);
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--brand-deep);
+      box-shadow: 0 0 0 5px rgba(40, 180, 102, 0.12);
+    }
+
+    .info-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 14px;
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 10px;
+      color: #1a2a35;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.3;
+    }
+
+    .card-title::before {
+      content: "";
+      width: 4px;
+      height: 16px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, var(--accent), var(--brand));
+      flex-shrink: 0;
+    }
+
+    .info-card p {
+      margin: 0;
+      color: #4d5c67;
+      font-size: 13px;
+    }
+
+    .notice {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(40, 180, 102, 0.12);
+      background: #f4faf5;
+      color: #4d5c67;
+      font-size: 12px;
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .button {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      border-radius: 14px;
+      padding: 0 16px;
+      color: #10351f;
+      background: linear-gradient(135deg, var(--accent), var(--brand));
+      box-shadow: 0 8px 18px rgba(40, 180, 102, 0.2);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button.secondary {
+      color: #33414d;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .button.compact {
+      min-height: 40px;
+      padding: 0 14px;
+      font-size: 13px;
+      box-shadow: 0 6px 14px rgba(40, 180, 102, 0.16);
+    }
+
+    .footer {
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .footer a {
+      color: var(--brand-deep);
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    @media (max-width: 760px) {
+      .page { padding: 14px 12px calc(24px + var(--safe-bottom)); }
+      .hero h1 { font-size: 24px; }
+      .live-grid { grid-template-columns: 1fr; gap: 12px; }
+      .action-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="brand-row">
+        <div class="brand-mark">
+          <div class="brand-logo" aria-hidden="true">🐾</div>
+          <div>
+            <div class="brand-name">毛毛星球</div>
+            <div class="brand-subtitle">MeowHub</div>
+          </div>
+        </div>
+        <span class="hero-tag" id="liveBadge">云直播大屏</span>
+      </div>
+      <h1>正在直播毛孩子们的日常</h1>
+      <p>进入页面后会尝试自动播放全部直播画面。为了符合浏览器规则，直播默认静音播放，点击画面右下角按钮即可开启声音。</p>
+      <div class="hero-actions">
+        <button class="button compact" id="startAllButton" type="button">一键启动全部直播</button>
+      </div>
+    </section>
+
+    <section class="section live-grid" id="liveGrid" aria-label="直播监控大屏"></section>
+
+    <section class="section info-card">
+      <h2 class="card-title">直播说明</h2>
+      <p>这里是毛毛星球的公开直播窗口。网页只用于观看摄像头画面，不提供登录、投喂、评论、支付或设备控制能力。</p>
+      <div class="notice">安全提示：系统已接入动态鉴权保护，后台自动维护播放凭证安全。</div>
+      <div class="action-row">
+        <a class="button" id="downloadButton" href="#" role="button">App 即将开放</a>
+        <a class="button secondary" id="privacyLink" href="https://agreement.meowhub.cn/privacy_policy1.0.html" target="_blank" rel="noopener noreferrer">查看隐私协议</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>© 2026 毛毛星球</div>
+      <div style="margin-top: 6px;">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" id="icpLink">苏ICP备2026010549号-2</a>
+      </div>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
+  <script>
+    // 动态 API 配置（部署后替换为你的真实后端 API 地址）
+    const API_ENDPOINT = "https://your-api-domain.com/api/v1/live/rooms";
+
+    // 备用静态配置（当接口不可用时降级使用）
+    const FALLBACK_ROOMS = [
+      { name: "1", hlsUrl: "" },
+      { name: "2", hlsUrl: "" },
+      { name: "3", hlsUrl: "" },
+      { name: "4", hlsUrl: "" }
+    ];
+
+    const liveGrid = document.getElementById("liveGrid");
+    const startAllButton = document.getElementById("startAllButton");
+    const downloadButton = document.getElementById("downloadButton");
+    const privacyLink = document.getElementById("privacyLink");
+    const icpLink = document.getElementById("icpLink");
+    const liveVideos = [];
+
+    function escapeText(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function setCameraStatus(card, text, isLive) {
+      const status = card.querySelector(".camera-status");
+      const dot = card.querySelector(".live-dot");
+      status.lastElementChild.textContent = text;
+      status.style.color = isLive ? "var(--brand-deep)" : "var(--muted)";
+      dot.style.background = isLive ? "var(--brand-deep)" : "#9aa7b2";
+    }
+
+    function showCameraMessage(card, title, copy) {
+      const empty = card.querySelector(".camera-empty");
+      empty.querySelector(".empty-title").textContent = title;
+      empty.querySelector(".empty-copy").textContent = copy;
+      empty.hidden = false;
+      setCameraStatus(card, "等待接入", false);
+    }
+
+    function showCameraConnecting(card) {
+      const empty = card.querySelector(".camera-empty");
+      empty.querySelector(".empty-title").textContent = "连接中";
+      empty.querySelector(".empty-copy").textContent = "正在连接萤石云直播流，请稍等片刻。";
+      empty.hidden = false;
+      setCameraStatus(card, "连接中", false);
+    }
+
+    function markCameraLive(card) {
+      const empty = card.querySelector(".camera-empty");
+      empty.hidden = true;
+      setCameraStatus(card, "正在直播", true);
+    }
+
+    function hasPlayableFrame(video) {
+      return video.videoWidth > 0 && video.videoHeight > 0;
+    }
+
+    function showPlaybackFailure(card, video) {
+      if (hasPlayableFrame(video)) {
+        markCameraLive(card);
+        return;
+      }
+      showCameraMessage(card, "直播暂时无法播放", "播放地址已失效或设备处于离线状态。");
+    }
+
+    function updateAudioButtonState(video, btn) {
+      btn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
+    }
+
+    function createCameraCard(room, index) {
+      const card = document.createElement("article");
+      card.className = "camera-card";
+      card.innerHTML =
+        '<div class="camera-frame">' +
+          '<video class="camera-video" id="liveVideo' + index + '" controls autoplay muted playsinline preload="metadata"></video>' +
+          '<button class="audio-control-btn" type="button" aria-label="切换声音状态">🔇 开启声音</button>' +
+          '<div class="camera-empty">' +
+            '<div>' +
+              '<div class="empty-title">连接中</div>' +
+              '<p class="empty-copy">正在获取最新直播数据...</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="camera-meta">' +
+          '<div class="camera-name">直播间 ' + escapeText(room.name) + '</div>' +
+          '<div class="camera-status"><span class="live-dot" aria-hidden="true"></span><span>准备播放</span></div>' +
+        '</div>';
+      
+      const video = card.querySelector("video");
+      const audioBtn = card.querySelector(".audio-control-btn");
+
+      audioBtn.addEventListener("click", function () {
+        video.muted = !video.muted;
+        updateAudioButtonState(video, audioBtn);
+      });
+
+      video.addEventListener("volumechange", function () {
+        updateAudioButtonState(video, audioBtn);
+      });
+
+      return card;
+    }
+
+    function destroyHlsInstance(video) {
+      if (video.hlsInstance) {
+        video.hlsInstance.destroy();
+        video.hlsInstance = null;
+      }
+    }
+
+    function attachHlsPlayer(video, url, card) {
+      destroyHlsInstance(video);
+      showCameraConnecting(card);
+
+      if (!url) {
+        showCameraMessage(card, "等待接入直播", "未配置 HLS 播放地址或地址已过期。");
+        return;
+      }
+
+      video.onloadeddata = function () { markCameraLive(card); };
+      video.oncanplay = function () { markCameraLive(card); };
+      video.onerror = function () { showPlaybackFailure(card, video); };
+
+      if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = url;
+        video.play().catch(function () {});
+        return;
+      }
+
+      if (window.Hls && window.Hls.isSupported()) {
+        const hls = new window.Hls({ enableWorker: true, lowLatencyMode: true });
+        video.hlsInstance = hls;
+        hls.loadSource(url);
+        hls.attachMedia(video);
+
+        hls.on(window.Hls.Events.MANIFEST_PARSED, function () {
+          video.play().catch(function () {});
+        });
+
+        hls.on(window.Hls.Events.ERROR, function (_event, data) {
+          if (data && data.fatal) {
+            switch (data.type) {
+              case window.Hls.ErrorTypes.NETWORK_ERROR:
+                hls.startLoad();
+                break;
+              case window.Hls.ErrorTypes.MEDIA_ERROR:
+                hls.recoverMediaError();
+                break;
+              default:
+                showPlaybackFailure(card, video);
+                destroyHlsInstance(video);
+                break;
+            }
+          }
+        });
+        return;
+      }
+
+      showCameraMessage(card, "当前浏览器不支持播放", "请换用 Safari、Chrome、Edge 或在手机浏览器中打开。");
+    }
+
+    // 从后端动态获取直播数据
+    async function loadLiveRoomsData() {
+      try {
+        const response = await fetch(API_ENDPOINT, { cache: "no-cache" });
+        if (!response.ok) throw new Error("Network response was not ok");
+        const resData = await response.json();
+        return resData.rooms && resData.rooms.length > 0 ? resData.rooms : FALLBACK_ROOMS;
+      } catch (error) {
+        console.warn("无法从 API 加载直播流，将切换至备用模式:", error);
+        return FALLBACK_ROOMS;
+      }
+    }
+
+    async function initPage() {
+      const rooms = await loadLiveRoomsData();
+      liveGrid.innerHTML = ""; // 清空加载骨架
+      
+      rooms.forEach(function (room, index) {
+        const card = createCameraCard(room, index + 1);
+        liveGrid.appendChild(card);
+        const video = card.querySelector("video");
+        liveVideos.push(video);
+
+        window.setTimeout(function () {
+          attachHlsPlayer(video, room.hlsUrl, card);
+        }, index * 300);
+      });
+    }
+
+    function startAllVideos() {
+      liveVideos.forEach(function (video) {
+        video.muted = true;
+        video.play().catch(function () {});
+        if (hasPlayableFrame(video)) {
+          markCameraLive(video.closest(".camera-card"));
+        }
+      });
+    }
+
+    window.addEventListener("beforeunload", function () {
+      liveVideos.forEach(function (video) { destroyHlsInstance(video); });
+    });
+
+    initPage();
+    startAllButton.addEventListener("click", startAllVideos);
+  </script>
+</body>
+</html>
