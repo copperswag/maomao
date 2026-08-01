@@ -237,18 +237,23 @@
     }
 
     .btn-main {
-      background: var(--text-main);
-      color: #000;
-      padding: 10px 20px;
+      background: linear-gradient(135deg, #ffffff, #e5e7eb);
+      color: #090a0f;
+      padding: 10px 22px;
       border-radius: 10px;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 14px;
       text-decoration: none;
-      transition: opacity 0.2s;
+      transition: all 0.2s ease;
       white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15);
     }
 
-    .btn-main:hover { opacity: 0.9; }
+    .btn-main:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25);
+      background: #ffffff;
+    }
 
     footer {
       margin-top: 32px;
@@ -286,10 +291,10 @@
 
     <div class="footer-box">
       <div>
-        <h3 style="font-size: 16px; margin-bottom: 4px;">毛毛星球 App 建设中</h3>
+        <h3 style="font-size: 16px; margin-bottom: 4px;">毛毛星球 App</h3>
         <p style="color: var(--text-sub); font-size: 13px;">提供定点云端投喂、远程看护与领养服务</p>
       </div>
-      <a href="#" class="btn-main">即将上线</a>
+      <a href="https://agreement.meowhub.cn/live_room_share.html" target="_blank" rel="noopener noreferrer" class="btn-main">下载 App</a>
     </div>
 
     <footer>
