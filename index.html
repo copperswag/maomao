@@ -411,12 +411,13 @@
       playerEmpty.style.display = "none";
     });
 
-    function playStream(roomIndex) {
-      const room = roomList[roomIndex];
-      if (!room) return;
+   function playStream(roomIndex) {
+  const room = roomList[roomIndex];
+  if (!room) return;
 
-      const roomLabel = `第${chineseNumbers[roomIndex] || (roomIndex + 1)}直播间`;
-      currentRoomTitle.textContent = roomLabel;
+  // 直接使用 Worker 传过来的名字
+  currentRoomTitle.textContent = room.name;
+
 
       // 切换按钮高亮
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
@@ -486,22 +487,54 @@
       }
     }
 
-    async function initPage() {
-      try {
-        const response = await fetch(API_ENDPOINT, { cache: "no-cache" });
-        const data = await response.json();
-        roomList = data.rooms || [];
+   roomList.forEach((room, idx) => {
+       const btn = document.createElement("button");
+       btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
+
+       // 如果是随机置顶的第一个，在名字后加上 (推荐)
+       const label = idx === 0 ? `${room.name} · 推荐` : room.name;
+
+       btn.innerHTML = `
+         <span>${label}</span>
+         <span class="status-indicator">
+           <span class="pulse-dot"></span>
+           LIVE
+         </span>
+       `;
+
+       btn.addEventListener("click", () => {
+         playStream(idx);
+       });
+
+       roomButtonList.appendChild(btn);
+     });
+
+        if (rawRooms.length === 0) {
+          emptyTitle.textContent = "暂无在线直播间";
+          emptyCopy.textContent = "请稍后再试";
+          return;
+        }
+
+        // 1. 随机选取一个机位并将其置顶到数组第 0 位
+        const randomIndex = Math.floor(Math.random() * rawRooms.length);
+        const featuredRoom = rawRooms.splice(randomIndex, 1)[0];
+        roomList = [featuredRoom, ...rawRooms];
 
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
         roomButtonList.innerHTML = "";
 
+        // 2. 渲染置顶后的机位列表
         roomList.forEach((room, idx) => {
           const btn = document.createElement("button");
           btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
-          const title = `第${chineseNumbers[idx] || (idx + 1)}直播间`;
           
+          // 置顶的第一个显示“推荐”，其余按顺序显示
+          const label = idx === 0 
+            ? `第${chineseNumbers[room.id - 1] || room.name}直播间 (推荐)` 
+            : `第${chineseNumbers[room.id - 1] || room.name}直播间`;
+
           btn.innerHTML = `
-            <span>${title}</span>
+            <span>${label}</span>
             <span class="status-indicator">
               <span class="pulse-dot"></span>
               LIVE
@@ -515,10 +548,8 @@
           roomButtonList.appendChild(btn);
         });
 
-        // 默认直接播放第三直播间（已知最稳定的机位），也可按需切换
-        if (roomList.length > 0) {
-          playStream(roomList.length > 2 ? 2 : 0);
-        }
+        // 3. 默认播放置顶的第 1 个推荐直播间
+        playStream(0);
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
         emptyCopy.textContent = "请检查网络或稍后刷新重试";
