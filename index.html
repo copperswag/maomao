@@ -204,7 +204,7 @@
       display: block;
     }
 
-    /* 弹幕覆盖层 */
+    /* 弹幕图层 */
     .danmaku-container {
       position: absolute;
       inset: 0;
@@ -293,7 +293,6 @@
       color: var(--text-main);
     }
 
-    /* 互动留言板组件 */
     .chat-section {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -481,7 +480,6 @@
       <div class="player-container">
         <div class="video-wrapper">
           <video id="mainVideo" autoplay muted playsinline controlsList="nodownload"></video>
-          <!-- 弹幕层 -->
           <div class="danmaku-container" id="danmakuBox"></div>
           
           <div class="controls-overlay">
@@ -571,13 +569,11 @@
     let seenCommentIds = new Set();
     let pollTimer = null;
 
-    // 音频开关
     audioBtn.addEventListener("click", () => {
       video.muted = !video.muted;
       audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
     });
 
-    // 弹幕开关
     danmakuToggleBtn.addEventListener("click", () => {
       danmakuEnabled = !danmakuEnabled;
       danmakuBox.style.display = danmakuEnabled ? "block" : "none";
@@ -594,13 +590,12 @@
       playerEmpty.style.display = "none";
     });
 
-    // 发射弹幕动效
+    // 纯文本弹幕插入（杜绝 XSS）
     function shootDanmaku(text) {
       if (!danmakuEnabled) return;
       const el = document.createElement("div");
       el.className = "danmaku-item";
       el.textContent = text;
-      // 随机分配高度轨道 (15% ~ 75%)
       const topPos = Math.floor(Math.random() * 60) + 15;
       el.style.top = `${topPos}%`;
       danmakuBox.appendChild(el);
@@ -609,7 +604,7 @@
       });
     }
 
-    // 渲染留言板并按需发弹幕
+    // 安全 DOM 构建留言项（免疫 innerHTML 漏洞）
     function renderComments(comments, isInitial = false) {
       if (!comments || comments.length === 0) return;
       
@@ -623,15 +618,27 @@
 
           const row = document.createElement("div");
           row.className = "message-item";
-          row.innerHTML = `
-            <span class="msg-user">${c.name}:</span>
-            <span class="msg-text">${c.text}</span>
-            <span class="msg-time">${c.time}</span>
-          `;
+
+          const userSpan = document.createElement("span");
+          userSpan.className = "msg-user";
+          userSpan.textContent = `${c.name}:`;
+
+          const textSpan = document.createElement("span");
+          textSpan.className = "msg-text";
+          textSpan.textContent = c.text;
+
+          const timeSpan = document.createElement("span");
+          timeSpan.className = "msg-time";
+          timeSpan.textContent = c.time;
+
+          row.appendChild(userSpan);
+          row.appendChild(textSpan);
+          row.appendChild(timeSpan);
+
           chatList.appendChild(row);
           chatList.scrollTop = chatList.scrollHeight;
 
-          // 仅在非首次加载且非本地即时发送时触发弹幕（防止弹幕重复）
+          // 仅在非首次加载且非本地即时发送时发射弹幕
           if (!isInitial && !c.isLocal) {
             shootDanmaku(`${c.name}: ${c.text}`);
           }
@@ -639,7 +646,6 @@
       });
     }
 
-    // 轮询拉取当前直播间的评论
     async function fetchComments(isInitial = false) {
       try {
         const res = await fetch(`${API_ENDPOINT}/api/comments?room=${currentRoomId}`);
@@ -650,7 +656,6 @@
       } catch (e) {}
     }
 
-    // 发送评论表单
     chatForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const text = textInput.value.trim();
@@ -659,7 +664,7 @@
 
       textInput.value = "";
       
-      // 本地立即发射一次弹幕提升体验
+      // 本地立即发射一次弹幕
       shootDanmaku(`${name}: ${text}`);
 
       try {
@@ -669,8 +674,15 @@
           body: JSON.stringify({ roomId: currentRoomId, name, text })
         });
         const json = await res.json();
+        if (res.status === 429) {
+          alert(json.msg || "发言太快了，请稍后再试");
+          return;
+        }
+        if (res.status === 403) {
+          alert(json.msg || "消息包含敏感词，已被拦截");
+          return;
+        }
         if (json && json.data) {
-          // 标记本地消息，防止 renderComments 重复发射弹幕
           json.data.isLocal = true;
           renderComments([json.data], false);
         }
@@ -685,7 +697,6 @@
       const roomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = roomName;
 
-      // 重置评论状态并拉取新房间的数据
       seenCommentIds.clear();
       chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>';
       fetchComments(true);
