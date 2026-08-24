@@ -393,13 +393,11 @@
     let hls = null;
     let roomList = [];
 
-    // 音频切换
     audioBtn.addEventListener("click", () => {
       video.muted = !video.muted;
       audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
     });
 
-    // 播放成功时自动隐藏遮罩
     video.addEventListener("timeupdate", () => {
       if (video.currentTime > 0) {
         playerEmpty.style.display = "none";
@@ -417,7 +415,6 @@
       const roomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = roomName;
 
-      // 切换按钮高亮
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
         btn.classList.toggle("active", idx === roomIndex);
@@ -427,7 +424,6 @@
       emptyTitle.textContent = `正在连接 ${roomName}...`;
       emptyCopy.textContent = "正在调取云端视频...";
 
-      // 彻底销毁上一个流，释放带宽
       if (hls) {
         hls.stopLoad();
         hls.detachMedia();
@@ -497,7 +493,7 @@
           return;
         }
 
-        // 1. 随机选取一个机位并将其置顶到第 0 位
+        // 随机置顶推荐
         const randomIndex = Math.floor(Math.random() * rawRooms.length);
         const featuredRoom = rawRooms.splice(randomIndex, 1)[0];
         roomList = [featuredRoom, ...rawRooms];
@@ -505,7 +501,6 @@
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
         roomButtonList.innerHTML = "";
 
-        // 2. 渲染左侧机位列表（置顶的显示推荐标签）
         roomList.forEach((room, idx) => {
           const btn = document.createElement("button");
           btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
@@ -527,7 +522,6 @@
           roomButtonList.appendChild(btn);
         });
 
-        // 3. 默认播放置顶推荐的第 1 个直播间
         playStream(0);
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
