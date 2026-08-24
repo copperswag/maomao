@@ -231,7 +231,6 @@
       background: rgba(9, 10, 15, 0.88);
       backdrop-filter: blur(4px);
       z-index: 5;
-      transition: opacity 0.2s ease;
     }
 
     .empty-title {
@@ -336,12 +335,12 @@
       <!-- 右侧单屏高清播放器 -->
       <div class="player-container">
         <div class="video-wrapper">
-          <video id="mainVideo" autoplay muted playsinline></video>
+          <video id="mainVideo" autoplay muted playsinline controlsList="nodownload"></video>
           <button class="audio-btn" id="audioBtn" type="button">🔇 开启声音</button>
           <div class="card-empty" id="playerEmpty">
             <div>
               <div class="empty-title" id="emptyTitle">正在连线设备...</div>
-              <p class="empty-copy" id="emptyCopy">唤醒边缘视频流中，请稍候...</p>
+              <p class="empty-copy" id="emptyCopy">唤醒视频流中，请稍候...</p>
             </div>
           </div>
         </div>
@@ -392,7 +391,7 @@
     const currentRoomTitle = document.getElementById("currentRoomTitle");
     const roomButtonList = document.getElementById("roomButtonList");
 
-    let currentHls = null;
+    let hls = null;
     let roomList = [];
 
     // 音频切换
@@ -401,7 +400,7 @@
       audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
     });
 
-    // 画面渲染成功时隐藏遮罩
+    // 播放中自动移除遮罩
     video.addEventListener("timeupdate", () => {
       if (video.currentTime > 0) {
         playerEmpty.style.display = "none";
@@ -412,13 +411,14 @@
       playerEmpty.style.display = "none";
     });
 
-    function playRoomStream(roomIndex) {
+    function playStream(roomIndex) {
       const room = roomList[roomIndex];
       if (!room) return;
 
       const roomLabel = `第${chineseNumbers[roomIndex] || (roomIndex + 1)}直播间`;
       currentRoomTitle.textContent = roomLabel;
 
+      // 切换按钮高亮
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
         btn.classList.toggle("active", idx === roomIndex);
@@ -426,16 +426,18 @@
 
       playerEmpty.style.display = "grid";
       emptyTitle.textContent = `正在连接 ${roomLabel}...`;
-      emptyCopy.textContent = "正在调取云端视频切片...";
+      emptyCopy.textContent = "正在调取云端视频...";
 
-      // 彻底销毁旧实例
-      if (currentHls) {
-        currentHls.destroy();
-        currentHls = null;
+      // 彻底解绑并销毁前一个播放器
+      if (hls) {
+        hls.stopLoad();
+        hls.detachMedia();
+        hls.destroy();
+        hls = null;
       }
 
       video.pause();
-      video.removeAttribute("src");
+      video.src = "";
       video.load();
 
       if (!room.hlsUrl) {
@@ -444,35 +446,24 @@
         return;
       }
 
-      if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = room.hlsUrl;
-        video.play().catch(() => {});
-        return;
-      }
-
       if (window.Hls && window.Hls.isSupported()) {
-        const hls = new window.Hls({
+        hls = new window.Hls({
           enableWorker: true,
           lowLatencyMode: true,
           manifestLoadingTimeOut: 15000,
           manifestLoadingMaxRetry: 10,
+          levelLoadingTimeOut: 15000,
+          levelLoadingMaxRetry: 10,
           fragLoadingTimeOut: 20000,
           fragLoadingMaxRetry: 10
         });
 
-        currentHls = hls;
         hls.loadSource(room.hlsUrl);
         hls.attachMedia(video);
 
         hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
           video.muted = true;
-          const playPromise = video.play();
-          if (playPromise !== undefined) {
-            playPromise.catch(() => {
-              video.muted = true;
-              video.play().catch(() => {});
-            });
-          }
+          video.play().catch(() => {});
         });
 
         hls.on(window.Hls.Events.ERROR, (_event, data) => {
@@ -485,11 +476,13 @@
                 hls.recoverMediaError();
                 break;
               default:
-                hls.destroy();
                 break;
             }
           }
         });
+      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = room.hlsUrl;
+        video.play().catch(() => {});
       }
     }
 
@@ -516,14 +509,15 @@
           `;
 
           btn.addEventListener("click", () => {
-            playRoomStream(idx);
+            playStream(idx);
           });
 
           roomButtonList.appendChild(btn);
         });
 
+        // 默认直接播放第三直播间（已知最稳定的机位），也可按需切换
         if (roomList.length > 0) {
-          playRoomStream(0);
+          playStream(roomList.length > 2 ? 2 : 0);
         }
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
