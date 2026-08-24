@@ -264,7 +264,7 @@
       </div>
       <div class="badge-live">
         <div class="pulse-dot"></div>
-        <span id="onlineCount">1 CAM ONLINE</span>
+        <span id="onlineCount">3 CAM ONLINE</span>
       </div>
     </header>
 
@@ -300,28 +300,15 @@
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
-    const FALLBACK_ROOMS = [{ name: "1" }];
     const liveGrid = document.getElementById("liveGrid");
-    const liveVideos = [];
+    const hlsInstances = [];
 
     function setCameraStatus(card, text, isLive) {
       const status = card.querySelector(".cam-status");
-      status.textContent = text;
-      status.style.color = isLive ? "var(--accent-green)" : "var(--text-sub)";
-    }
-
-    function showCameraConnecting(card, msg) {
-      const empty = card.querySelector(".card-empty");
-      empty.querySelector(".empty-title").textContent = "正在连线设备...";
-      empty.querySelector(".empty-copy").textContent = msg || "唤醒边缘视频流中，请稍候...";
-      empty.hidden = false;
-      setCameraStatus(card, "连接中", false);
-    }
-
-    function markCameraLive(card) {
-      const empty = card.querySelector(".card-empty");
-      empty.hidden = true;
-      setCameraStatus(card, "LIVE", true);
+      if (status) {
+        status.textContent = text;
+        status.style.color = isLive ? "var(--accent-green)" : "var(--text-sub)";
+      }
     }
 
     function createVideoCard(room, index) {
@@ -329,7 +316,7 @@
       card.className = "video-card";
       card.innerHTML = `
         <div class="video-wrapper">
-          <video id="liveVideo${index}" autoplay muted playsinline preload="auto"></video>
+          <video id="liveVideo_${index}" autoplay muted playsinline preload="auto"></video>
           <button class="audio-btn" type="button">🔇 开启声音</button>
           <div class="card-empty">
             <div>
@@ -355,28 +342,21 @@
       return card;
     }
 
-    function destroyHlsInstance(video) {
-      if (video.hlsInstance) {
-        video.hlsInstance.destroy();
-        video.hlsInstance = null;
+    // 针对每台设备创建独立的 HLS 实例与后台重连
+    function initHlsStream(video, url, card) {
+      if (!url) {
+        const empty = card.querySelector(".card-empty");
+        empty.querySelector(".empty-title").textContent = "设备待机中";
+        empty.querySelector(".empty-copy").textContent = "暂无活跃推流，请稍后刷新";
+        return;
       }
-    }
 
-    // App 级别无感知自愈播放器
-    function attachAppLevelPlayer(video, url, card) {
-      destroyHlsInstance(video);
-      showCameraConnecting(card);
+      const empty = card.querySelector(".card-empty");
 
-      if (!url) return;
-
-      let retryTimer = null;
-      let hasPlayed = false;
-
-      video.onplaying = () => {
-        hasPlayed = true;
-        markCameraLive(card);
-        if (retryTimer) clearTimeout(retryTimer);
-      };
+      video.addEventListener("playing", () => {
+        empty.hidden = true;
+        setCameraStatus(card, "LIVE", true);
+      });
 
       if (video.canPlayType("application/vnd.apple.mpegurl")) {
         video.src = url;
@@ -388,15 +368,15 @@
         const hls = new window.Hls({
           enableWorker: true,
           lowLatencyMode: true,
-          manifestLoadingTimeOut: 10000,
+          manifestLoadingTimeOut: 15000,
           manifestLoadingMaxRetry: 10,
-          levelLoadingTimeOut: 10000,
+          levelLoadingTimeOut: 15000,
           levelLoadingMaxRetry: 10,
           fragLoadingTimeOut: 20000,
           fragLoadingMaxRetry: 10
         });
 
-        video.hlsInstance = hls;
+        hlsInstances.push(hls);
         hls.loadSource(url);
         hls.attachMedia(video);
 
@@ -404,7 +384,6 @@
           video.play().catch(() => {});
         });
 
-        // 静默自愈：遇到网络波动或切片延迟，自动后台拉取，绝不黑屏报错
         hls.on(window.Hls.Events.ERROR, (_event, data) => {
           if (data && data.fatal) {
             switch (data.type) {
@@ -415,13 +394,10 @@
                 hls.recoverMediaError();
                 break;
               default:
-                if (!hasPlayed) {
-                  // 设备唤醒中，自动循环重连
-                  retryTimer = setTimeout(() => {
-                    hls.loadSource(url);
-                    hls.startLoad();
-                  }, 2000);
-                }
+                setTimeout(() => {
+                  hls.loadSource(url);
+                  hls.startLoad();
+                }, 2000);
                 break;
             }
           }
@@ -429,37 +405,29 @@
       }
     }
 
-    async function loadLiveRoomsData() {
+    async function initPage() {
       try {
         const response = await fetch(API_ENDPOINT, { cache: "no-cache" });
-        if (!response.ok) throw new Error("API error");
-        const resData = await response.json();
-        return resData.rooms && resData.rooms.length > 0 ? resData.rooms : FALLBACK_ROOMS;
-      } catch (error) {
-        return FALLBACK_ROOMS;
+        const data = await response.json();
+        const rooms = data.rooms || [];
+
+        liveGrid.innerHTML = "";
+        document.getElementById("onlineCount").textContent = `${rooms.length} CAM ONLINE`;
+
+        rooms.forEach((room, idx) => {
+          const card = createVideoCard(room, idx + 1);
+          liveGrid.appendChild(card);
+          const video = card.querySelector("video");
+
+          // 错峰 300ms 唤醒，确保多机位全部正常出画面
+          setTimeout(() => {
+            initHlsStream(video, room.hlsUrl, card);
+          }, idx * 300);
+        });
+      } catch (err) {
+        console.error("加载直播房间失败:", err);
       }
     }
-
-    async function initPage() {
-      const rooms = await loadLiveRoomsData();
-      liveGrid.innerHTML = "";
-      document.getElementById("onlineCount").textContent = `${rooms.length} CAM ONLINE`;
-
-      rooms.forEach((room, index) => {
-        const card = createVideoCard(room, index + 1);
-        liveGrid.appendChild(card);
-        const video = card.querySelector("video");
-        liveVideos.push(video);
-
-        setTimeout(() => {
-          attachAppLevelPlayer(video, room.hlsUrl, card);
-        }, index * 150);
-      });
-    }
-
-    window.addEventListener("beforeunload", () => {
-      liveVideos.forEach(v => destroyHlsInstance(v));
-    });
 
     initPage();
   </script>
