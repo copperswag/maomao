@@ -528,7 +528,19 @@
         emptyCopy.textContent = "请检查网络或稍后刷新重试";
       }
     }
-
+document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        if (hls && hls.liveSyncPosition) {
+          const latency = hls.liveSyncPosition - video.currentTime;
+          if (latency > 3) {
+            video.currentTime = hls.liveSyncPosition;
+          }
+          video.play().catch(() => {});
+        } else if (video.paused) {
+          video.play().catch(() => {});
+        }
+      }
+    });
     initPage();
   </script>
 </body>
