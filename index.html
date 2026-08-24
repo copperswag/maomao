@@ -631,8 +631,8 @@
           chatList.appendChild(row);
           chatList.scrollTop = chatList.scrollHeight;
 
-          // 非首次加载的新鲜留言实时转为弹幕
-          if (!isInitial) {
+          // 仅在非首次加载且非本地即时发送时触发弹幕（防止弹幕重复）
+          if (!isInitial && !c.isLocal) {
             shootDanmaku(`${c.name}: ${c.text}`);
           }
         }
@@ -658,7 +658,8 @@
       const name = nameInput.value.trim() || "热心猫友";
 
       textInput.value = "";
-      // 本地即时发射弹幕提升响应体验
+      
+      // 本地立即发射一次弹幕提升体验
       shootDanmaku(`${name}: ${text}`);
 
       try {
@@ -669,6 +670,8 @@
         });
         const json = await res.json();
         if (json && json.data) {
+          // 标记本地消息，防止 renderComments 重复发射弹幕
+          json.data.isLocal = true;
           renderComments([json.data], false);
         }
       } catch (err) {}
