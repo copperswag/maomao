@@ -345,7 +345,7 @@
           </div>
         </div>
         <div class="player-bar">
-          <span class="current-room-name" id="currentRoomTitle">第一直播间</span>
+          <span class="current-room-name" id="currentRoomTitle">加载中...</span>
           <span class="badge-live">
             <div class="pulse-dot"></div>
             <span>LIVE 实时直连</span>
@@ -381,7 +381,6 @@
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
-    const chineseNumbers = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
 
     const video = document.getElementById("mainVideo");
     const audioBtn = document.getElementById("audioBtn");
@@ -400,7 +399,7 @@
       audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
     });
 
-    // 播放中自动移除遮罩
+    // 播放成功时自动隐藏遮罩
     video.addEventListener("timeupdate", () => {
       if (video.currentTime > 0) {
         playerEmpty.style.display = "none";
@@ -411,13 +410,12 @@
       playerEmpty.style.display = "none";
     });
 
-   function playStream(roomIndex) {
-  const room = roomList[roomIndex];
-  if (!room) return;
+    function playStream(roomIndex) {
+      const room = roomList[roomIndex];
+      if (!room) return;
 
-  // 直接使用 Worker 传过来的名字
-  currentRoomTitle.textContent = room.name;
-
+      const roomName = room.name || `直播间 ${roomIndex + 1}`;
+      currentRoomTitle.textContent = roomName;
 
       // 切换按钮高亮
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
@@ -426,10 +424,10 @@
       });
 
       playerEmpty.style.display = "grid";
-      emptyTitle.textContent = `正在连接 ${roomLabel}...`;
+      emptyTitle.textContent = `正在连接 ${roomName}...`;
       emptyCopy.textContent = "正在调取云端视频...";
 
-      // 彻底解绑并销毁前一个播放器
+      // 彻底销毁上一个流，释放带宽
       if (hls) {
         hls.stopLoad();
         hls.detachMedia();
@@ -442,7 +440,7 @@
       video.load();
 
       if (!room.hlsUrl) {
-        emptyTitle.textContent = `${roomLabel} 待机中`;
+        emptyTitle.textContent = `${roomName} 待机中`;
         emptyCopy.textContent = "暂无活跃推流，请切换其他直播间";
         return;
       }
@@ -487,27 +485,11 @@
       }
     }
 
-   roomList.forEach((room, idx) => {
-       const btn = document.createElement("button");
-       btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
-
-       // 如果是随机置顶的第一个，在名字后加上 (推荐)
-       const label = idx === 0 ? `${room.name} · 推荐` : room.name;
-
-       btn.innerHTML = `
-         <span>${label}</span>
-         <span class="status-indicator">
-           <span class="pulse-dot"></span>
-           LIVE
-         </span>
-       `;
-
-       btn.addEventListener("click", () => {
-         playStream(idx);
-       });
-
-       roomButtonList.appendChild(btn);
-     });
+    async function initPage() {
+      try {
+        const response = await fetch(API_ENDPOINT, { cache: "no-cache" });
+        const data = await response.json();
+        let rawRooms = data.rooms || [];
 
         if (rawRooms.length === 0) {
           emptyTitle.textContent = "暂无在线直播间";
@@ -515,7 +497,7 @@
           return;
         }
 
-        // 1. 随机选取一个机位并将其置顶到数组第 0 位
+        // 1. 随机选取一个机位并将其置顶到第 0 位
         const randomIndex = Math.floor(Math.random() * rawRooms.length);
         const featuredRoom = rawRooms.splice(randomIndex, 1)[0];
         roomList = [featuredRoom, ...rawRooms];
@@ -523,15 +505,12 @@
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
         roomButtonList.innerHTML = "";
 
-        // 2. 渲染置顶后的机位列表
+        // 2. 渲染左侧机位列表（置顶的显示推荐标签）
         roomList.forEach((room, idx) => {
           const btn = document.createElement("button");
           btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
           
-          // 置顶的第一个显示“推荐”，其余按顺序显示
-          const label = idx === 0 
-            ? `第${chineseNumbers[room.id - 1] || room.name}直播间 (推荐)` 
-            : `第${chineseNumbers[room.id - 1] || room.name}直播间`;
+          const label = idx === 0 ? `${room.name} · 推荐` : room.name;
 
           btn.innerHTML = `
             <span>${label}</span>
@@ -548,7 +527,7 @@
           roomButtonList.appendChild(btn);
         });
 
-        // 3. 默认播放置顶的第 1 个推荐直播间
+        // 3. 默认播放置顶推荐的第 1 个直播间
         playStream(0);
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
