@@ -378,7 +378,8 @@
     </footer>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
+  <!-- 使用国内加速 CDN 节点 -->
+  <script src="https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/hls.js/1.1.5/hls.min.js"></script>
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
@@ -445,12 +446,13 @@
         hls = new window.Hls({
           enableWorker: true,
           lowLatencyMode: true,
-          manifestLoadingTimeOut: 15000,
-          manifestLoadingMaxRetry: 10,
-          levelLoadingTimeOut: 15000,
-          levelLoadingMaxRetry: 10,
-          fragLoadingTimeOut: 20000,
-          fragLoadingMaxRetry: 10
+          backBufferLength: 0,
+          maxBufferLength: 4,
+          maxMaxBufferLength: 6,
+          liveSyncDurationCount: 1,
+          liveMaxLatencyDurationCount: 3,
+          manifestLoadingTimeOut: 10000,
+          fragLoadingTimeOut: 10000
         });
 
         hls.loadSource(room.hlsUrl);
@@ -493,7 +495,7 @@
           return;
         }
 
-        // 随机置顶推荐
+        // 随机选取一个机位并将其置顶到第 0 位
         const randomIndex = Math.floor(Math.random() * rawRooms.length);
         const featuredRoom = rawRooms.splice(randomIndex, 1)[0];
         roomList = [featuredRoom, ...rawRooms];
@@ -501,14 +503,13 @@
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
         roomButtonList.innerHTML = "";
 
+        // 纯净展示名称，无额外标签
         roomList.forEach((room, idx) => {
           const btn = document.createElement("button");
           btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
-          
-          const label = idx === 0 ? `${room.name} · 推荐` : room.name;
 
           btn.innerHTML = `
-            <span>${label}</span>
+            <span>${room.name}</span>
             <span class="status-indicator">
               <span class="pulse-dot"></span>
               LIVE
@@ -522,6 +523,7 @@
           roomButtonList.appendChild(btn);
         });
 
+        // 默认播放置顶的第 1 个随机机位
         playStream(0);
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
