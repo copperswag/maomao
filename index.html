@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <!-- CSP 内容安全策略：硬性限制浏览器仅能连接 Worker 和萤石推流域名 -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://maomao-live-api.yuangchen16.workers.dev https://*.ys7.com https://*.hikvision.com; media-src 'self' blob: https:;" />
   <title>毛毛星球 MeowHub | 智能养宠</title>
   <style>
     :root {
@@ -204,7 +206,6 @@
       display: block;
     }
 
-    /* 弹幕图层 */
     .danmaku-container {
       position: absolute;
       inset: 0;
@@ -329,9 +330,7 @@
       margin-bottom: 16px;
     }
 
-    .chat-messages::-webkit-scrollbar {
-      width: 4px;
-    }
+    .chat-messages::-webkit-scrollbar { width: 4px; }
     .chat-messages::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.15);
       border-radius: 4px;
@@ -365,6 +364,7 @@
     .chat-input-bar {
       display: flex;
       gap: 10px;
+      position: relative;
     }
 
     .chat-input {
@@ -385,6 +385,17 @@
 
     .input-name { width: 110px; }
     .input-text { flex: 1; }
+
+    /* Honeypot 蜜罐隐藏样式 */
+    .hp-field {
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 0;
+      width: 0;
+      z-index: -1;
+    }
 
     .btn-send {
       background: var(--accent-green);
@@ -470,13 +481,11 @@
     <p class="hero-desc">不论爱宠、更懂爱它。定点喂养、实时直播与智能看护系统。</p>
 
     <div class="live-layout">
-      <!-- 左侧机位切换列表 -->
       <div class="room-sidebar">
         <div class="sidebar-title">切换直播间</div>
         <div id="roomButtonList" style="display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
 
-      <!-- 右侧单屏高清播放器 -->
       <div class="player-container">
         <div class="video-wrapper">
           <video id="mainVideo" autoplay muted playsinline controlsList="nodownload"></video>
@@ -514,6 +523,9 @@
         <div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>
       </div>
       <form class="chat-input-bar" id="chatForm">
+        <!-- 蜜罐隐藏字段（正常人类不会填，爬虫若填会被拦截） -->
+        <input type="text" name="hp_website" id="hpWebsite" class="hp-field" tabindex="-1" autocomplete="off" />
+        
         <input type="text" class="chat-input input-name" id="nameInput" placeholder="昵称 (可选)" maxlength="10" />
         <input type="text" class="chat-input input-text" id="textInput" placeholder="说点什么吧，按回车发送弹幕..." maxlength="60" required />
         <button type="submit" class="btn-send">发送</button>
@@ -556,6 +568,7 @@
     const chatForm = document.getElementById("chatForm");
     const nameInput = document.getElementById("nameInput");
     const textInput = document.getElementById("textInput");
+    const hpWebsite = document.getElementById("hpWebsite");
     const playerEmpty = document.getElementById("playerEmpty");
     const emptyTitle = document.getElementById("emptyTitle");
     const emptyCopy = document.getElementById("emptyCopy");
@@ -590,7 +603,6 @@
       playerEmpty.style.display = "none";
     });
 
-    // 纯文本弹幕插入（杜绝 XSS）
     function shootDanmaku(text) {
       if (!danmakuEnabled) return;
       const el = document.createElement("div");
@@ -604,7 +616,6 @@
       });
     }
 
-    // 安全 DOM 构建留言项（免疫 innerHTML 漏洞）
     function renderComments(comments, isInitial = false) {
       if (!comments || comments.length === 0) return;
       
@@ -638,7 +649,6 @@
           chatList.appendChild(row);
           chatList.scrollTop = chatList.scrollHeight;
 
-          // 仅在非首次加载且非本地即时发送时发射弹幕
           if (!isInitial && !c.isLocal) {
             shootDanmaku(`${c.name}: ${c.text}`);
           }
@@ -661,17 +671,16 @@
       const text = textInput.value.trim();
       if (!text) return;
       const name = nameInput.value.trim() || "热心猫友";
+      const hp = hpWebsite.value;
 
       textInput.value = "";
-      
-      // 本地立即发射一次弹幕
       shootDanmaku(`${name}: ${text}`);
 
       try {
         const res = await fetch(`${API_ENDPOINT}/api/comments`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomId: currentRoomId, name, text })
+          body: JSON.stringify({ roomId: currentRoomId, name, text, hp_website: hp })
         });
         const json = await res.json();
         if (res.status === 429) {
@@ -680,6 +689,10 @@
         }
         if (res.status === 403) {
           alert(json.msg || "消息包含敏感词，已被拦截");
+          return;
+        }
+        if (res.status === 400 && json.msg) {
+          alert(json.msg);
           return;
         }
         if (json && json.data) {
