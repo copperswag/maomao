@@ -279,6 +279,19 @@
 
     .player-ctrl-btn:hover {
       background: rgba(0, 0, 0, 0.85);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .player-ctrl-btn.btn-snapshot {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .player-ctrl-btn.btn-snapshot:hover {
+      background: linear-gradient(135deg, #10b981, #059669);
+      transform: scale(1.05);
     }
 
     .card-empty {
@@ -575,6 +588,93 @@
       color: var(--text-sub);
       text-decoration: none;
     }
+
+    /* 拍立得弹窗样式 */
+    .polaroid-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .polaroid-modal.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .polaroid-card-wrapper {
+      max-width: 380px;
+      width: 90vw;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes pop-in {
+      from { transform: scale(0.85) translateY(20px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .polaroid-img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .polaroid-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn-polaroid-action {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 99px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-polaroid-action:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .btn-polaroid-action.primary {
+      background: #10b981;
+      border-color: #10b981;
+      color: #090a0f;
+    }
+
+    .btn-polaroid-action.primary:hover {
+      background: #059669;
+    }
+
+    .polaroid-tip {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -601,10 +701,11 @@
 
       <div class="player-container">
         <div class="video-wrapper" id="videoWrapper">
-          <video id="mainVideo" autoplay muted playsinline controlsList="nodownload"></video>
+          <video id="mainVideo" autoplay muted playsinline crossorigin="anonymous" controlsList="nodownload"></video>
           <div class="danmaku-container" id="danmakuBox"></div>
           
           <div class="controls-overlay">
+            <button class="player-ctrl-btn btn-snapshot" id="snapshotBtn" type="button">📷 拍立得</button>
             <button class="player-ctrl-btn" id="danmakuToggleBtn" type="button">💬 弹幕: 开</button>
             <button class="player-ctrl-btn" id="audioBtn" type="button">🔇 开启声音</button>
           </div>
@@ -682,6 +783,20 @@
     </footer>
   </div>
 
+  <!-- 拍立得海报弹窗 -->
+  <div class="polaroid-modal" id="polaroidModal">
+    <div class="polaroid-card-wrapper">
+      <img id="polaroidImg" class="polaroid-img" alt="毛毛星球拍立得" />
+    </div>
+    <div class="polaroid-actions">
+      <a id="downloadPolaroidBtn" class="btn-polaroid-action primary" download="meowhub_snap.png">📥 保存海报</a>
+      <button id="closePolaroidBtn" class="btn-polaroid-action" type="button">✕ 关闭</button>
+    </div>
+    <div class="polaroid-tip">手机端长按图片可直接存入相册 / 发朋友圈</div>
+  </div>
+
+  <canvas id="snapshotCanvas" style="display: none;"></canvas>
+
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
@@ -690,6 +805,7 @@
     const videoWrapper = document.getElementById("videoWrapper");
     const audioBtn = document.getElementById("audioBtn");
     const danmakuToggleBtn = document.getElementById("danmakuToggleBtn");
+    const snapshotBtn = document.getElementById("snapshotBtn");
     const danmakuBox = document.getElementById("danmakuBox");
     const chatList = document.getElementById("chatList");
     const chatForm = document.getElementById("chatForm");
@@ -704,12 +820,19 @@
     const currentRoomTitle = document.getElementById("currentRoomTitle");
     const roomButtonList = document.getElementById("roomButtonList");
 
+    const polaroidModal = document.getElementById("polaroidModal");
+    const polaroidImg = document.getElementById("polaroidImg");
+    const downloadPolaroidBtn = document.getElementById("downloadPolaroidBtn");
+    const closePolaroidBtn = document.getElementById("closePolaroidBtn");
+    const snapshotCanvas = document.getElementById("snapshotCanvas");
+
     let hls = null;
     let roomList = [];
     let currentRoomId = "1";
+    let currentRoomName = "苏州猫岛";
     let danmakuEnabled = true;
     let seenCommentIds = new Set();
-    let latestCommentId = ""; // 记录当前最新消息 ID，用于毫秒级增量拉取
+    let latestCommentId = "";
     let pollTimer = null;
     let cooldownTimer = null;
 
@@ -774,6 +897,128 @@
       danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
     });
 
+    // 拍立得海报生成引擎
+    snapshotBtn.addEventListener("click", () => {
+      if (!video || video.readyState < 2 || video.videoWidth === 0) {
+        alert("视频流正在加载中，请稍候再抓拍~");
+        return;
+      }
+
+      const canvas = snapshotCanvas;
+      const ctx = canvas.getContext("2d");
+
+      // 拍立得卡片尺寸 (600 x 780 黄金比例)
+      const CARD_W = 600;
+      const CARD_H = 780;
+      canvas.width = CARD_W;
+      canvas.height = CARD_H;
+
+      // 1. 绘制白底相纸与质感阴影
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, CARD_W, CARD_H);
+
+      // 2. 照片内嵌区域 (540 x 420, 边距 30)
+      const PHOTO_X = 30;
+      const PHOTO_Y = 30;
+      const PHOTO_W = 540;
+      const PHOTO_H = 420;
+
+      // 居中裁剪视频画面 (Object-fit: cover 算法)
+      const vW = video.videoWidth;
+      const vH = video.videoHeight;
+      const targetRatio = PHOTO_W / PHOTO_H;
+      const videoRatio = vW / vH;
+      let sX = 0, sY = 0, sW = vW, sH = vH;
+
+      if (videoRatio > targetRatio) {
+        sW = vH * targetRatio;
+        sX = (vW - sW) / 2;
+      } else {
+        sH = vW / targetRatio;
+        sY = (vH - sH) / 2;
+      }
+
+      try {
+        ctx.drawImage(video, sX, sY, sW, sH, PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
+      } catch (err) {
+        alert("画面受跨域保护，请稍后刷新重试或直接手机截屏！");
+        return;
+      }
+
+      // 3. 画面左上角抓拍印章 (🔴 LIVE SNAP)
+      ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+      ctx.beginPath();
+      ctx.roundRect(PHOTO_X + 16, PHOTO_Y + 16, 125, 28, 14);
+      ctx.fill();
+
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath();
+      ctx.arc(PHOTO_X + 30, PHOTO_Y + 30, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 12px sans-serif";
+      ctx.fillText("LIVE SNAP", PHOTO_X + 42, PHOTO_Y + 34);
+
+      // 4. 下方拍立得打卡信息
+      const userNick = nameInput.value.trim() || getOrCreateUserNickname();
+      const now = new Date();
+      const timeStr = now.getFullYear() + "." + 
+        String(now.getMonth() + 1).padStart(2, '0') + "." + 
+        String(now.getDate()).padStart(2, '0') + " " + 
+        String(now.getHours()).padStart(2, '0') + ":" + 
+        String(now.getMinutes()).padStart(2, '0') + ":" + 
+        String(now.getSeconds()).padStart(2, '0');
+
+      // 机位地点
+      ctx.fillStyle = "#111827";
+      ctx.font = "bold 24px -apple-system, sans-serif";
+      ctx.fillText(`📍 ${currentRoomName} · 现场抓拍`, PHOTO_X + 4, PHOTO_Y + PHOTO_H + 50);
+
+      // 时间戳
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "14px monospace";
+      ctx.fillText(`📅 ${timeStr}`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 82);
+
+      // 抓拍官徽标
+      ctx.fillStyle = "#059669";
+      ctx.font = "bold 15px -apple-system, sans-serif";
+      ctx.fillText(`🐾 抓拍官：${userNick}`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
+
+      // 5. 右下角品牌水印与寄语
+      ctx.textAlign = "right";
+      ctx.fillStyle = "#10b981";
+      ctx.font = "bold 16px -apple-system, sans-serif";
+      ctx.fillText("毛毛星球 MeowHub", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 75);
+
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "12px sans-serif";
+      ctx.fillText("定点云守护 · 每一份爱都有回响", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 102);
+
+      ctx.textAlign = "left"; // 复位对齐
+
+      // 6. 导出并弹出展示
+      try {
+        const dataUrl = canvas.toDataURL("image/png");
+        polaroidImg.src = dataUrl;
+        downloadPolaroidBtn.href = dataUrl;
+        downloadPolaroidBtn.download = `meowhub_${currentRoomName}_${Date.now()}.png`;
+        polaroidModal.classList.add("show");
+      } catch (e) {
+        alert("截屏生成失败，可能是浏览器权限限制，请直接使用手机截屏哦~");
+      }
+    });
+
+    closePolaroidBtn.addEventListener("click", () => {
+      polaroidModal.classList.remove("show");
+    });
+
+    polaroidModal.addEventListener("click", (e) => {
+      if (e.target === polaroidModal) {
+        polaroidModal.classList.remove("show");
+      }
+    });
+
     video.addEventListener("timeupdate", () => {
       if (video.currentTime > 0) playerEmpty.style.display = "none";
     });
@@ -816,7 +1061,7 @@
       comments.forEach(c => {
         if (seenCommentIds.has(c.id)) return;
         seenCommentIds.add(c.id);
-        latestCommentId = c.id; // 更新游标
+        latestCommentId = c.id;
 
         const isMe = Boolean(c.isLocal) || (myCurrentName && c.name === myCurrentName);
 
@@ -868,14 +1113,12 @@
       }
     }
 
-    // 增量拉取函数（极速轻量化）
     async function fetchComments(isInitial = false) {
       if (!currentRoomId) return;
       try {
         const timestamp = Date.now();
         let query = `${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}&_t=${timestamp}`;
         
-        // 如果不是初次进房，且已经有最新消息ID，则只拉取增量
         if (!isInitial && latestCommentId) {
           query += `&since=${encodeURIComponent(latestCommentId)}`;
         }
@@ -974,8 +1217,8 @@
       if (!room) return;
 
       currentRoomId = String(room.id || "1");
-      const roomName = room.name || `直播间 ${roomIndex + 1}`;
-      currentRoomTitle.textContent = roomName;
+      currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
+      currentRoomTitle.textContent = currentRoomName;
 
       seenCommentIds.clear();
       latestCommentId = "";
@@ -984,7 +1227,6 @@
       fetchComments(true);
 
       if (pollTimer) clearInterval(pollTimer);
-      // 800ms 增量极速轮询
       pollTimer = setInterval(() => fetchComments(false), 800);
 
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
@@ -993,7 +1235,7 @@
       });
 
       playerEmpty.style.display = "grid";
-      emptyTitle.textContent = `正在连接 ${roomName}...`;
+      emptyTitle.textContent = `正在连接 ${currentRoomName}...`;
       emptyCopy.textContent = "正在调取云端视频...";
 
       if (hls) {
@@ -1008,7 +1250,7 @@
       video.load();
 
       if (!room.hlsUrl) {
-        emptyTitle.textContent = `${roomName} 待机中`;
+        emptyTitle.textContent = `${currentRoomName} 待机中`;
         emptyCopy.textContent = "暂无活跃推流，请切换其他直播间";
         return;
       }
