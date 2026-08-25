@@ -801,6 +801,7 @@
     }
 
     // 渲染留言板（支持进房历史弹幕错峰回放 + 智能平滑贴底）
+// 渲染留言板（支持刷新与进房时自动错峰回放历史弹幕）
     function renderComments(comments, isInitial = false) {
       if (!comments || comments.length === 0) {
         if (isInitial) {
@@ -852,17 +853,18 @@
 
         // 轮询到的实时新消息直接飘出
         if (!isInitial && !c.isLocal) {
-          shootDanmaku(`${c.name}: ${c.text}`, false);
+          shootDanmaku(`${c.name}: ${c.text}`, isMe);
         }
       });
 
-      // 进房时：若有历史记录，挑出最近 6 条错峰回放飘出，营造热闹氛围
+      // 【核心修复】：初次进入或刷新时，提取最近 8 条历史留言，每隔 800ms 依次在屏幕飘过
       if (isInitial && comments.length > 0) {
-        const recentHistory = comments.slice(-6);
-        recentHistory.forEach((item, index) => {
+        const historyDanmaku = comments.slice(-8);
+        historyDanmaku.forEach((item, index) => {
           setTimeout(() => {
-            shootDanmaku(`${item.name}: ${item.text}`, false);
-          }, index * 1200 + 400);
+            const isMe = (myCurrentName && item.name === myCurrentName);
+            shootDanmaku(`${item.name}: ${item.text}`, isMe);
+          }, index * 800 + 300);
         });
       }
 
