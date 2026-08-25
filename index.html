@@ -240,7 +240,6 @@
       to { transform: translateX(-100%); }
     }
 
-    /* 点赞动效 */
     .tap-heart {
       position: absolute;
       font-size: 32px;
@@ -321,7 +320,6 @@
       color: var(--text-main);
     }
 
-    /* 互动聊天区 */
     .chat-section {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -412,7 +410,6 @@
       word-break: break-all;
     }
 
-    /* 快捷气泡短语 */
     .quick-chips {
       display: flex;
       gap: 8px;
@@ -720,7 +717,7 @@
     let pollTimer = null;
     let cooldownTimer = null;
 
-    // 随机猫咪昵称库
+    // 随机猫咪昵称生成与本地存储记忆
     const ADJECTIVES = ["干饭的", "贪睡的", "软萌的", "机智的", "威风的", "好奇的", "粘人的", "调皮的", "高冷的", "元气的"];
     const CAT_NAMES = ["小橘", "三花", "奶牛猫", "布偶", "狸花", "金渐层", "银渐层", "大胖橘", "无毛猫", "小黑猫"];
 
@@ -803,10 +800,10 @@
       el.addEventListener("animationend", () => el.remove());
     }
 
-    // 平滑滚动智能贴底
+    // 渲染留言板（支持进房历史弹幕错峰回放 + 智能平滑贴底）
     function renderComments(comments, isInitial = false) {
       if (!comments || comments.length === 0) {
-        if (isInitial && chatList.children.length === 0) {
+        if (isInitial) {
           chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
         }
         return;
@@ -817,7 +814,6 @@
       }
 
       const myCurrentName = nameInput.value.trim();
-      // 判断用户是否处于底部附近（允许 50px 误差）
       const isAtBottom = chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 50;
 
       comments.forEach(c => {
@@ -854,32 +850,46 @@
 
         chatList.appendChild(row);
 
+        // 轮询到的实时新消息直接飘出
         if (!isInitial && !c.isLocal) {
           shootDanmaku(`${c.name}: ${c.text}`, false);
         }
       });
 
-      // 仅当用户处于底部或自己发消息时才自动下滚
-      if (isAtBottom || !isInitial) {
+      // 进房时：若有历史记录，挑出最近 6 条错峰回放飘出，营造热闹氛围
+      if (isInitial && comments.length > 0) {
+        const recentHistory = comments.slice(-6);
+        recentHistory.forEach((item, index) => {
+          setTimeout(() => {
+            shootDanmaku(`${item.name}: ${item.text}`, false);
+          }, index * 1200 + 400);
+        });
+      }
+
+      if (isAtBottom || isInitial) {
         chatList.scrollTo({ top: chatList.scrollHeight, behavior: 'smooth' });
       }
     }
 
     async function fetchComments(isInitial = false) {
       try {
-        const res = await fetch(`${API_ENDPOINT}/api/comments?room=${currentRoomId}`, { cache: "no-cache" });
+        const safeRoomId = encodeURIComponent(currentRoomId);
+        const res = await fetch(`${API_ENDPOINT}/api/comments?room=${safeRoomId}`, { cache: "no-cache" });
         const data = await res.json();
         if (data && Array.isArray(data.comments)) {
           renderComments(data.comments, isInitial);
+        } else {
+          if (isInitial) {
+            chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
+          }
         }
       } catch (e) {
-        if (isInitial && chatList.children.length === 0) {
+        if (isInitial) {
           chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
         }
       }
     }
 
-    // 启动 3 秒发送倒计时冷却
     function startCooldown() {
       let timeLeft = 3;
       btnSend.disabled = true;
