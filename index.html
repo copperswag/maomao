@@ -467,9 +467,7 @@
       background: rgba(255, 255, 255, 0.07);
     }
 
-    .input-name {
-      padding-right: 32px;
-    }
+    .input-name { padding-right: 32px; }
 
     .btn-dice {
       position: absolute;
@@ -596,13 +594,11 @@
     <p class="hero-desc">不论爱宠、更懂爱它。定点喂养、实时直播与智能看护系统。</p>
 
     <div class="live-layout">
-      <!-- 机位切换列表 -->
       <div class="room-sidebar">
         <div class="sidebar-title">切换直播间</div>
         <div id="roomButtonList" style="display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
 
-      <!-- 单屏高清播放器 -->
       <div class="player-container">
         <div class="video-wrapper" id="videoWrapper">
           <video id="mainVideo" autoplay muted playsinline controlsList="nodownload"></video>
@@ -638,10 +634,9 @@
       </div>
 
       <div class="chat-messages" id="chatList">
-        <div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>
+        <div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>
       </div>
 
-      <!-- 快捷气泡短语 -->
       <div class="quick-chips">
         <button class="chip-btn" type="button">🐱 咪咪好乖</button>
         <button class="chip-btn" type="button">🍗 加餐加餐</button>
@@ -711,13 +706,12 @@
 
     let hls = null;
     let roomList = [];
-    let currentRoomId = "default";
+    let currentRoomId = "";
     let danmakuEnabled = true;
     let seenCommentIds = new Set();
     let pollTimer = null;
     let cooldownTimer = null;
 
-    // 随机猫咪昵称生成与本地存储记忆
     const ADJECTIVES = ["干饭的", "贪睡的", "软萌的", "机智的", "威风的", "好奇的", "粘人的", "调皮的", "高冷的", "元气的"];
     const CAT_NAMES = ["小橘", "三花", "奶牛猫", "布偶", "狸花", "金渐层", "银渐层", "大胖橘", "无毛猫", "小黑猫"];
 
@@ -745,7 +739,6 @@
       if (val) localStorage.setItem("meow_user_nickname", val);
     });
 
-    // 快捷气泡点击
     document.querySelectorAll(".chip-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         textInput.value = btn.textContent.trim();
@@ -753,7 +746,6 @@
       });
     });
 
-    // 双击画面爱心/猫爪动效
     const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
     videoWrapper.addEventListener("dblclick", (e) => {
       const rect = videoWrapper.getBoundingClientRect();
@@ -800,11 +792,9 @@
       el.addEventListener("animationend", () => el.remove());
     }
 
-    // 渲染留言板（支持进房历史弹幕错峰回放 + 智能平滑贴底）
-// 渲染留言板（支持刷新与进房时自动错峰回放历史弹幕）
     function renderComments(comments, isInitial = false) {
       if (!comments || comments.length === 0) {
-        if (isInitial) {
+        if (isInitial && chatList.children.length === 0) {
           chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
         }
         return;
@@ -851,20 +841,18 @@
 
         chatList.appendChild(row);
 
-        // 轮询到的实时新消息直接飘出
         if (!isInitial && !c.isLocal) {
           shootDanmaku(`${c.name}: ${c.text}`, isMe);
         }
       });
 
-      // 【核心修复】：初次进入或刷新时，提取最近 8 条历史留言，每隔 800ms 依次在屏幕飘过
       if (isInitial && comments.length > 0) {
-        const historyDanmaku = comments.slice(-8);
-        historyDanmaku.forEach((item, index) => {
+        const historyList = comments.slice(-8);
+        historyList.forEach((item, index) => {
           setTimeout(() => {
             const isMe = (myCurrentName && item.name === myCurrentName);
             shootDanmaku(`${item.name}: ${item.text}`, isMe);
-          }, index * 800 + 300);
+          }, index * 900 + 400);
         });
       }
 
@@ -874,19 +862,18 @@
     }
 
     async function fetchComments(isInitial = false) {
+      if (!currentRoomId) return;
       try {
         const safeRoomId = encodeURIComponent(currentRoomId);
         const res = await fetch(`${API_ENDPOINT}/api/comments?room=${safeRoomId}`, { cache: "no-cache" });
         const data = await res.json();
         if (data && Array.isArray(data.comments)) {
           renderComments(data.comments, isInitial);
-        } else {
-          if (isInitial) {
-            chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
-          }
+        } else if (isInitial && chatList.children.length === 0) {
+          chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
         }
       } catch (e) {
-        if (isInitial) {
+        if (isInitial && chatList.children.length === 0) {
           chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
         }
       }
@@ -941,7 +928,7 @@
         });
         const json = await res.json();
         if (res.status === 429) {
-          alert(json.msg || "发言太快了，请稍后再试");
+          alert(json.msg || "发言太快了，请休息几秒~");
           return;
         }
         if (res.status === 403) {
@@ -962,12 +949,13 @@
       const room = roomList[roomIndex];
       if (!room) return;
 
-      currentRoomId = room.id || `room_${roomIndex}`;
+      currentRoomId = room.id || `room_${room.name}`;
       const roomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = roomName;
 
       seenCommentIds.clear();
       chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>';
+      
       fetchComments(true);
 
       if (pollTimer) clearInterval(pollTimer);
@@ -1079,6 +1067,7 @@
           roomButtonList.appendChild(btn);
         });
 
+        // 确保列表构建完成后再切流加载数据
         playStream(0);
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
