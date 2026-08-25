@@ -869,7 +869,12 @@
     async function fetchComments(isInitial = false) {
       if (!currentRoomId) return;
       try {
-        const res = await fetch(`${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}`, { cache: "no-cache" });
+        // 加入 dynamic timestamp (_t)，彻底击穿手机浏览器和 CDN 缓存
+        const timestamp = Date.now();
+        const res = await fetch(`${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}&_t=${timestamp}`, {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache", "Pragma": "no-cache" }
+        });
         const data = await res.json();
         if (data && Array.isArray(data.comments)) {
           renderComments(data.comments, isInitial);
