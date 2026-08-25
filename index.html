@@ -706,7 +706,7 @@
 
     let hls = null;
     let roomList = [];
-    let currentRoomId = "";
+    let currentRoomId = "1";
     let danmakuEnabled = true;
     let seenCommentIds = new Set();
     let pollTimer = null;
@@ -869,8 +869,7 @@
     async function fetchComments(isInitial = false) {
       if (!currentRoomId) return;
       try {
-        const safeRoomId = encodeURIComponent(currentRoomId);
-        const res = await fetch(`${API_ENDPOINT}/api/comments?room=${safeRoomId}`, { cache: "no-cache" });
+        const res = await fetch(`${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}`, { cache: "no-cache" });
         const data = await res.json();
         if (data && Array.isArray(data.comments)) {
           renderComments(data.comments, isInitial);
@@ -952,7 +951,7 @@
       const room = roomList[roomIndex];
       if (!room) return;
 
-      currentRoomId = room.id || `room_${room.name}`;
+      currentRoomId = String(room.id || "1");
       const roomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = roomName;
 
@@ -1044,9 +1043,8 @@
           return;
         }
 
-        const randomIndex = Math.floor(Math.random() * rawRooms.length);
-        const featuredRoom = rawRooms.splice(randomIndex, 1)[0];
-        roomList = [featuredRoom, ...rawRooms];
+        // 随机打乱房间顺序并保留稳定绑定的纯数字 ID
+        roomList = rawRooms.sort(() => Math.random() - 0.5);
 
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
         roomButtonList.innerHTML = "";
