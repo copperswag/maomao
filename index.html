@@ -666,16 +666,29 @@
       } catch (e) {}
     }
 
-    chatForm.addEventListener("submit", async (e) => {
+chatForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const text = textInput.value.trim();
       if (!text) return;
       const name = nameInput.value.trim() || "热心猫友";
-      const hp = hpWebsite.value;
+      const hp = hpWebsite ? hpWebsite.value : "";
 
       textInput.value = "";
+      
+      // 1. 本地立即发射弹幕
       shootDanmaku(`${name}: ${text}`);
 
+      // 2. 本地立即在聊天列表中生成一条消息（不等后端响应，体验秒呈现）
+      const localMsg = {
+        id: "local_" + Date.now(),
+        name: name,
+        text: text,
+        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        isLocal: true
+      };
+      renderComments([localMsg], false);
+
+      // 3. 异步提交到后端 KV 持久化
       try {
         const res = await fetch(`${API_ENDPOINT}/api/comments`, {
           method: "POST",
@@ -694,10 +707,6 @@
         if (res.status === 400 && json.msg) {
           alert(json.msg);
           return;
-        }
-        if (json && json.data) {
-          json.data.isLocal = true;
-          renderComments([json.data], false);
         }
       } catch (err) {}
     });
