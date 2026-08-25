@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <!-- CSP 内容安全策略：硬性限制浏览器仅能连接 Worker 和萤石推流域名 -->
-  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; connect-src * blob: data:; media-src * blob: data:;" />
   <title>毛毛星球 MeowHub | 智能养宠</title>
   <style>
     :root {
@@ -14,6 +12,7 @@
       --text-main: #f3f4f6;
       --text-sub: #9ca3af;
       --accent-green: #10b981;
+      --accent-green-hover: #059669;
       --radius: 16px;
     }
 
@@ -196,6 +195,8 @@
       aspect-ratio: 16 / 9;
       background: #000;
       overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
     video {
@@ -224,9 +225,35 @@
       animation: danmaku-move 7s linear forwards;
     }
 
+    .danmaku-item.is-me {
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.55);
+      border-radius: 99px;
+      padding: 3px 12px;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+    }
+
     @keyframes danmaku-move {
       from { transform: translateX(100vw); }
       to { transform: translateX(-100%); }
+    }
+
+    /* 点赞动效 */
+    .tap-heart {
+      position: absolute;
+      font-size: 32px;
+      pointer-events: none;
+      z-index: 12;
+      animation: float-up-fade 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    }
+
+    @keyframes float-up-fade {
+      0% { transform: translate(-50%, -50%) scale(0.6) rotate(0deg); opacity: 0; }
+      20% { transform: translate(-50%, -50%) scale(1.3) rotate(-8deg); opacity: 1; }
+      100% { transform: translate(-50%, -150px) scale(1) rotate(12deg); opacity: 0; }
     }
 
     .controls-overlay {
@@ -294,6 +321,7 @@
       color: var(--text-main);
     }
 
+    /* 互动聊天区 */
     .chat-section {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -307,7 +335,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       padding-bottom: 10px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
@@ -325,9 +353,10 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       padding-right: 6px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
+      scroll-behavior: smooth;
     }
 
     .chat-messages::-webkit-scrollbar { width: 4px; }
@@ -338,15 +367,37 @@
 
     .message-item {
       display: flex;
+      align-items: baseline;
       gap: 8px;
       font-size: 13px;
       line-height: 1.5;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .message-item.is-me {
+      background: rgba(16, 185, 129, 0.09);
+      border: 1px solid rgba(16, 185, 129, 0.15);
     }
 
     .msg-user {
       color: var(--accent-green);
       font-weight: 600;
       white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .msg-badge-me {
+      background: var(--accent-green);
+      color: #090a0f;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 0 4px;
+      border-radius: 4px;
+      line-height: 14px;
     }
 
     .msg-time {
@@ -361,13 +412,49 @@
       word-break: break-all;
     }
 
+    /* 快捷气泡短语 */
+    .quick-chips {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .quick-chips::-webkit-scrollbar { display: none; }
+
+    .chip-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: var(--text-sub);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .chip-btn:hover {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #fff;
+    }
+
     .chat-input-bar {
       display: flex;
       gap: 10px;
       position: relative;
     }
 
+    .nickname-wrapper {
+      position: relative;
+      width: 155px;
+      flex-shrink: 0;
+    }
+
     .chat-input {
+      width: 100%;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--card-border);
       border-radius: 10px;
@@ -383,10 +470,31 @@
       background: rgba(255, 255, 255, 0.07);
     }
 
-    .input-name { width: 110px; }
+    .input-name {
+      padding-right: 32px;
+    }
+
+    .btn-dice {
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      font-size: 15px;
+      cursor: pointer;
+      opacity: 0.65;
+      padding: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn-dice:hover {
+      opacity: 1;
+      transform: translateY(-50%) rotate(45deg);
+    }
+
     .input-text { flex: 1; }
 
-    /* Honeypot 蜜罐隐藏样式 */
     .hp-field {
       opacity: 0;
       position: absolute;
@@ -395,6 +503,7 @@
       height: 0;
       width: 0;
       z-index: -1;
+      pointer-events: none;
     }
 
     .btn-send {
@@ -406,11 +515,20 @@
       font-weight: 700;
       font-size: 13px;
       cursor: pointer;
-      transition: opacity 0.2s;
+      transition: all 0.2s;
       white-space: nowrap;
+      min-width: 65px;
     }
 
-    .btn-send:hover { opacity: 0.9; }
+    .btn-send:hover:not(:disabled) {
+      background: var(--accent-green-hover);
+    }
+
+    .btn-send:disabled {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-sub);
+      cursor: not-allowed;
+    }
 
     .footer-box {
       background: var(--card-bg);
@@ -431,7 +549,7 @@
         gap: 16px;
       }
       .chat-input-bar { flex-direction: column; }
-      .input-name { width: 100%; }
+      .nickname-wrapper { width: 100%; }
     }
 
     .btn-main {
@@ -481,13 +599,15 @@
     <p class="hero-desc">不论爱宠、更懂爱它。定点喂养、实时直播与智能看护系统。</p>
 
     <div class="live-layout">
+      <!-- 机位切换列表 -->
       <div class="room-sidebar">
         <div class="sidebar-title">切换直播间</div>
         <div id="roomButtonList" style="display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
 
+      <!-- 单屏高清播放器 -->
       <div class="player-container">
-        <div class="video-wrapper">
+        <div class="video-wrapper" id="videoWrapper">
           <video id="mainVideo" autoplay muted playsinline controlsList="nodownload"></video>
           <div class="danmaku-container" id="danmakuBox"></div>
           
@@ -517,18 +637,32 @@
     <div class="chat-section">
       <div class="chat-header">
         <div class="chat-title">💬 实时猫友互动区</div>
-        <div style="font-size: 12px; color: var(--text-sub);">发言将同步化为屏幕弹幕 🚀</div>
+        <div style="font-size: 12px; color: var(--text-sub);">双击视频画面有吸猫爱心 🐾</div>
       </div>
+
       <div class="chat-messages" id="chatList">
         <div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>
       </div>
+
+      <!-- 快捷气泡短语 -->
+      <div class="quick-chips">
+        <button class="chip-btn" type="button">🐱 咪咪好乖</button>
+        <button class="chip-btn" type="button">🍗 加餐加餐</button>
+        <button class="chip-btn" type="button">👀 正在暗中观察</button>
+        <button class="chip-btn" type="button">❤️ 来看小可爱啦</button>
+        <button class="chip-btn" type="button">🐟 赛博云喂猫</button>
+      </div>
+
       <form class="chat-input-bar" id="chatForm">
-        <!-- 蜜罐隐藏字段（正常人类不会填，爬虫若填会被拦截） -->
         <input type="text" name="hp_website" id="hpWebsite" class="hp-field" tabindex="-1" autocomplete="off" />
         
-        <input type="text" class="chat-input input-name" id="nameInput" placeholder="昵称 (可选)" maxlength="10" />
+        <div class="nickname-wrapper">
+          <input type="text" class="chat-input input-name" id="nameInput" placeholder="昵称" maxlength="12" />
+          <button type="button" class="btn-dice" id="btnRandomName" title="随机换一个名字">🎲</button>
+        </div>
+
         <input type="text" class="chat-input input-text" id="textInput" placeholder="说点什么吧，按回车发送弹幕..." maxlength="60" required />
-        <button type="submit" class="btn-send">发送</button>
+        <button type="submit" class="btn-send" id="btnSend">发送</button>
       </form>
     </div>
 
@@ -561,6 +695,7 @@
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
     const video = document.getElementById("mainVideo");
+    const videoWrapper = document.getElementById("videoWrapper");
     const audioBtn = document.getElementById("audioBtn");
     const danmakuToggleBtn = document.getElementById("danmakuToggleBtn");
     const danmakuBox = document.getElementById("danmakuBox");
@@ -568,6 +703,8 @@
     const chatForm = document.getElementById("chatForm");
     const nameInput = document.getElementById("nameInput");
     const textInput = document.getElementById("textInput");
+    const btnRandomName = document.getElementById("btnRandomName");
+    const btnSend = document.getElementById("btnSend");
     const hpWebsite = document.getElementById("hpWebsite");
     const playerEmpty = document.getElementById("playerEmpty");
     const emptyTitle = document.getElementById("emptyTitle");
@@ -581,6 +718,60 @@
     let danmakuEnabled = true;
     let seenCommentIds = new Set();
     let pollTimer = null;
+    let cooldownTimer = null;
+
+    // 随机猫咪昵称库
+    const ADJECTIVES = ["干饭的", "贪睡的", "软萌的", "机智的", "威风的", "好奇的", "粘人的", "调皮的", "高冷的", "元气的"];
+    const CAT_NAMES = ["小橘", "三花", "奶牛猫", "布偶", "狸花", "金渐层", "银渐层", "大胖橘", "无毛猫", "小黑猫"];
+
+    function generateNewNickname() {
+      const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+      const cat = CAT_NAMES[Math.floor(Math.random() * CAT_NAMES.length)];
+      const num = Math.floor(Math.random() * 900) + 100;
+      const nick = `${adj}${cat}#${num}`;
+      localStorage.setItem("meow_user_nickname", nick);
+      return nick;
+    }
+
+    function getOrCreateUserNickname() {
+      let saved = localStorage.getItem("meow_user_nickname");
+      if (!saved) saved = generateNewNickname();
+      return saved;
+    }
+
+    btnRandomName.addEventListener("click", () => {
+      nameInput.value = generateNewNickname();
+    });
+
+    nameInput.addEventListener("change", () => {
+      const val = nameInput.value.trim();
+      if (val) localStorage.setItem("meow_user_nickname", val);
+    });
+
+    // 快捷气泡点击
+    document.querySelectorAll(".chip-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        textInput.value = btn.textContent.trim();
+        textInput.focus();
+      });
+    });
+
+    // 双击画面爱心/猫爪动效
+    const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
+    videoWrapper.addEventListener("dblclick", (e) => {
+      const rect = videoWrapper.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const heart = document.createElement("div");
+      heart.className = "tap-heart";
+      heart.textContent = ICONS[Math.floor(Math.random() * ICONS.length)];
+      heart.style.left = `${x}px`;
+      heart.style.top = `${y}px`;
+      videoWrapper.appendChild(heart);
+
+      heart.addEventListener("animationend", () => heart.remove());
+    });
 
     audioBtn.addEventListener("click", () => {
       video.muted = !video.muted;
@@ -594,93 +785,135 @@
     });
 
     video.addEventListener("timeupdate", () => {
-      if (video.currentTime > 0) {
-        playerEmpty.style.display = "none";
-      }
+      if (video.currentTime > 0) playerEmpty.style.display = "none";
     });
 
     video.addEventListener("playing", () => {
       playerEmpty.style.display = "none";
     });
 
-    function shootDanmaku(text) {
+    function shootDanmaku(text, isMe = false) {
       if (!danmakuEnabled) return;
       const el = document.createElement("div");
-      el.className = "danmaku-item";
+      el.className = `danmaku-item ${isMe ? 'is-me' : ''}`;
       el.textContent = text;
       const topPos = Math.floor(Math.random() * 60) + 15;
       el.style.top = `${topPos}%`;
       danmakuBox.appendChild(el);
-      el.addEventListener("animationend", () => {
-        el.remove();
-      });
+      el.addEventListener("animationend", () => el.remove());
     }
 
+    // 平滑滚动智能贴底
     function renderComments(comments, isInitial = false) {
-      if (!comments || comments.length === 0) return;
-      
-      if (isInitial) {
+      if (!comments || comments.length === 0) {
+        if (isInitial && chatList.children.length === 0) {
+          chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
+        }
+        return;
+      }
+
+      if (chatList.querySelector('div[style*="text-align: center"]')) {
         chatList.innerHTML = "";
       }
 
+      const myCurrentName = nameInput.value.trim();
+      // 判断用户是否处于底部附近（允许 50px 误差）
+      const isAtBottom = chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 50;
+
       comments.forEach(c => {
-        if (!seenCommentIds.has(c.id)) {
-          seenCommentIds.add(c.id);
+        if (seenCommentIds.has(c.id)) return;
+        seenCommentIds.add(c.id);
 
-          const row = document.createElement("div");
-          row.className = "message-item";
+        const isMe = Boolean(c.isLocal) || (myCurrentName && c.name === myCurrentName);
 
-          const userSpan = document.createElement("span");
-          userSpan.className = "msg-user";
-          userSpan.textContent = `${c.name}:`;
+        const row = document.createElement("div");
+        row.className = `message-item ${isMe ? 'is-me' : ''}`;
 
-          const textSpan = document.createElement("span");
-          textSpan.className = "msg-text";
-          textSpan.textContent = c.text;
+        const userSpan = document.createElement("span");
+        userSpan.className = "msg-user";
+        userSpan.textContent = `${c.name || '热心猫友'}:`;
 
-          const timeSpan = document.createElement("span");
-          timeSpan.className = "msg-time";
-          timeSpan.textContent = c.time;
+        if (isMe) {
+          const badge = document.createElement("span");
+          badge.className = "msg-badge-me";
+          badge.textContent = "我";
+          userSpan.appendChild(badge);
+        }
 
-          row.appendChild(userSpan);
-          row.appendChild(textSpan);
-          row.appendChild(timeSpan);
+        const textSpan = document.createElement("span");
+        textSpan.className = "msg-text";
+        textSpan.textContent = ` ${c.text || ''}`;
 
-          chatList.appendChild(row);
-          chatList.scrollTop = chatList.scrollHeight;
+        const timeSpan = document.createElement("span");
+        timeSpan.className = "msg-time";
+        timeSpan.textContent = c.time || '';
 
-          if (!isInitial && !c.isLocal) {
-            shootDanmaku(`${c.name}: ${c.text}`);
-          }
+        row.appendChild(userSpan);
+        row.appendChild(textSpan);
+        row.appendChild(timeSpan);
+
+        chatList.appendChild(row);
+
+        if (!isInitial && !c.isLocal) {
+          shootDanmaku(`${c.name}: ${c.text}`, false);
         }
       });
+
+      // 仅当用户处于底部或自己发消息时才自动下滚
+      if (isAtBottom || !isInitial) {
+        chatList.scrollTo({ top: chatList.scrollHeight, behavior: 'smooth' });
+      }
     }
 
     async function fetchComments(isInitial = false) {
       try {
-        const res = await fetch(`${API_ENDPOINT}/api/comments?room=${currentRoomId}`);
+        const res = await fetch(`${API_ENDPOINT}/api/comments?room=${currentRoomId}`, { cache: "no-cache" });
         const data = await res.json();
-        if (data && data.comments) {
+        if (data && Array.isArray(data.comments)) {
           renderComments(data.comments, isInitial);
         }
-      } catch (e) {}
+      } catch (e) {
+        if (isInitial && chatList.children.length === 0) {
+          chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
+        }
+      }
     }
 
-chatForm.addEventListener("submit", async (e) => {
+    // 启动 3 秒发送倒计时冷却
+    function startCooldown() {
+      let timeLeft = 3;
+      btnSend.disabled = true;
+      btnSend.textContent = `${timeLeft}s`;
+
+      cooldownTimer = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(cooldownTimer);
+          btnSend.disabled = false;
+          btnSend.textContent = "发送";
+        } else {
+          btnSend.textContent = `${timeLeft}s`;
+        }
+      }, 1000);
+    }
+
+    chatForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      if (btnSend.disabled) return;
+
       const text = textInput.value.trim();
       if (!text) return;
-      const name = nameInput.value.trim() || "热心猫友";
+      const name = nameInput.value.trim() || getOrCreateUserNickname();
       const hp = hpWebsite ? hpWebsite.value : "";
 
       textInput.value = "";
-      
-      // 1. 本地立即发射弹幕
-      shootDanmaku(`${name}: ${text}`);
+      startCooldown();
 
-      // 2. 本地立即在聊天列表中生成一条消息（不等后端响应，体验秒呈现）
+      shootDanmaku(`${name}: ${text}`, true);
+
+      const localId = "loc_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
       const localMsg = {
-        id: "local_" + Date.now(),
+        id: localId,
         name: name,
         text: text,
         time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
@@ -688,7 +921,6 @@ chatForm.addEventListener("submit", async (e) => {
       };
       renderComments([localMsg], false);
 
-      // 3. 异步提交到后端 KV 持久化
       try {
         const res = await fetch(`${API_ENDPOINT}/api/comments`, {
           method: "POST",
@@ -707,6 +939,9 @@ chatForm.addEventListener("submit", async (e) => {
         if (res.status === 400 && json.msg) {
           alert(json.msg);
           return;
+        }
+        if (json && json.data) {
+          seenCommentIds.add(json.data.id);
         }
       } catch (err) {}
     });
@@ -794,6 +1029,8 @@ chatForm.addEventListener("submit", async (e) => {
 
     async function initPage() {
       try {
+        nameInput.value = getOrCreateUserNickname();
+
         const response = await fetch(API_ENDPOINT, { cache: "no-cache" });
         const data = await response.json();
         let rawRooms = data.rooms || [];
