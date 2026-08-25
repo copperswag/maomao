@@ -792,14 +792,11 @@
       el.addEventListener("animationend", () => el.remove());
     }
 
-// 渲染留言板与弹幕（彻底解除死锁）
     function renderComments(comments, isInitial = false) {
-      // 1. 如果是初次加载，先把容器里的“正在加载...”清空
       if (isInitial) {
         chatList.innerHTML = "";
       }
 
-      // 2. 如果没有任何评论数据
       if (!comments || comments.length === 0) {
         if (chatList.children.length === 0) {
           chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
@@ -807,7 +804,6 @@
         return;
       }
 
-      // 3. 如果当前展示的是“暂无互动消息”或“正在加载”，将其清除
       const placeholder = chatList.querySelector('div[style*="text-align: center"]');
       if (placeholder) {
         placeholder.remove();
@@ -850,13 +846,11 @@
 
         chatList.appendChild(row);
 
-        // 如果不是初次进房，也不是自己刚发的，就飘出实时弹幕
         if (!isInitial && !c.isLocal) {
           shootDanmaku(`${c.name}: ${c.text}`, isMe);
         }
       });
 
-      // 初次进入时，回放最近 8 条弹幕
       if (isInitial && comments.length > 0) {
         const historyList = comments.slice(-8);
         historyList.forEach((item, index) => {
@@ -872,7 +866,6 @@
       }
     }
 
-    // 轮询拉取评论
     async function fetchComments(isInitial = false) {
       if (!currentRoomId) return;
       try {
@@ -886,14 +879,6 @@
         }
       } catch (e) {
         renderComments([], isInitial);
-      }
-    } else if (isInitial && chatList.children.length === 0) {
-          chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
-        }
-      } catch (e) {
-        if (isInitial && chatList.children.length === 0) {
-          chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
-        }
       }
     }
 
@@ -1085,7 +1070,6 @@
           roomButtonList.appendChild(btn);
         });
 
-        // 确保列表构建完成后再切流加载数据
         playStream(0);
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
