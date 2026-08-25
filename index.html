@@ -929,6 +929,7 @@
           body: JSON.stringify({ roomId: currentRoomId, name, text, hp_website: hp })
         });
         const json = await res.json();
+        
         if (res.status === 429) {
           alert(json.msg || "发言太快了，请休息几秒~");
           return;
@@ -937,14 +938,16 @@
           alert(json.msg || "消息包含敏感词，已被拦截");
           return;
         }
-        if (res.status === 400 && json.msg) {
-          alert(json.msg);
+        if (res.status !== 200) {
+          alert("保存失败：" + (json.msg || "服务器异常"));
           return;
         }
         if (json && json.data) {
           seenCommentIds.add(json.data.id);
         }
-      } catch (err) {}
+      } catch (err) {
+        alert("网络连接失败，消息未能保存到云端");
+      }
     });
 
     function playStream(roomIndex) {
