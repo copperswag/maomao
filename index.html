@@ -964,7 +964,8 @@
       fetchComments(true);
 
       if (pollTimer) clearInterval(pollTimer);
-      pollTimer = setInterval(() => fetchComments(false), 3500);
+      // 1.5 秒极速轮询
+      pollTimer = setInterval(() => fetchComments(false), 1500);
 
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
@@ -996,12 +997,15 @@
         hls = new window.Hls({
           enableWorker: true,
           lowLatencyMode: true,
-          manifestLoadingTimeOut: 15000,
-          manifestLoadingMaxRetry: 10,
-          levelLoadingTimeOut: 15000,
-          levelLoadingMaxRetry: 10,
-          fragLoadingTimeOut: 20000,
-          fragLoadingMaxRetry: 10
+          backBufferLength: 0,             // 手机端不留回放历史缓存，大幅降低内存占用
+          maxBufferLength: 3,              // 最大向前缓冲仅保留 3 秒，杜绝积压延迟
+          maxMaxBufferLength: 6,
+          liveSyncDurationCount: 1,        // 强制紧贴最新推流切片
+          liveMaxLatencyDurationCount: 2.5,// 画面落后超过 2.5 个分片时触发强制同步
+          maxLiveSyncPlaybackRate: 1.15,   // 稍有落后自动以 1.15x 倍速无感追赶对齐
+          liveDurationInfinity: true,
+          manifestLoadingTimeOut: 10000,
+          fragLoadingTimeOut: 15000
         });
 
         hls.loadSource(room.hlsUrl);
@@ -1080,9 +1084,11 @@
 
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
+        fetchComments(false);
+
         if (hls && hls.liveSyncPosition) {
           const latency = hls.liveSyncPosition - video.currentTime;
-          if (latency > 3) {
+          if (latency > 2) {
             video.currentTime = hls.liveSyncPosition;
           }
           video.play().catch(() => {});
