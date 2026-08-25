@@ -709,6 +709,7 @@
     let currentRoomId = "1";
     let danmakuEnabled = true;
     let seenCommentIds = new Set();
+    let latestCommentId = ""; // 记录当前最新消息 ID，用于毫秒级增量拉取
     let pollTimer = null;
     let cooldownTimer = null;
 
@@ -815,6 +816,7 @@
       comments.forEach(c => {
         if (seenCommentIds.has(c.id)) return;
         seenCommentIds.add(c.id);
+        latestCommentId = c.id; // 更新游标
 
         const isMe = Boolean(c.isLocal) || (myCurrentName && c.name === myCurrentName);
 
@@ -857,7 +859,7 @@
           setTimeout(() => {
             const isMe = (myCurrentName && item.name === myCurrentName);
             shootDanmaku(`${item.name}: ${item.text}`, isMe);
-          }, index * 900 + 400);
+          }, index * 800 + 400);
         });
       }
 
@@ -866,14 +868,25 @@
       }
     }
 
+    // 增量拉取函数（极速轻量化）
     async function fetchComments(isInitial = false) {
       if (!currentRoomId) return;
       try {
-        // 加入 dynamic timestamp (_t)，彻底击穿手机浏览器和 CDN 缓存
         const timestamp = Date.now();
-        const res = await fetch(`${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}&_t=${timestamp}`, {
+        let query = `${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}&_t=${timestamp}`;
+        
+        // 如果不是初次进房，且已经有最新消息ID，则只拉取增量
+        if (!isInitial && latestCommentId) {
+          query += `&since=${encodeURIComponent(latestCommentId)}`;
+        }
+
+        const res = await fetch(query, {
+          method: "GET",
           cache: "no-store",
-          headers: { "Cache-Control": "no-cache", "Pragma": "no-cache" }
+          headers: {
+            "Cache-Control": "no-cache, no-store, max-age=0",
+            "Pragma": "no-cache"
+          }
         });
         const data = await res.json();
         if (data && Array.isArray(data.comments)) {
@@ -949,6 +962,7 @@
         }
         if (json && json.data) {
           seenCommentIds.add(json.data.id);
+          latestCommentId = json.data.id;
         }
       } catch (err) {
         alert("网络连接失败，消息未能保存到云端");
@@ -964,13 +978,14 @@
       currentRoomTitle.textContent = roomName;
 
       seenCommentIds.clear();
+      latestCommentId = "";
       chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>';
       
       fetchComments(true);
 
       if (pollTimer) clearInterval(pollTimer);
-      // 1.5 秒极速轮询
-      pollTimer = setInterval(() => fetchComments(false), 1500);
+      // 800ms 增量极速轮询
+      pollTimer = setInterval(() => fetchComments(false), 800);
 
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
@@ -1002,12 +1017,12 @@
         hls = new window.Hls({
           enableWorker: true,
           lowLatencyMode: true,
-          backBufferLength: 0,             // 手机端不留回放历史缓存，大幅降低内存占用
-          maxBufferLength: 3,              // 最大向前缓冲仅保留 3 秒，杜绝积压延迟
+          backBufferLength: 0,
+          maxBufferLength: 3,
           maxMaxBufferLength: 6,
-          liveSyncDurationCount: 1,        // 强制紧贴最新推流切片
-          liveMaxLatencyDurationCount: 2.5,// 画面落后超过 2.5 个分片时触发强制同步
-          maxLiveSyncPlaybackRate: 1.15,   // 稍有落后自动以 1.15x 倍速无感追赶对齐
+          liveSyncDurationCount: 1,
+          liveMaxLatencyDurationCount: 2.5,
+          maxLiveSyncPlaybackRate: 1.15,
           liveDurationInfinity: true,
           manifestLoadingTimeOut: 10000,
           fragLoadingTimeOut: 15000
@@ -1055,7 +1070,6 @@
           return;
         }
 
-        // 随机打乱房间顺序并保留稳定绑定的纯数字 ID
         roomList = rawRooms.sort(() => Math.random() - 0.5);
 
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
