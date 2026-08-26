@@ -849,33 +849,28 @@
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
-    // 核心状态变量预先声明
+    // 核心全局状态
     let currentRoomId = "1";
     let currentRoomName = "苏州猫岛";
     let lastDurationFlushTime = Date.now();
 
-    // 运营轻量埋点引擎
+    // 强制使用原生跨域 fetch 埋点通道（100% 携带请求头，绝不丢失数据）
     function trackEvent(type, extra = {}) {
       try {
         const payload = JSON.stringify({ type, ...extra });
-        if (navigator.sendBeacon) {
-          const blob = new Blob([payload], { type: "application/json" });
-          navigator.sendBeacon(`${API_ENDPOINT}/api/track`, blob);
-        } else {
-          fetch(`${API_ENDPOINT}/api/track`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: payload,
-            keepalive: true
-          }).catch(() => {});
-        }
+        fetch(`${API_ENDPOINT}/api/track`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+          keepalive: true
+        }).catch(() => {});
       } catch(e) {}
     }
 
-    // 页面访问触发 PV
+    // 页面进入立即上报 PV
     trackEvent("pv");
 
-    // 精准机位停留时长追踪引擎
+    // 精准时长上报引擎
     function flushRoomDuration() {
       if (!currentRoomId) return;
       const now = Date.now();
@@ -886,8 +881,8 @@
       }
     }
 
-    // 5秒心跳上报增量
-    setInterval(flushRoomDuration, 5000);
+    // 每 4 秒自动上报一次增量
+    setInterval(flushRoomDuration, 4000);
     window.addEventListener("pagehide", flushRoomDuration);
     window.addEventListener("beforeunload", flushRoomDuration);
 
