@@ -27,10 +27,7 @@
       min-height: 100vh;
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+    .container { max-width: 1240px; margin: 0 auto; }
 
     header {
       display: flex;
@@ -50,7 +47,9 @@
       gap: 10px;
     }
 
-    .btn-refresh {
+    .header-btns { display: flex; gap: 10px; }
+
+    .btn-header {
       background: #21262d;
       border: 1px solid var(--border);
       color: var(--text-main);
@@ -59,8 +58,11 @@
       font-size: 13px;
       cursor: pointer;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
-    .btn-refresh:hover { background: #30363d; }
+    .btn-header:hover { background: #30363d; }
 
     .grid-4 {
       display: grid;
@@ -74,6 +76,7 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 20px;
+      margin-bottom: 24px;
     }
 
     .card-title {
@@ -85,31 +88,19 @@
       align-items: center;
     }
 
-    .card-num {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--text-main);
-    }
-
-    .card-sub {
-      font-size: 12px;
-      color: #8b949e;
-      margin-top: 6px;
-    }
+    .card-num { font-size: 28px; font-weight: 800; color: var(--text-main); }
+    .card-sub { font-size: 12px; color: #8b949e; margin-top: 6px; }
 
     .grid-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
-      margin-bottom: 24px;
     }
 
-    @media (max-width: 800px) {
-      .grid-2 { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
 
     .section-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text-main);
       margin-bottom: 16px;
@@ -118,32 +109,11 @@
       align-items: center;
     }
 
-    .room-bar-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .room-bar-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-    }
-
+    .room-bar-group { display: flex; flex-direction: column; gap: 12px; }
+    .room-bar-item { display: flex; align-items: center; gap: 12px; font-size: 13px; }
     .room-bar-label { width: 90px; }
-    .room-bar-track {
-      flex: 1;
-      height: 10px;
-      background: #21262d;
-      border-radius: 99px;
-      overflow: hidden;
-    }
-    .room-bar-fill {
-      height: 100%;
-      background: var(--green-light);
-      border-radius: 99px;
-    }
+    .room-bar-track { flex: 1; height: 10px; background: #21262d; border-radius: 99px; overflow: hidden; }
+    .room-bar-fill { height: 100%; background: var(--green-light); border-radius: 99px; }
     .room-bar-val { width: 50px; text-align: right; color: var(--text-main); font-weight: 600; }
 
     .input-box {
@@ -175,24 +145,57 @@
       background: #21262d;
       border: 1px solid var(--red);
       color: #ff7b72;
-      padding: 6px 12px;
+      padding: 6px 10px;
       border-radius: 6px;
       font-size: 12px;
       cursor: pointer;
     }
     .btn-danger:hover { background: var(--red); color: #fff; }
 
-    .select-room {
-      background: #0d1117;
-      border: 1px solid var(--border);
-      color: var(--text-main);
+    .btn-warn {
+      background: #21262d;
+      border: 1px solid #d29922;
+      color: #d29922;
       padding: 6px 10px;
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn-warn:hover { background: #d29922; color: #fff; }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .tag-item {
+      background: #21262d;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag-del { cursor: pointer; color: #8b949e; font-weight: bold; }
+    .tag-del:hover { color: #ff7b72; }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 12px;
     }
 
     .comment-list {
-      max-height: 360px;
+      max-height: 380px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -214,9 +217,17 @@
 
     .c-user { color: var(--green-light); font-weight: 600; margin-right: 6px; }
     .c-text { color: var(--text-main); }
-    .c-time { color: #8b949e; font-size: 11px; margin-left: 8px; }
+    .c-meta { color: #8b949e; font-size: 11px; margin-left: 8px; }
 
-    /* 密码登录遮罩 */
+    .select-room {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+
     .auth-overlay {
       position: fixed;
       inset: 0;
@@ -255,7 +266,10 @@
         <span>🐾</span>
         <span>毛毛星球 MeowHub · 运营中台</span>
       </div>
-      <button class="btn-refresh" id="btnRefresh">🔄 刷新数据</button>
+      <div class="header-btns">
+        <button class="btn-header" id="btnExportCSV">📊 导出报表 (CSV)</button>
+        <button class="btn-header" id="btnRefresh">🔄 刷新数据</button>
+      </div>
     </header>
 
     <!-- 4 个核心流量与转化卡片 -->
@@ -282,7 +296,7 @@
       </div>
     </div>
 
-    <!-- 中部：机位热度与运营广播 -->
+    <!-- 中部：机位热度、全局控制与广播 -->
     <div class="grid-2">
       <div class="card">
         <div class="section-title">📍 机位访问热度排行</div>
@@ -303,16 +317,42 @@
             <div class="room-bar-val" id="val3">0</div>
           </div>
         </div>
+
+        <div style="margin-top: 24px;">
+          <div class="section-title">📢 全局运营跑马灯广播</div>
+          <input type="text" class="input-box" id="noticeInput" placeholder="输入顶部滚动公告（留空并保存则隐藏）..." />
+          <button class="btn-action" id="btnSaveNotice">发布公告</button>
+        </div>
       </div>
 
       <div class="card">
-        <div class="section-title">📢 全局运营跑马灯广播</div>
-        <input type="text" class="input-box" id="noticeInput" placeholder="输入顶部滚动公告（留空并保存则隐藏）..." />
-        <button class="btn-action" id="btnSaveNotice">发布公告</button>
+        <div class="section-title">🛡️ 应急控制与动态词库</div>
+        
+        <div class="toggle-row">
+          <div>
+            <div style="color: var(--text-main); font-weight: 600;">全站互动弹幕开关</div>
+            <div style="font-size: 12px; color: #8b949e;">关闭后前台将进入全员禁言状态</div>
+          </div>
+          <button class="btn-action" id="btnToggleChat">已开启</button>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">动态敏感词拦截库</div>
+          <div class="tag-list" id="forbiddenTagList"></div>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" class="input-box" id="newWordInput" placeholder="添加新敏感词..." style="margin-bottom: 0;" />
+            <button class="btn-action" id="btnAddWord">添加</button>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <div style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">已封禁 IP 名单 (<span id="bannedIpCount">0</span>)</div>
+          <div class="tag-list" id="bannedIpTagList"></div>
+        </div>
       </div>
     </div>
 
-    <!-- 底部：弹幕内容审核与删除 -->
+    <!-- 底部：弹幕内容审核、单条删除与一键封禁 -->
     <div class="card">
       <div class="section-title">
         <span>🛡️ 弹幕内容实时治理</span>
@@ -322,7 +362,7 @@
             <option value="2">沛霖</option>
             <option value="3">南庄</option>
           </select>
-          <button class="btn-danger" id="btnClearRoom">清空此房间全部留言</button>
+          <button class="btn-danger" id="btnClearRoom">清空此机位历史留言</button>
         </div>
       </div>
       <div class="comment-list" id="adminCommentList">
@@ -335,15 +375,25 @@
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
     let adminToken = localStorage.getItem("maomao_admin_token") || "";
 
+    let currentStats = null;
+    let systemConfig = { chatEnabled: true, forbiddenWords: [], bannedIps: [] };
+
     const authOverlay = document.getElementById("authOverlay");
     const adminKeyInput = document.getElementById("adminKeyInput");
     const btnAuth = document.getElementById("btnAuth");
     const btnRefresh = document.getElementById("btnRefresh");
+    const btnExportCSV = document.getElementById("btnExportCSV");
     const selectRoom = document.getElementById("selectRoom");
     const adminCommentList = document.getElementById("adminCommentList");
     const btnSaveNotice = document.getElementById("btnSaveNotice");
     const noticeInput = document.getElementById("noticeInput");
     const btnClearRoom = document.getElementById("btnClearRoom");
+    const btnToggleChat = document.getElementById("btnToggleChat");
+    const forbiddenTagList = document.getElementById("forbiddenTagList");
+    const newWordInput = document.getElementById("newWordInput");
+    const btnAddWord = document.getElementById("btnAddWord");
+    const bannedIpTagList = document.getElementById("bannedIpTagList");
+    const bannedIpCount = document.getElementById("bannedIpCount");
 
     if (adminToken) {
       authOverlay.style.display = "none";
@@ -372,6 +422,7 @@
         }
         const json = await res.json();
         const d = json.data;
+        currentStats = d;
 
         document.getElementById("uvToday").textContent = d.uvToday.toLocaleString();
         document.getElementById("uvTotal").textContent = d.uvTotal.toLocaleString();
@@ -397,6 +448,84 @@
       } catch (e) {}
     }
 
+    async function loadConfig() {
+      try {
+        const res = await fetch(`${API_ENDPOINT}/api/admin/config`, {
+          headers: { "X-Admin-Key": adminToken }
+        });
+        const json = await res.json();
+        if (json.data) {
+          systemConfig = json.data;
+          renderConfigUI();
+        }
+      } catch (e) {}
+    }
+
+    function renderConfigUI() {
+      btnToggleChat.textContent = systemConfig.chatEnabled ? "已开启" : "已禁言";
+      btnToggleChat.style.background = systemConfig.chatEnabled ? "var(--green)" : "var(--red)";
+
+      forbiddenTagList.innerHTML = "";
+      systemConfig.forbiddenWords.forEach(w => {
+        const span = document.createElement("span");
+        span.className = "tag-item";
+        span.innerHTML = `<span>${w}</span><span class="tag-del" onclick="removeWord('${w}')">×</span>`;
+        forbiddenTagList.appendChild(span);
+      });
+
+      bannedIpTagList.innerHTML = "";
+      bannedIpCount.textContent = systemConfig.bannedIps.length;
+      systemConfig.bannedIps.forEach(ip => {
+        const span = document.createElement("span");
+        span.className = "tag-item";
+        span.innerHTML = `<span>${ip}</span><span class="tag-del" onclick="unbanIp('${ip}')">×</span>`;
+        bannedIpTagList.appendChild(span);
+      });
+    }
+
+    async function saveConfig() {
+      try {
+        await fetch(`${API_ENDPOINT}/api/admin/config`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Admin-Key": adminToken },
+          body: JSON.stringify(systemConfig)
+        });
+        renderConfigUI();
+      } catch (e) {}
+    }
+
+    btnToggleChat.addEventListener("click", () => {
+      systemConfig.chatEnabled = !systemConfig.chatEnabled;
+      saveConfig();
+    });
+
+    btnAddWord.addEventListener("click", () => {
+      const val = newWordInput.value.trim();
+      if (!val || systemConfig.forbiddenWords.includes(val)) return;
+      systemConfig.forbiddenWords.push(val);
+      newWordInput.value = "";
+      saveConfig();
+    });
+
+    window.removeWord = function(w) {
+      systemConfig.forbiddenWords = systemConfig.forbiddenWords.filter(item => item !== w);
+      saveConfig();
+    };
+
+    window.unbanIp = function(ip) {
+      systemConfig.bannedIps = systemConfig.bannedIps.filter(item => item !== ip);
+      saveConfig();
+    };
+
+    window.banIp = function(ip) {
+      if (!ip || ip === "unknown") return;
+      if (!confirm(`确定要封禁 IP: ${ip} 吗？被封禁后该设备将无法发送弹幕。`)) return;
+      if (!systemConfig.bannedIps.includes(ip)) {
+        systemConfig.bannedIps.push(ip);
+        saveConfig();
+      }
+    };
+
     async function loadNotice() {
       try {
         const res = await fetch(`${API_ENDPOINT}/api/notice`);
@@ -415,15 +544,15 @@
         });
         const json = await res.json();
         alert(json.msg || "保存成功！");
-      } catch (e) {
-        alert("网络异常");
-      }
+      } catch (e) {}
     });
 
     async function loadComments() {
       const roomId = selectRoom.value;
       try {
-        const res = await fetch(`${API_ENDPOINT}/api/comments?room=${roomId}`, { cache: "no-store" });
+        const res = await fetch(`${API_ENDPOINT}/api/admin/comments?room=${roomId}`, {
+          headers: { "X-Admin-Key": adminToken }
+        });
         const json = await res.json();
         const list = json.comments || [];
 
@@ -437,36 +566,36 @@
           const row = document.createElement("div");
           row.className = "comment-row";
 
+          const ipStr = c.ip ? `IP: ${c.ip}` : "";
+
           row.innerHTML = `
             <div>
               <span class="c-user">${c.name}:</span>
               <span class="c-text">${c.text}</span>
-              <span class="c-time">${c.time || ''}</span>
+              <span class="c-meta">${c.time || ''} | ${ipStr}</span>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              ${c.ip ? `<button class="btn-warn" onclick="banIp('${c.ip}')">封禁IP</button>` : ''}
+              <button class="btn-danger" onclick="deleteComment('${roomId}', '${c.id}')">删除</button>
             </div>
           `;
 
-          const btnDel = document.createElement("button");
-          btnDel.className = "btn-danger";
-          btnDel.textContent = "删除";
-          btnDel.addEventListener("click", () => deleteComment(roomId, c.id));
-
-          row.appendChild(btnDel);
           adminCommentList.appendChild(row);
         });
       } catch (e) {}
     }
 
-    async function deleteComment(roomId, commentId) {
+    window.deleteComment = async function(roomId, commentId) {
       if (!confirm("确定要删除这条留言吗？")) return;
       try {
-        const res = await fetch(`${API_ENDPOINT}/api/admin/comments/delete`, {
+        await fetch(`${API_ENDPOINT}/api/admin/comments/delete`, {
           method: "POST",
           headers: { "Content-Type": "application/json", "X-Admin-Key": adminToken },
           body: JSON.stringify({ roomId, commentId })
         });
         loadComments();
       } catch (e) {}
-    }
+    };
 
     btnClearRoom.addEventListener("click", async () => {
       const roomId = selectRoom.value;
@@ -481,11 +610,41 @@
       } catch (e) {}
     });
 
+    btnExportCSV.addEventListener("click", () => {
+      if (!currentStats) { alert("数据正在加载中..."); return; }
+      const now = new Date().toLocaleDateString('zh-CN');
+      const rows = [
+        ["统计日期", now],
+        ["指标名称", "数值"],
+        ["今日独立访客 (UV)", currentStats.uvToday],
+        ["累计独立访客 (UV)", currentStats.uvTotal],
+        ["今日页面浏览 (PV)", currentStats.pvToday],
+        ["累计页面浏览 (PV)", currentStats.pvTotal],
+        ["App 导流点击数 (今日)", currentStats.appClicksToday],
+        ["App 导流点击数 (累计)", currentStats.appClicksTotal],
+        ["真实弹幕互动总量", currentStats.commentsTotal],
+        ["拍立得海报生成总量", currentStats.snapshotsTotal],
+        ["双击吸猫点赞总量", currentStats.dblclicksTotal],
+        ["机位1 (苏州猫岛) 访问量", currentStats.roomViews["1"] || 0],
+        ["机位2 (沛霖) 访问量", currentStats.roomViews["2"] || 0],
+        ["机位3 (南庄) 访问量", currentStats.roomViews["3"] || 0]
+      ];
+
+      let csvContent = "\uFEFF";
+      rows.forEach(r => { csvContent += r.join(",") + "\n"; });
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `毛毛星球运营报表_${now.replace(/\//g, "-")}.csv`;
+      link.click();
+    });
+
     selectRoom.addEventListener("change", loadComments);
     btnRefresh.addEventListener("click", loadAllData);
 
     function loadAllData() {
       loadStats();
+      loadConfig();
       loadNotice();
       loadComments();
     }
