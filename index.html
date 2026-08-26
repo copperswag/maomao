@@ -589,7 +589,6 @@
       text-decoration: none;
     }
 
-    /* 拍立得弹窗样式 */
     .polaroid-modal {
       position: fixed;
       inset: 0;
@@ -783,7 +782,6 @@
     </footer>
   </div>
 
-  <!-- 拍立得海报弹窗 -->
   <div class="polaroid-modal" id="polaroidModal">
     <div class="polaroid-card-wrapper">
       <img id="polaroidImg" class="polaroid-img" alt="毛毛星球拍立得" />
@@ -835,6 +833,56 @@
     let latestCommentId = "";
     let pollTimer = null;
     let cooldownTimer = null;
+
+    // ================= 赛博氛围机器人引擎 =================
+    const BOT_NAMES = [
+      "猫猫教信徒", "吸猫专业户", "橘猫大军团长", "三花天下第一", "今天也要摸猫",
+      "赛博铲屎官", "罐头赞助商", "喵呜星人", "佛系云养猫", "工位偷猫选手",
+      "大橘为重", "毛茸茸爱好者", "软萌收割机", "猫尾巴摇摇", "小鱼干采购员"
+    ];
+
+    const BOT_MESSAGES = [
+      "咪咪快来吃好吃的~ 🍗",
+      "今天天气不错，小猫都在晒太阳呢 ☀️",
+      "这只小猫好萌呀，想抱走！",
+      "吸猫打卡+1 🐾",
+      "大橘为重，多吃点长大个！",
+      "又是被小猫治愈的一天 🥰",
+      "好想隔着屏幕伸手摸摸它",
+      "在工位偷偷云吸猫被发现了 🤣",
+      "看猫咪干饭真的好解压",
+      "给直播间各位猫友打个招呼 👋",
+      "定点喂养真的太有爱心了！",
+      "蹲一个三花出镜 👀",
+      "猫猫的警惕性还挺高呢",
+      "赛博云投喂，快乐翻倍 🐟",
+      "刚刚跑过去的是哪只呀？"
+    ];
+
+    let botTimer = null;
+
+    function triggerBotComment() {
+      const randomName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
+      const randomText = BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)];
+      const botMsg = {
+        id: "bot_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+        name: randomName,
+        text: randomText,
+        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        isBot: true
+      };
+
+      renderComments([botMsg], false);
+      shootDanmaku(`${randomName}: ${randomText}`, false);
+
+      const nextDelay = Math.floor(Math.random() * 20000) + 15000;
+      botTimer = setTimeout(triggerBotComment, nextDelay);
+    }
+
+    function startAtmosphereBot() {
+      if (botTimer) clearTimeout(botTimer);
+      botTimer = setTimeout(triggerBotComment, 6000);
+    }
 
     const ADJECTIVES = ["干饭的", "贪睡的", "软萌的", "机智的", "威风的", "好奇的", "粘人的", "调皮的", "高冷的", "元气的"];
     const CAT_NAMES = ["小橘", "三花", "奶牛猫", "布偶", "狸花", "金渐层", "银渐层", "大胖橘", "无毛猫", "小黑猫"];
@@ -897,7 +945,6 @@
       danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
     });
 
-    // 拍立得海报生成引擎
     snapshotBtn.addEventListener("click", () => {
       if (!video || video.readyState < 2 || video.videoWidth === 0) {
         alert("视频流正在加载中，请稍候再抓拍~");
@@ -906,24 +953,19 @@
 
       const canvas = snapshotCanvas;
       const ctx = canvas.getContext("2d");
-
-      // 拍立得卡片尺寸 (600 x 780 黄金比例)
       const CARD_W = 600;
       const CARD_H = 780;
       canvas.width = CARD_W;
       canvas.height = CARD_H;
 
-      // 1. 绘制白底相纸与质感阴影
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-      // 2. 照片内嵌区域 (540 x 420, 边距 30)
       const PHOTO_X = 30;
       const PHOTO_Y = 30;
       const PHOTO_W = 540;
       const PHOTO_H = 420;
 
-      // 居中裁剪视频画面 (Object-fit: cover 算法)
       const vW = video.videoWidth;
       const vH = video.videoHeight;
       const targetRatio = PHOTO_W / PHOTO_H;
@@ -945,7 +987,6 @@
         return;
       }
 
-      // 3. 画面左上角抓拍印章 (🔴 LIVE SNAP)
       ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
       ctx.beginPath();
       ctx.roundRect(PHOTO_X + 16, PHOTO_Y + 16, 125, 28, 14);
@@ -960,7 +1001,6 @@
       ctx.font = "bold 12px sans-serif";
       ctx.fillText("LIVE SNAP", PHOTO_X + 42, PHOTO_Y + 34);
 
-      // 4. 下方拍立得打卡信息
       const userNick = nameInput.value.trim() || getOrCreateUserNickname();
       const now = new Date();
       const timeStr = now.getFullYear() + "." + 
@@ -970,22 +1010,18 @@
         String(now.getMinutes()).padStart(2, '0') + ":" + 
         String(now.getSeconds()).padStart(2, '0');
 
-      // 机位地点
       ctx.fillStyle = "#111827";
       ctx.font = "bold 24px -apple-system, sans-serif";
       ctx.fillText(`📍 ${currentRoomName} · 现场抓拍`, PHOTO_X + 4, PHOTO_Y + PHOTO_H + 50);
 
-      // 时间戳
       ctx.fillStyle = "#6b7280";
       ctx.font = "14px monospace";
       ctx.fillText(`📅 ${timeStr}`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 82);
 
-      // 抓拍官徽标
       ctx.fillStyle = "#059669";
       ctx.font = "bold 15px -apple-system, sans-serif";
       ctx.fillText(`🐾 抓拍官：${userNick}`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
 
-      // 5. 右下角品牌水印与寄语
       ctx.textAlign = "right";
       ctx.fillStyle = "#10b981";
       ctx.font = "bold 16px -apple-system, sans-serif";
@@ -995,9 +1031,8 @@
       ctx.font = "12px sans-serif";
       ctx.fillText("定点云守护 · 每一份爱都有回响", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 102);
 
-      ctx.textAlign = "left"; // 复位对齐
+      ctx.textAlign = "left";
 
-      // 6. 导出并弹出展示
       try {
         const dataUrl = canvas.toDataURL("image/png");
         polaroidImg.src = dataUrl;
@@ -1061,7 +1096,7 @@
       comments.forEach(c => {
         if (seenCommentIds.has(c.id)) return;
         seenCommentIds.add(c.id);
-        latestCommentId = c.id;
+        if (!c.isBot) latestCommentId = c.id;
 
         const isMe = Boolean(c.isLocal) || (myCurrentName && c.name === myCurrentName);
 
@@ -1093,7 +1128,7 @@
 
         chatList.appendChild(row);
 
-        if (!isInitial && !c.isLocal) {
+        if (!isInitial && !c.isLocal && !c.isBot) {
           shootDanmaku(`${c.name}: ${c.text}`, isMe);
         }
       });
@@ -1225,6 +1260,7 @@
       chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>';
       
       fetchComments(true);
+      startAtmosphereBot(); // 启动氛围机器人
 
       if (pollTimer) clearInterval(pollTimer);
       pollTimer = setInterval(() => fetchComments(false), 800);
