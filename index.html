@@ -398,22 +398,32 @@
       gap: 8px;
     }
 
+    /* 荣誉称号样式（支持点击交互） */
     .honor-badge {
       display: inline-flex;
       align-items: center;
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 11px;
+      gap: 4px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 12px;
       font-weight: 700;
       background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--text-sub);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
     }
 
-    .honor-badge.tier-1 { color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.1); }
-    .honor-badge.tier-2 { color: #34d399; border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1); }
-    .honor-badge.tier-3 { color: #c084fc; border-color: rgba(192, 132, 252, 0.3); background: rgba(192, 132, 252, 0.1); }
-    .honor-badge.tier-4 { color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.15); box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
+    .honor-badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .honor-badge.tier-1 { color: #60a5fa; border-color: rgba(96, 165, 250, 0.4); background: rgba(96, 165, 250, 0.12); }
+    .honor-badge.tier-2 { color: #34d399; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.12); }
+    .honor-badge.tier-3 { color: #c084fc; border-color: rgba(192, 132, 252, 0.4); background: rgba(192, 132, 252, 0.12); }
+    .honor-badge.tier-4 { color: #fbbf24; border-color: rgba(251, 191, 36, 0.5); background: rgba(251, 191, 36, 0.18); box-shadow: 0 0 12px rgba(245, 158, 11, 0.3); }
 
     .chat-messages {
       height: 180px;
@@ -634,6 +644,7 @@
 
     footer a { color: var(--text-sub); text-decoration: none; }
 
+    /* 通用弹窗模态框 */
     .app-modal {
       position: fixed;
       inset: 0;
@@ -653,10 +664,11 @@
     .app-modal.show { opacity: 1; pointer-events: auto; }
 
     .modal-card-box {
-      max-width: 380px;
-      width: 90vw;
-      background: #fff;
-      border-radius: 8px;
+      max-width: 440px;
+      width: 92vw;
+      background: #161b22;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
       overflow: hidden;
       animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -703,6 +715,107 @@
       border-color: #f59e0b;
       color: #090a0f;
     }
+
+    /* 称号成就面板专属样式 */
+    .honor-modal-header {
+      padding: 24px 20px 16px;
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.12), transparent);
+      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .honor-current-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .honor-stay-stat {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+
+    .honor-progress-wrapper {
+      margin: 14px auto 4px;
+      max-width: 280px;
+    }
+
+    .honor-progress-bar {
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .honor-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #34d399);
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+
+    .honor-list {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .honor-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+
+    .honor-item.unlocked {
+      background: rgba(16, 185, 129, 0.06);
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+
+    .honor-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .honor-item-icon {
+      font-size: 22px;
+    }
+
+    .honor-item-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .honor-item-req {
+      font-size: 11px;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    .honor-item-status {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-sub);
+    }
+
+    .honor-item.unlocked .honor-item-status {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+    }
   </style>
 </head>
 <body>
@@ -713,7 +826,7 @@
         <div class="logo-text">MeowHub <span style="font-weight: 300; opacity: 0.5;">Live</span></div>
       </div>
       <div class="header-right">
-        <span class="honor-badge" id="myHonorBadge">🌱 路过猫奴 (0m)</span>
+        <span class="honor-badge" id="myHonorBadge" title="点击查看铲屎官成就称号">🌱 路过猫奴 (0m) ⓘ</span>
         <div class="badge-live">
           <div class="pulse-dot"></div>
           <span id="onlineCount">3 直播间在线</span>
@@ -820,8 +933,9 @@
     </footer>
   </div>
 
+  <!-- 拍立得弹窗 -->
   <div class="app-modal" id="polaroidModal">
-    <div class="modal-card-box">
+    <div class="modal-card-box" style="background:#fff;">
       <img id="polaroidImg" style="width: 100%; display: block;" alt="毛毛星球拍立得" />
     </div>
     <div class="modal-actions">
@@ -831,14 +945,38 @@
     <div style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 10px;">手机端长按图片可直接存入相册 / 发朋友圈</div>
   </div>
 
+  <!-- 猫生运势签弹窗 -->
   <div class="app-modal" id="fortuneModal">
-    <div class="modal-card-box">
+    <div class="modal-card-box" style="background:#fff;">
       <img id="fortuneImg" style="width: 100%; display: block;" alt="今日猫生运势签" />
     </div>
     <div class="modal-actions">
       <a id="downloadFortuneBtn" class="btn-modal-action fortune-color" download="meow_fortune.png">📥 保存运势卡</a>
       <button id="reFortuneBtn" class="btn-modal-action" type="button">🎲 重抽</button>
       <button id="closeFortuneBtn" class="btn-modal-action" type="button">✕ 关闭</button>
+    </div>
+  </div>
+
+  <!-- 铲屎官荣誉称号二级页面弹窗 -->
+  <div class="app-modal" id="honorModal">
+    <div class="modal-card-box">
+      <div class="honor-modal-header">
+        <div class="honor-current-title" id="modalHonorTitle">🌱 路过猫奴</div>
+        <div class="honor-stay-stat">累计陪伴时长：<span id="modalStayTimeText" style="color: #34d399; font-weight: 700;">0分钟</span></div>
+        <div class="honor-progress-wrapper">
+          <div class="honor-progress-bar">
+            <div class="honor-progress-fill" id="modalProgressFill" style="width: 0%;"></div>
+          </div>
+          <div style="font-size: 11px; color: var(--text-sub);" id="modalNextTierTip">距下一称号还需 1 分钟</div>
+        </div>
+      </div>
+
+      <div class="honor-list" id="honorListContainer"></div>
+
+      <div style="padding: 0 20px 20px; text-align: center;">
+        <p style="font-size: 11px; color: var(--text-sub); margin-bottom: 14px;">陪伴时长将永久保存在您的设备中，抓拍海报可同步印制最高称号印章 🐾</p>
+        <button id="closeHonorBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">我知道啦</button>
+      </div>
     </div>
   </div>
 
@@ -849,12 +987,10 @@
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
-    // 核心全局状态
     let currentRoomId = "1";
     let currentRoomName = "苏州猫岛";
     let lastDurationFlushTime = Date.now();
 
-    // 强制使用原生跨域 fetch 埋点通道（100% 携带请求头，绝不丢失数据）
     function trackEvent(type, extra = {}) {
       try {
         const payload = JSON.stringify({ type, ...extra });
@@ -867,10 +1003,8 @@
       } catch(e) {}
     }
 
-    // 页面进入立即上报 PV
     trackEvent("pv");
 
-    // 精准时长上报引擎
     function flushRoomDuration() {
       if (!currentRoomId) return;
       const now = Date.now();
@@ -881,7 +1015,6 @@
       }
     }
 
-    // 每 4 秒自动上报一次增量
     setInterval(flushRoomDuration, 4000);
     window.addEventListener("pagehide", flushRoomDuration);
     window.addEventListener("beforeunload", flushRoomDuration);
@@ -924,6 +1057,14 @@
     const closeFortuneBtn = document.getElementById("closeFortuneBtn");
     const fortuneCanvas = document.getElementById("fortuneCanvas");
 
+    const honorModal = document.getElementById("honorModal");
+    const modalHonorTitle = document.getElementById("modalHonorTitle");
+    const modalStayTimeText = document.getElementById("modalStayTimeText");
+    const modalProgressFill = document.getElementById("modalProgressFill");
+    const modalNextTierTip = document.getElementById("modalNextTierTip");
+    const honorListContainer = document.getElementById("honorListContainer");
+    const closeHonorBtn = document.getElementById("closeHonorBtn");
+
     let hls = null;
     let roomList = [];
     let danmakuEnabled = true;
@@ -934,14 +1075,15 @@
 
     btnDownloadApp.addEventListener("click", () => trackEvent("app_click"));
 
-    // 荣誉称号
-    let staySeconds = 0;
+    // ================= 永久累加荣誉称号体系 =================
+    let staySeconds = parseInt(localStorage.getItem("meow_total_stay_sec") || "0", 10);
+
     const HONOR_TIERS = [
-      { minSec: 0, title: "🌱 路过猫奴", class: "" },
-      { minSec: 60, title: "🐾 见习铲屎官", class: "tier-1" },
-      { minSec: 300, title: "🍖 资深云爸妈", class: "tier-2" },
-      { minSec: 900, title: "⭐ 金牌护喵官", class: "tier-3" },
-      { minSec: 1800, title: "👑 猫岛守护神", class: "tier-4" }
+      { minSec: 0, title: "🌱 路过猫奴", icon: "🌱", desc: "初来乍到，与毛毛星球结缘", class: "" },
+      { minSec: 60, title: "🐾 见习铲屎官", icon: "🐾", desc: "累计陪伴满 1 分钟", class: "tier-1" },
+      { minSec: 300, title: "🍖 资深云爸妈", icon: "🍖", desc: "累计陪伴满 5 分钟", class: "tier-2" },
+      { minSec: 900, title: "⭐ 金牌护喵官", icon: "⭐", desc: "累计陪伴满 15 分钟", class: "tier-3" },
+      { minSec: 1800, title: "👑 猫岛守护神", icon: "👑", desc: "累计陪伴满 30 分钟", class: "tier-4" }
     ];
 
     function getCurrentHonor() {
@@ -958,16 +1100,71 @@
     function updateHonorUI() {
       const honor = getCurrentHonor();
       const mins = Math.floor(staySeconds / 60);
-      myHonorBadge.textContent = `${honor.title} (${mins}m)`;
+      myHonorBadge.textContent = `${honor.title} (${mins}m) ⓘ`;
       myHonorBadge.className = `honor-badge ${honor.class}`;
     }
+
+    updateHonorUI();
 
     setInterval(() => {
       staySeconds++;
       updateHonorUI();
+      if (staySeconds % 5 === 0) {
+        localStorage.setItem("meow_total_stay_sec", String(staySeconds));
+      }
     }, 1000);
 
-    // 呼噜声
+    // 弹出荣誉称号二级面板
+    function openHonorModal() {
+      const current = getCurrentHonor();
+      const currentIdx = HONOR_TIERS.findIndex(h => h.title === current.title);
+      const mins = Math.floor(staySeconds / 60);
+
+      modalHonorTitle.textContent = current.title;
+      modalStayTimeText.textContent = `${mins} 分钟 (${staySeconds} 秒)`;
+
+      if (currentIdx < HONOR_TIERS.length - 1) {
+        const next = HONOR_TIERS[currentIdx + 1];
+        const prevSec = current.minSec;
+        const totalGap = next.minSec - prevSec;
+        const curGap = staySeconds - prevSec;
+        const pct = Math.min(Math.max((curGap / totalGap) * 100, 0), 100);
+
+        modalProgressFill.style.width = `${pct}%`;
+        const needMins = Math.ceil((next.minSec - staySeconds) / 60);
+        modalNextTierTip.textContent = `距解锁【${next.title}】还需约 ${needMins} 分钟`;
+      } else {
+        modalProgressFill.style.width = "100%";
+        modalNextTierTip.textContent = "已达成最高殿堂荣耀！感谢守护每一只猫咪 💖";
+      }
+
+      honorListContainer.innerHTML = "";
+      HONOR_TIERS.forEach((tier) => {
+        const isUnlocked = staySeconds >= tier.minSec;
+        const row = document.createElement("div");
+        row.className = `honor-item ${isUnlocked ? 'unlocked' : ''}`;
+
+        row.innerHTML = `
+          <div class="honor-item-left">
+            <div class="honor-item-icon">${tier.icon}</div>
+            <div>
+              <div class="honor-item-name">${tier.title}</div>
+              <div class="honor-item-req">${tier.desc}</div>
+            </div>
+          </div>
+          <div class="honor-item-status">${isUnlocked ? '已达成 ✓' : '未解锁 🔒'}</div>
+        `;
+        honorListContainer.appendChild(row);
+      });
+
+      honorModal.classList.add("show");
+    }
+
+    myHonorBadge.addEventListener("click", openHonorModal);
+    closeHonorBtn.addEventListener("click", () => honorModal.classList.remove("show"));
+    honorModal.addEventListener("click", (e) => { if (e.target === honorModal) honorModal.classList.remove("show"); });
+
+    // ================= 呼噜声白噪音 =================
     let audioCtx = null;
     let purrGain = null;
     let isPurring = false;
@@ -1022,7 +1219,7 @@
       }
     });
 
-    // 运势签
+    // ================= 运势签 =================
     const FORTUNES = [
       { title: "大吉 · 招财橘", star: "★★★★★", color: "橘猫色", food: "特级金枪鱼罐", desc: "今日诸事顺遂，吸猫吸到饱，工位财运滚滚来！", wish: "宜：定点投喂，忌：工位焦虑" },
       { title: "大吉 · 绝美三花", star: "★★★★★", color: "三花色", food: "新鲜冻干鸡肉", desc: "气质优雅气场全开，今天遇到的都是喜欢你的人。", wish: "宜：晒太阳，忌：熬夜加班" },
@@ -1116,7 +1313,7 @@
     closeFortuneBtn.addEventListener("click", () => fortuneModal.classList.remove("show"));
     fortuneModal.addEventListener("click", (e) => { if (e.target === fortuneModal) fortuneModal.classList.remove("show"); });
 
-    // 功德浮字
+    // ================= 功德浮字动效 =================
     const GONGDE_TEXTS = ["功德+1 ✨", "猫粮+5g 🍗", "毛量+100 🐾", "治愈值+1 💖", "寒冬抵御+1 ☀️", "吸猫快乐+999 😻"];
     const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
 
@@ -1545,18 +1742,15 @@
     });
 
     function playStream(roomIndex) {
-      // 1. 切换房间前先将上一房间产生的时长上报
       flushRoomDuration();
 
       const room = roomList[roomIndex];
       if (!room) return;
 
-      // 2. 绑定新房间的 ID 和名称
       currentRoomId = String(room.id || "1");
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
 
-      // 3. 重置时间戳，开始累计新房间的时长
       lastDurationFlushTime = Date.now();
       trackEvent("room_view", { roomId: currentRoomId });
 
@@ -1677,7 +1871,6 @@
           roomButtonList.appendChild(btn);
         });
 
-        // 首次进入初始机位
         playStream(0);
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
@@ -1700,7 +1893,6 @@
           video.play().catch(() => {});
         }
       } else {
-        // 切出或息屏时立即提交已产生的时长
         flushRoomDuration();
       }
     });
