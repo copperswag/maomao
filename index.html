@@ -41,7 +41,7 @@
       align-items: center;
       padding-bottom: 24px;
       border-bottom: 1px solid var(--card-border);
-      margin-bottom: 28px;
+      margin-bottom: 20px;
     }
 
     .logo-group {
@@ -87,6 +87,23 @@
       border-radius: 50%;
       box-shadow: 0 0 8px var(--accent-green);
     }
+
+    /* 顶部运营广播条 */
+    .notice-bar {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: #34d399;
+      margin-bottom: 24px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
     .hero-title {
       font-size: 26px;
@@ -689,6 +706,11 @@
       </div>
     </header>
 
+    <div class="notice-bar" id="noticeBar">
+      <span>📢</span>
+      <span id="noticeContent"></span>
+    </div>
+
     <h1 class="hero-title">毛毛星球 MeowHub | 智能养宠</h1>
     <p class="hero-desc">不论爱宠、更懂爱它。定点喂养、实时直播与智能看护系统。</p>
 
@@ -726,7 +748,6 @@
       </div>
     </div>
 
-    <!-- 互动留言板 -->
     <div class="chat-section">
       <div class="chat-header">
         <div class="chat-title">💬 实时猫友互动区</div>
@@ -763,7 +784,7 @@
         <h3 style="font-size: 15px; margin-bottom: 4px;">毛毛星球 App</h3>
         <p style="color: var(--text-sub); font-size: 13px;">提供定点云端投喂、远程看护与领养服务</p>
       </div>
-      <a href="https://agreement.meowhub.cn/live_room_share.html" target="_blank" rel="noopener noreferrer" class="btn-main">下载 App</a>
+      <a href="https://agreement.meowhub.cn/live_room_share.html" target="_blank" rel="noopener noreferrer" class="btn-main" id="btnDownloadApp">下载 App</a>
     </div>
 
     <div class="footer-box">
@@ -799,6 +820,21 @@
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
+    // 运营轻量埋点引擎
+    function trackEvent(type, extra = {}) {
+      try {
+        const payload = JSON.stringify({ type, ...extra });
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(`${API_ENDPOINT}/api/track`, payload);
+        } else {
+          fetch(`${API_ENDPOINT}/api/track`, { method: "POST", headers: { "Content-Type": "application/json" }, body: payload, keepalive: true }).catch(() => {});
+        }
+      } catch(e) {}
+    }
+
+    // 页面加载触发 PV/UV
+    trackEvent("pv");
+
     const video = document.getElementById("mainVideo");
     const videoWrapper = document.getElementById("videoWrapper");
     const audioBtn = document.getElementById("audioBtn");
@@ -817,6 +853,9 @@
     const emptyCopy = document.getElementById("emptyCopy");
     const currentRoomTitle = document.getElementById("currentRoomTitle");
     const roomButtonList = document.getElementById("roomButtonList");
+    const btnDownloadApp = document.getElementById("btnDownloadApp");
+    const noticeBar = document.getElementById("noticeBar");
+    const noticeContent = document.getElementById("noticeContent");
 
     const polaroidModal = document.getElementById("polaroidModal");
     const polaroidImg = document.getElementById("polaroidImg");
@@ -834,7 +873,23 @@
     let pollTimer = null;
     let cooldownTimer = null;
 
-    // ================= 赛博氛围机器人引擎 =================
+    // 监听 App 下载点击
+    btnDownloadApp.addEventListener("click", () => trackEvent("app_click"));
+
+    // 拉取顶部运营广播
+    async function fetchNotice() {
+      try {
+        const res = await fetch(`${API_ENDPOINT}/api/notice`, { cache: "no-cache" });
+        const data = await res.json();
+        if (data && data.notice && data.notice.trim()) {
+          noticeContent.textContent = data.notice.trim();
+          noticeBar.style.display = "flex";
+        }
+      } catch (e) {}
+    }
+    fetchNotice();
+
+    // 赛博氛围机器人引擎
     const BOT_NAMES = [
       "猫猫教信徒", "吸猫专业户", "橘猫大军团长", "三花天下第一", "今天也要摸猫",
       "赛博铲屎官", "罐头赞助商", "喵呜星人", "佛系云养猫", "工位偷猫选手",
@@ -920,6 +975,7 @@
 
     const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
     videoWrapper.addEventListener("dblclick", (e) => {
+      trackEvent("dblclick");
       const rect = videoWrapper.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -950,6 +1006,7 @@
         alert("视频流正在加载中，请稍候再抓拍~");
         return;
       }
+      trackEvent("snapshot");
 
       const canvas = snapshotCanvas;
       const ctx = canvas.getContext("2d");
@@ -1049,9 +1106,7 @@
     });
 
     polaroidModal.addEventListener("click", (e) => {
-      if (e.target === polaroidModal) {
-        polaroidModal.classList.remove("show");
-      }
+      if (e.target === polaroidModal) polaroidModal.classList.remove("show");
     });
 
     video.addEventListener("timeupdate", () => {
@@ -1086,9 +1141,7 @@
       }
 
       const placeholder = chatList.querySelector('div[style*="text-align: center"]');
-      if (placeholder) {
-        placeholder.remove();
-      }
+      if (placeholder) placeholder.remove();
 
       const myCurrentName = nameInput.value.trim();
       const isAtBottom = chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 50;
@@ -1255,12 +1308,15 @@
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
 
+      // 埋点上报机位切换
+      trackEvent("room_view", { roomId: currentRoomId });
+
       seenCommentIds.clear();
       latestCommentId = "";
       chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>';
       
       fetchComments(true);
-      startAtmosphereBot(); // 启动氛围机器人
+      startAtmosphereBot();
 
       if (pollTimer) clearInterval(pollTimer);
       pollTimer = setInterval(() => fetchComments(false), 800);
