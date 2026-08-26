@@ -849,7 +849,12 @@
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
-// 运营轻量埋点引擎（使用 Blob 封装，确保跨端和离线 100% 成功送达）
+    // 核心状态变量预先声明
+    let currentRoomId = "1";
+    let currentRoomName = "苏州猫岛";
+    let lastDurationFlushTime = Date.now();
+
+    // 运营轻量埋点引擎
     function trackEvent(type, extra = {}) {
       try {
         const payload = JSON.stringify({ type, ...extra });
@@ -857,15 +862,20 @@
           const blob = new Blob([payload], { type: "application/json" });
           navigator.sendBeacon(`${API_ENDPOINT}/api/track`, blob);
         } else {
-          fetch(`${API_ENDPOINT}/api/track`, { method: "POST", headers: { "Content-Type": "application/json" }, body: payload, keepalive: true }).catch(() => {});
+          fetch(`${API_ENDPOINT}/api/track`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: payload,
+            keepalive: true
+          }).catch(() => {});
         }
       } catch(e) {}
     }
 
+    // 页面访问触发 PV
     trackEvent("pv");
 
-    // ================= 精准机位停留时长追踪引擎 =================
-    let lastDurationFlushTime = Date.now();
+    // 精准机位停留时长追踪引擎
     function flushRoomDuration() {
       if (!currentRoomId) return;
       const now = Date.now();
@@ -875,8 +885,8 @@
         lastDurationFlushTime = now;
       }
     }
- 
-    // 改为每 5 秒自动上报一次增量，测试即测即见
+
+    // 5秒心跳上报增量
     setInterval(flushRoomDuration, 5000);
     window.addEventListener("pagehide", flushRoomDuration);
     window.addEventListener("beforeunload", flushRoomDuration);
@@ -921,8 +931,6 @@
 
     let hls = null;
     let roomList = [];
-    let currentRoomId = "1";
-    let currentRoomName = "苏州猫岛";
     let danmakuEnabled = true;
     let seenCommentIds = new Set();
     let latestCommentId = "";
@@ -1542,17 +1550,18 @@
     });
 
     function playStream(roomIndex) {
-      // 结算上一房间的停留时长
+      // 1. 切换房间前先将上一房间产生的时长上报
       flushRoomDuration();
 
       const room = roomList[roomIndex];
       if (!room) return;
 
+      // 2. 绑定新房间的 ID 和名称
       currentRoomId = String(room.id || "1");
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
 
-      // 开启新房间计时
+      // 3. 重置时间戳，开始累计新房间的时长
       lastDurationFlushTime = Date.now();
       trackEvent("room_view", { roomId: currentRoomId });
 
@@ -1673,6 +1682,7 @@
           roomButtonList.appendChild(btn);
         });
 
+        // 首次进入初始机位
         playStream(0);
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
@@ -1682,6 +1692,7 @@
 
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
+        lastDurationFlushTime = Date.now();
         fetchComments(false);
 
         if (hls && hls.liveSyncPosition) {
