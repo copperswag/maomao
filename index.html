@@ -875,7 +875,7 @@
         lastDurationFlushTime = now;
       }
     }
-
+ 
     // 改为每 5 秒自动上报一次增量，测试即测即见
     setInterval(flushRoomDuration, 5000);
     window.addEventListener("pagehide", flushRoomDuration);
