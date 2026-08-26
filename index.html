@@ -849,11 +849,13 @@
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
+// 运营轻量埋点引擎（使用 Blob 封装，确保跨端和离线 100% 成功送达）
     function trackEvent(type, extra = {}) {
       try {
         const payload = JSON.stringify({ type, ...extra });
         if (navigator.sendBeacon) {
-          navigator.sendBeacon(`${API_ENDPOINT}/api/track`, payload);
+          const blob = new Blob([payload], { type: "application/json" });
+          navigator.sendBeacon(`${API_ENDPOINT}/api/track`, blob);
         } else {
           fetch(`${API_ENDPOINT}/api/track`, { method: "POST", headers: { "Content-Type": "application/json" }, body: payload, keepalive: true }).catch(() => {});
         }
@@ -874,8 +876,9 @@
       }
     }
 
-    // 每 15 秒心跳增量累加
-    setInterval(flushRoomDuration, 15000);
+    // 改为每 5 秒自动上报一次增量，测试即测即见
+    setInterval(flushRoomDuration, 5000);
+    window.addEventListener("pagehide", flushRoomDuration);
     window.addEventListener("beforeunload", flushRoomDuration);
 
     const video = document.getElementById("mainVideo");
