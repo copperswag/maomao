@@ -15,6 +15,7 @@
       --green-light: #3fb950;
       --red: #da3633;
       --blue: #58a6ff;
+      --gold: #f59e0b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -109,12 +110,26 @@
       align-items: center;
     }
 
-    .room-bar-group { display: flex; flex-direction: column; gap: 12px; }
-    .room-bar-item { display: flex; align-items: center; gap: 12px; font-size: 13px; }
-    .room-bar-label { width: 90px; }
-    .room-bar-track { flex: 1; height: 10px; background: #21262d; border-radius: 99px; overflow: hidden; }
-    .room-bar-fill { height: 100%; background: var(--green-light); border-radius: 99px; }
-    .room-bar-val { width: 50px; text-align: right; color: var(--text-main); font-weight: 600; }
+    /* 停留时长表格 */
+    .dur-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .dur-table th {
+      padding: 10px 12px;
+      color: #8b949e;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dur-table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+    }
 
     .input-box {
       width: 100%;
@@ -250,7 +265,6 @@
 </head>
 <body>
 
-  <!-- 登录校验弹窗 -->
   <div class="auth-overlay" id="authOverlay">
     <div class="auth-box">
       <h3 style="color: var(--text-main); margin-bottom: 8px;">🔐 管理员鉴权</h3>
@@ -280,9 +294,9 @@
         <div class="card-sub">历史累计 UV：<span id="uvTotal">0</span></div>
       </div>
       <div class="card">
-        <div class="card-title">今日页面浏览 (PV) <span>👁️</span></div>
-        <div class="card-num" id="pvToday">0</div>
-        <div class="card-sub">历史累计 PV：<span id="pvTotal">0</span></div>
+        <div class="card-title">全站累计观看时长 <span>⏱️</span></div>
+        <div class="card-num" id="durationTotal" style="color: var(--gold);">0分</div>
+        <div class="card-sub">累计浏览 (PV)：<span id="pvTotal">0</span> 次</div>
       </div>
       <div class="card">
         <div class="card-title">App 导流点击数 <span>📲</span></div>
@@ -296,27 +310,40 @@
       </div>
     </div>
 
-    <!-- 中部：机位热度、全局控制与广播 -->
+    <!-- 中部：机位停留时长深度分析 & 应急控制与广播 -->
     <div class="grid-2">
       <div class="card">
-        <div class="section-title">📍 机位访问热度排行</div>
-        <div class="room-bar-group">
-          <div class="room-bar-item">
-            <div class="room-bar-label">苏州猫岛</div>
-            <div class="room-bar-track"><div class="room-bar-fill" id="bar1" style="width: 0%;"></div></div>
-            <div class="room-bar-val" id="val1">0</div>
-          </div>
-          <div class="room-bar-item">
-            <div class="room-bar-label">沛霖</div>
-            <div class="room-bar-track"><div class="room-bar-fill" id="bar2" style="width: 0%;"></div></div>
-            <div class="room-bar-val" id="val2">0</div>
-          </div>
-          <div class="room-bar-item">
-            <div class="room-bar-label">南庄</div>
-            <div class="room-bar-track"><div class="room-bar-fill" id="bar3" style="width: 0%;"></div></div>
-            <div class="room-bar-val" id="val3">0</div>
-          </div>
-        </div>
+        <div class="section-title">⏱️ 各直播间停留时长与人均深度</div>
+        <table class="dur-table">
+          <thead>
+            <tr>
+              <th>机位名称</th>
+              <th>访问次数</th>
+              <th>总观看时长</th>
+              <th>人均停留</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>苏州猫岛</strong></td>
+              <td id="vCount1">0</td>
+              <td id="dTotal1" style="color: var(--gold); font-weight: 600;">0分</td>
+              <td id="dAvg1" style="color: var(--green-light); font-weight: 600;">0秒</td>
+            </tr>
+            <tr>
+              <td><strong>沛霖</strong></td>
+              <td id="vCount2">0</td>
+              <td id="dTotal2" style="color: var(--gold); font-weight: 600;">0分</td>
+              <td id="dAvg2" style="color: var(--green-light); font-weight: 600;">0秒</td>
+            </tr>
+            <tr>
+              <td><strong>南庄</strong></td>
+              <td id="vCount3">0</td>
+              <td id="dTotal3" style="color: var(--gold); font-weight: 600;">0分</td>
+              <td id="dAvg3" style="color: var(--green-light); font-weight: 600;">0秒</td>
+            </tr>
+          </tbody>
+        </table>
 
         <div style="margin-top: 24px;">
           <div class="section-title">📢 全局运营跑马灯广播</div>
@@ -409,6 +436,17 @@
       loadAllData();
     });
 
+    function formatDuration(seconds) {
+      const s = parseInt(seconds, 10) || 0;
+      if (s < 60) return `${s}秒`;
+      const mins = Math.floor(s / 60);
+      const remSec = s % 60;
+      if (mins < 60) return `${mins}分${remSec > 0 ? remSec + '秒' : ''}`;
+      const hours = Math.floor(mins / 60);
+      const remMins = mins % 60;
+      return `${hours}时${remMins}分`;
+    }
+
     async function loadStats() {
       try {
         const res = await fetch(`${API_ENDPOINT}/api/admin/stats`, {
@@ -426,25 +464,33 @@
 
         document.getElementById("uvToday").textContent = d.uvToday.toLocaleString();
         document.getElementById("uvTotal").textContent = d.uvTotal.toLocaleString();
-        document.getElementById("pvToday").textContent = d.pvToday.toLocaleString();
         document.getElementById("pvTotal").textContent = d.pvTotal.toLocaleString();
         document.getElementById("appToday").textContent = d.appClicksToday.toLocaleString();
         document.getElementById("appTotal").textContent = d.appClicksTotal.toLocaleString();
         document.getElementById("commTotal").textContent = d.commentsTotal.toLocaleString();
         document.getElementById("snapTotal").textContent = d.snapshotsTotal.toLocaleString();
         document.getElementById("likeTotal").textContent = d.dblclicksTotal.toLocaleString();
+        document.getElementById("durationTotal").textContent = formatDuration(d.durationTotal);
 
         const v1 = d.roomViews["1"] || 0;
         const v2 = d.roomViews["2"] || 0;
         const v3 = d.roomViews["3"] || 0;
-        const max = Math.max(v1, v2, v3, 1);
 
-        document.getElementById("val1").textContent = v1;
-        document.getElementById("val2").textContent = v2;
-        document.getElementById("val3").textContent = v3;
-        document.getElementById("bar1").style.width = `${(v1 / max) * 100}%`;
-        document.getElementById("bar2").style.width = `${(v2 / max) * 100}%`;
-        document.getElementById("bar3").style.width = `${(v3 / max) * 100}%`;
+        const dur1 = d.roomDurations["1"] || 0;
+        const dur2 = d.roomDurations["2"] || 0;
+        const dur3 = d.roomDurations["3"] || 0;
+
+        document.getElementById("vCount1").textContent = `${v1} 次`;
+        document.getElementById("vCount2").textContent = `${v2} 次`;
+        document.getElementById("vCount3").textContent = `${v3} 次`;
+
+        document.getElementById("dTotal1").textContent = formatDuration(dur1);
+        document.getElementById("dTotal2").textContent = formatDuration(dur2);
+        document.getElementById("dTotal3").textContent = formatDuration(dur3);
+
+        document.getElementById("dAvg1").textContent = v1 > 0 ? formatDuration(Math.round(dur1 / v1)) : "0秒";
+        document.getElementById("dAvg2").textContent = v2 > 0 ? formatDuration(Math.round(dur2 / v2)) : "0秒";
+        document.getElementById("dAvg3").textContent = v3 > 0 ? formatDuration(Math.round(dur3 / v3)) : "0秒";
       } catch (e) {}
     }
 
@@ -565,7 +611,6 @@
         list.slice().reverse().forEach(c => {
           const row = document.createElement("div");
           row.className = "comment-row";
-
           const ipStr = c.ip ? `IP: ${c.ip}` : "";
 
           row.innerHTML = `
@@ -618,16 +663,21 @@
         ["指标名称", "数值"],
         ["今日独立访客 (UV)", currentStats.uvToday],
         ["累计独立访客 (UV)", currentStats.uvTotal],
-        ["今日页面浏览 (PV)", currentStats.pvToday],
         ["累计页面浏览 (PV)", currentStats.pvTotal],
-        ["App 导流点击数 (今日)", currentStats.appClicksToday],
-        ["App 导流点击数 (累计)", currentStats.appClicksTotal],
-        ["真实弹幕互动总量", currentStats.commentsTotal],
-        ["拍立得海报生成总量", currentStats.snapshotsTotal],
-        ["双击吸猫点赞总量", currentStats.dblclicksTotal],
+        ["全站累计观看总时长 (秒)", currentStats.durationTotal],
+        ["全站累计观看总时长 (格式化)", formatDuration(currentStats.durationTotal)],
         ["机位1 (苏州猫岛) 访问量", currentStats.roomViews["1"] || 0],
+        ["机位1 (苏州猫岛) 总停留时长 (秒)", currentStats.roomDurations["1"] || 0],
+        ["机位1 (苏州猫岛) 人均停留时长", currentStats.roomViews["1"] > 0 ? formatDuration(Math.round(currentStats.roomDurations["1"] / currentStats.roomViews["1"])) : "0秒"],
         ["机位2 (沛霖) 访问量", currentStats.roomViews["2"] || 0],
-        ["机位3 (南庄) 访问量", currentStats.roomViews["3"] || 0]
+        ["机位2 (沛霖) 总停留时长 (秒)", currentStats.roomDurations["2"] || 0],
+        ["机位2 (沛霖) 人均停留时长", currentStats.roomViews["2"] > 0 ? formatDuration(Math.round(currentStats.roomDurations["2"] / currentStats.roomViews["2"])) : "0秒"],
+        ["机位3 (南庄) 访问量", currentStats.roomViews["3"] || 0],
+        ["机位3 (南庄) 总停留时长 (秒)", currentStats.roomDurations["3"] || 0],
+        ["机位3 (南庄) 人均停留时长", currentStats.roomViews["3"] > 0 ? formatDuration(Math.round(currentStats.roomDurations["3"] / currentStats.roomViews["3"])) : "0秒"],
+        ["App 导流点击数 (累计)", currentStats.appClicksTotal],
+        ["拍立得海报生成总量", currentStats.snapshotsTotal],
+        ["双击吸猫点赞总量", currentStats.dblclicksTotal]
       ];
 
       let csvContent = "\uFEFF";
