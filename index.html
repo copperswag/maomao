@@ -13,6 +13,7 @@
       --text-sub: #9ca3af;
       --accent-green: #10b981;
       --accent-green-hover: #059669;
+      --gold: #f59e0b;
       --radius: 16px;
     }
 
@@ -67,6 +68,12 @@
       letter-spacing: -0.5px;
     }
 
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .badge-live {
       display: inline-flex;
       align-items: center;
@@ -88,7 +95,6 @@
       box-shadow: 0 0 8px var(--accent-green);
     }
 
-    /* 顶部运营广播条 */
     .notice-bar {
       display: none;
       align-items: center;
@@ -130,9 +136,7 @@
     }
 
     @media (max-width: 860px) {
-      .live-layout {
-        grid-template-columns: 1fr;
-      }
+      .live-layout { grid-template-columns: 1fr; }
     }
 
     .room-sidebar {
@@ -194,9 +198,7 @@
       font-weight: 500;
     }
 
-    .room-btn.active .status-indicator {
-      color: var(--accent-green);
-    }
+    .room-btn.active .status-indicator { color: var(--accent-green); }
 
     .player-container {
       background: var(--card-bg);
@@ -257,6 +259,25 @@
       to { transform: translateX(-100%); }
     }
 
+    /* 赛博功德漂浮动效 */
+    .gongde-pop {
+      position: absolute;
+      font-size: 15px;
+      font-weight: 800;
+      color: #fbbf24;
+      text-shadow: 0 0 8px rgba(245, 158, 11, 0.6), 0 2px 4px rgba(0,0,0,0.8);
+      pointer-events: none;
+      z-index: 13;
+      white-space: nowrap;
+      animation: float-gongde 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes float-gongde {
+      0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+      20% { transform: translate(-50%, -70px) scale(1.15); opacity: 1; }
+      100% { transform: translate(-50%, -150px) scale(1); opacity: 0; }
+    }
+
     .tap-heart {
       position: absolute;
       font-size: 32px;
@@ -269,7 +290,7 @@
     @keyframes float-up-fade {
       0% { transform: translate(-50%, -50%) scale(0.6) rotate(0deg); opacity: 0; }
       20% { transform: translate(-50%, -50%) scale(1.3) rotate(-8deg); opacity: 1; }
-      100% { transform: translate(-50%, -150px) scale(1) rotate(12deg); opacity: 0; }
+      100% { transform: translate(-50%, -130px) scale(1) rotate(12deg); opacity: 0; }
     }
 
     .controls-overlay {
@@ -278,6 +299,8 @@
       right: 16px;
       z-index: 10;
       display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
       gap: 8px;
     }
 
@@ -299,16 +322,16 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
-    .player-ctrl-btn.btn-snapshot {
+    .player-ctrl-btn.active {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
-      border: 1px solid rgba(16, 185, 129, 0.5);
-      font-weight: 600;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #fff;
     }
 
-    .player-ctrl-btn.btn-snapshot:hover {
-      background: linear-gradient(135deg, #10b981, #059669);
-      transform: scale(1.05);
+    .player-ctrl-btn.btn-fortune {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
+      border-color: rgba(245, 158, 11, 0.5);
+      font-weight: 600;
     }
 
     .card-empty {
@@ -336,7 +359,7 @@
     }
 
     .player-bar {
-      padding: 16px 20px;
+      padding: 14px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -345,7 +368,7 @@
     }
 
     .current-room-name {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text-main);
     }
@@ -376,6 +399,24 @@
       gap: 8px;
     }
 
+    /* 称号勋章 */
+    .honor-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-sub);
+    }
+
+    .honor-badge.tier-1 { color: #60a5fa; border-color: rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.1); }
+    .honor-badge.tier-2 { color: #34d399; border-color: rgba(52, 211, 153, 0.3); background: rgba(52, 211, 153, 0.1); }
+    .honor-badge.tier-3 { color: #c084fc; border-color: rgba(192, 132, 252, 0.3); background: rgba(192, 132, 252, 0.1); }
+    .honor-badge.tier-4 { color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.15); box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
+
     .chat-messages {
       height: 180px;
       overflow-y: auto;
@@ -396,7 +437,7 @@
     .message-item {
       display: flex;
       align-items: baseline;
-      gap: 8px;
+      gap: 6px;
       font-size: 13px;
       line-height: 1.5;
       padding: 4px 8px;
@@ -435,10 +476,7 @@
       white-space: nowrap;
     }
 
-    .msg-text {
-      color: var(--text-main);
-      word-break: break-all;
-    }
+    .msg-text { color: var(--text-main); word-break: break-all; }
 
     .quick-chips {
       display: flex;
@@ -545,9 +583,7 @@
       min-width: 65px;
     }
 
-    .btn-send:hover:not(:disabled) {
-      background: var(--accent-green-hover);
-    }
+    .btn-send:hover:not(:disabled) { background: var(--accent-green-hover); }
 
     .btn-send:disabled {
       background: rgba(255, 255, 255, 0.1);
@@ -589,10 +625,7 @@
       white-space: nowrap;
     }
 
-    .btn-main:hover {
-      background: #ffffff;
-      transform: translateY(-1px);
-    }
+    .btn-main:hover { background: #ffffff; transform: translateY(-1px); }
 
     footer {
       margin-top: 32px;
@@ -601,12 +634,10 @@
       color: var(--text-sub);
     }
 
-    footer a {
-      color: var(--text-sub);
-      text-decoration: none;
-    }
+    footer a { color: var(--text-sub); text-decoration: none; }
 
-    .polaroid-modal {
+    /* 通用弹窗模态框 */
+    .app-modal {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.85);
@@ -622,16 +653,13 @@
       transition: opacity 0.25s ease;
     }
 
-    .polaroid-modal.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .app-modal.show { opacity: 1; pointer-events: auto; }
 
-    .polaroid-card-wrapper {
+    .modal-card-box {
       max-width: 380px;
       width: 90vw;
       background: #fff;
-      border-radius: 6px;
+      border-radius: 8px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
       overflow: hidden;
       animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -642,19 +670,13 @@
       to { transform: scale(1) translateY(0); opacity: 1; }
     }
 
-    .polaroid-img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .polaroid-actions {
+    .modal-actions {
       display: flex;
       gap: 12px;
       margin-top: 20px;
     }
 
-    .btn-polaroid-action {
+    .btn-modal-action {
       background: rgba(255, 255, 255, 0.15);
       border: 1px solid rgba(255, 255, 255, 0.25);
       color: #fff;
@@ -671,25 +693,18 @@
       transition: all 0.2s;
     }
 
-    .btn-polaroid-action:hover {
-      background: rgba(255, 255, 255, 0.25);
-      transform: translateY(-1px);
-    }
+    .btn-modal-action:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-1px); }
 
-    .btn-polaroid-action.primary {
+    .btn-modal-action.primary {
       background: #10b981;
       border-color: #10b981;
       color: #090a0f;
     }
 
-    .btn-polaroid-action.primary:hover {
-      background: #059669;
-    }
-
-    .polaroid-tip {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 12px;
-      margin-top: 10px;
+    .btn-modal-action.fortune-color {
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #090a0f;
     }
   </style>
 </head>
@@ -700,9 +715,12 @@
         <div class="logo-icon">🐾</div>
         <div class="logo-text">MeowHub <span style="font-weight: 300; opacity: 0.5;">Live</span></div>
       </div>
-      <div class="badge-live">
-        <div class="pulse-dot"></div>
-        <span id="onlineCount">3 直播间在线</span>
+      <div class="header-right">
+        <span class="honor-badge" id="myHonorBadge">🌱 路过猫奴 (0m)</span>
+        <div class="badge-live">
+          <div class="pulse-dot"></div>
+          <span id="onlineCount">3 直播间在线</span>
+        </div>
       </div>
     </header>
 
@@ -726,7 +744,9 @@
           <div class="danmaku-container" id="danmakuBox"></div>
           
           <div class="controls-overlay">
-            <button class="player-ctrl-btn btn-snapshot" id="snapshotBtn" type="button">📷 拍立得</button>
+            <button class="player-ctrl-btn btn-fortune" id="fortuneBtn" type="button">🥠 猫生运势</button>
+            <button class="player-ctrl-btn" id="purrBtn" type="button">🎧 呼噜声: 关</button>
+            <button class="player-ctrl-btn" id="snapshotBtn" type="button">📷 拍立得</button>
             <button class="player-ctrl-btn" id="danmakuToggleBtn" type="button">💬 弹幕: 开</button>
             <button class="player-ctrl-btn" id="audioBtn" type="button">🔇 开启声音</button>
           </div>
@@ -751,7 +771,7 @@
     <div class="chat-section">
       <div class="chat-header">
         <div class="chat-title">💬 实时猫友互动区</div>
-        <div style="font-size: 12px; color: var(--text-sub);">双击视频画面有吸猫爱心 🐾</div>
+        <div style="font-size: 12px; color: var(--text-sub);">双击视频画面攒功德 🐾</div>
       </div>
 
       <div class="chat-messages" id="chatList">
@@ -803,24 +823,37 @@
     </footer>
   </div>
 
-  <div class="polaroid-modal" id="polaroidModal">
-    <div class="polaroid-card-wrapper">
-      <img id="polaroidImg" class="polaroid-img" alt="毛毛星球拍立得" />
+  <!-- 拍立得弹窗 -->
+  <div class="app-modal" id="polaroidModal">
+    <div class="modal-card-box">
+      <img id="polaroidImg" style="width: 100%; display: block;" alt="毛毛星球拍立得" />
     </div>
-    <div class="polaroid-actions">
-      <a id="downloadPolaroidBtn" class="btn-polaroid-action primary" download="meowhub_snap.png">📥 保存海报</a>
-      <button id="closePolaroidBtn" class="btn-polaroid-action" type="button">✕ 关闭</button>
+    <div class="modal-actions">
+      <a id="downloadPolaroidBtn" class="btn-modal-action primary" download="meowhub_snap.png">📥 保存海报</a>
+      <button id="closePolaroidBtn" class="btn-modal-action" type="button">✕ 关闭</button>
     </div>
-    <div class="polaroid-tip">手机端长按图片可直接存入相册 / 发朋友圈</div>
+    <div style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 10px;">手机端长按图片可直接存入相册 / 发朋友圈</div>
+  </div>
+
+  <!-- 猫生运势签弹窗 -->
+  <div class="app-modal" id="fortuneModal">
+    <div class="modal-card-box">
+      <img id="fortuneImg" style="width: 100%; display: block;" alt="今日猫生运势签" />
+    </div>
+    <div class="modal-actions">
+      <a id="downloadFortuneBtn" class="btn-modal-action fortune-color" download="meow_fortune.png">📥 保存运势卡</a>
+      <button id="reFortuneBtn" class="btn-modal-action" type="button">🎲 重抽</button>
+      <button id="closeFortuneBtn" class="btn-modal-action" type="button">✕ 关闭</button>
+    </div>
   </div>
 
   <canvas id="snapshotCanvas" style="display: none;"></canvas>
+  <canvas id="fortuneCanvas" style="display: none;"></canvas>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
-    // 运营轻量埋点引擎
     function trackEvent(type, extra = {}) {
       try {
         const payload = JSON.stringify({ type, ...extra });
@@ -832,7 +865,6 @@
       } catch(e) {}
     }
 
-    // 页面加载触发 PV/UV
     trackEvent("pv");
 
     const video = document.getElementById("mainVideo");
@@ -840,6 +872,8 @@
     const audioBtn = document.getElementById("audioBtn");
     const danmakuToggleBtn = document.getElementById("danmakuToggleBtn");
     const snapshotBtn = document.getElementById("snapshotBtn");
+    const fortuneBtn = document.getElementById("fortuneBtn");
+    const purrBtn = document.getElementById("purrBtn");
     const danmakuBox = document.getElementById("danmakuBox");
     const chatList = document.getElementById("chatList");
     const chatForm = document.getElementById("chatForm");
@@ -856,12 +890,20 @@
     const btnDownloadApp = document.getElementById("btnDownloadApp");
     const noticeBar = document.getElementById("noticeBar");
     const noticeContent = document.getElementById("noticeContent");
+    const myHonorBadge = document.getElementById("myHonorBadge");
 
     const polaroidModal = document.getElementById("polaroidModal");
     const polaroidImg = document.getElementById("polaroidImg");
     const downloadPolaroidBtn = document.getElementById("downloadPolaroidBtn");
     const closePolaroidBtn = document.getElementById("closePolaroidBtn");
     const snapshotCanvas = document.getElementById("snapshotCanvas");
+
+    const fortuneModal = document.getElementById("fortuneModal");
+    const fortuneImg = document.getElementById("fortuneImg");
+    const downloadFortuneBtn = document.getElementById("downloadFortuneBtn");
+    const reFortuneBtn = document.getElementById("reFortuneBtn");
+    const closeFortuneBtn = document.getElementById("closeFortuneBtn");
+    const fortuneCanvas = document.getElementById("fortuneCanvas");
 
     let hls = null;
     let roomList = [];
@@ -873,10 +915,232 @@
     let pollTimer = null;
     let cooldownTimer = null;
 
-    // 监听 App 下载点击
     btnDownloadApp.addEventListener("click", () => trackEvent("app_click"));
 
-    // 拉取顶部运营广播
+    // ================= 1. 吸猫时长与荣誉称号体系 =================
+    let staySeconds = 0;
+    const HONOR_TIERS = [
+      { minSec: 0, title: "🌱 路过猫奴", class: "" },
+      { minSec: 60, title: "🐾 见习铲屎官", class: "tier-1" },
+      { minSec: 300, title: "🍖 资深云爸妈", class: "tier-2" },
+      { minSec: 900, title: "⭐ 金牌护喵官", class: "tier-3" },
+      { minSec: 1800, title: "👑 猫岛守护神", class: "tier-4" }
+    ];
+
+    function getCurrentHonor() {
+      let current = HONOR_TIERS[0];
+      for (let i = HONOR_TIERS.length - 1; i >= 0; i--) {
+        if (staySeconds >= HONOR_TIERS[i].minSec) {
+          current = HONOR_TIERS[i];
+          break;
+        }
+      }
+      return current;
+    }
+
+    function updateHonorUI() {
+      const honor = getCurrentHonor();
+      const mins = Math.floor(staySeconds / 60);
+      myHonorBadge.textContent = `${honor.title} (${mins}m)`;
+      myHonorBadge.className = `honor-badge ${honor.class}`;
+    }
+
+    setInterval(() => {
+      staySeconds++;
+      updateHonorUI();
+    }, 1000);
+
+    // ================= 2. Web Audio 猫咪治愈呼噜声合成器 =================
+    let audioCtx = null;
+    let purrGain = null;
+    let isPurring = false;
+
+    function initPurrSound() {
+      if (audioCtx) return;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+
+      // 主振荡器 (28Hz 低频基音)
+      const osc = audioCtx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(28, audioCtx.currentTime);
+
+      // 低通滤波 (过滤高频，突出胸腔共鸣)
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(90, audioCtx.currentTime);
+
+      // 呼噜呼吸节奏调制 LFO (2.2Hz 呼吸频率)
+      const lfo = audioCtx.createOscillator();
+      lfo.type = "sine";
+      lfo.frequency.setValueAtTime(2.2, audioCtx.currentTime);
+
+      const lfoGain = audioCtx.createGain();
+      lfoGain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+
+      purrGain = audioCtx.createGain();
+      purrGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+      lfo.connect(lfoGain);
+      lfoGain.connect(purrGain.gain);
+
+      osc.connect(filter);
+      filter.connect(purrGain);
+      purrGain.connect(audioCtx.destination);
+
+      osc.start();
+      lfo.start();
+    }
+
+    purrBtn.addEventListener("click", () => {
+      initPurrSound();
+      if (audioCtx.state === "suspended") audioCtx.resume();
+
+      isPurring = !isPurring;
+      if (isPurring) {
+        purrGain.gain.setTargetAtTime(0.6, audioCtx.currentTime, 0.3);
+        purrBtn.textContent = "🎧 呼噜声: 开";
+        purrBtn.classList.add("active");
+      } else {
+        purrGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
+        purrBtn.textContent = "🎧 呼噜声: 关";
+        purrBtn.classList.remove("active");
+      }
+    });
+
+    // ================= 3. 猫生运势签引擎 =================
+    const FORTUNES = [
+      { title: "大吉 · 招财橘", star: "★★★★★", color: "橘猫色", food: "特级金枪鱼罐", desc: "今日诸事顺遂，吸猫吸到饱，工位财运滚滚来！", wish: "宜：定点投喂，忌：工位焦虑" },
+      { title: "大吉 · 绝美三花", star: "★★★★★", color: "三花色", food: "新鲜冻干鸡肉", desc: "气质优雅气场全开，今天遇到的都是喜欢你的人。", wish: "宜：晒太阳，忌：熬夜加班" },
+      { title: "上吉 · 威武狸花", star: "★★★★☆", color: "狸花斑纹", food: "鲜肉大猫条", desc: "精力充沛抓力拉满，所有难题都能一爪子搞定。", wish: "宜：运动伸展，忌：犹豫不决" },
+      { title: "中吉 · 睡神布偶", star: "★★★★☆", color: "海双色", food: "三文鱼慕斯", desc: "躺平也能遇好事，保持好心态，随时准备打个呼噜。", wish: "宜：午间小憩，忌：过度内卷" },
+      { title: "上吉 · 赛博奶牛", star: "★★★★☆", color: "黑白拼色", food: "大草鱼干", desc: "思维敏捷整活大师，今天会有意想不到的惊喜灵感！", wish: "宜：画鱼互动，忌：一本正经" }
+    ];
+
+    function drawFortuneCard() {
+      const f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
+      const canvas = fortuneCanvas;
+      const ctx = canvas.getContext("2d");
+      canvas.width = 540;
+      canvas.height = 720;
+
+      // 背景渐变
+      const grad = ctx.createLinearGradient(0, 0, 540, 720);
+      grad.addColorStop(0, "#18181b");
+      grad.addColorStop(1, "#090a0f");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 540, 720);
+
+      // 金色边框
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(20, 20, 500, 680);
+
+      // 内框虚线
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.3)";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([6, 4]);
+      ctx.strokeRect(30, 30, 480, 660);
+      ctx.setLineDash([]);
+
+      // 标题
+      ctx.fillStyle = "#f59e0b";
+      ctx.font = "bold 28px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("🐾 今日猫生运势签 🐾", 270, 85);
+
+      // 运势等级
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 36px sans-serif";
+      ctx.fillText(f.title, 270, 160);
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "20px sans-serif";
+      ctx.fillText(`运势指数：${f.star}`, 270, 205);
+
+      // 属性栏卡片
+      ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+      ctx.fillRect(50, 240, 440, 140);
+
+      ctx.textAlign = "left";
+      ctx.font = "16px sans-serif";
+      ctx.fillStyle = "#9ca3af";
+      ctx.fillText("🎨 幸运猫色：", 75, 280);
+      ctx.fillStyle = "#34d399";
+      ctx.fillText(f.color, 180, 280);
+
+      ctx.fillStyle = "#9ca3af";
+      ctx.fillText("🐟 幸运干粮：", 75, 320);
+      ctx.fillStyle = "#60a5fa";
+      ctx.fillText(f.food, 180, 320);
+
+      ctx.fillStyle = "#9ca3af";
+      ctx.fillText("✨ 宜忌指引：", 75, 360);
+      ctx.fillStyle = "#f59e0b";
+      ctx.fillText(f.wish, 180, 360);
+
+      // 签文解读
+      ctx.fillStyle = "#f3f4f6";
+      ctx.font = "17px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(`“ ${f.desc} ”`, 270, 440);
+
+      // 抓拍官与日期
+      const userNick = nameInput.value.trim() || getOrCreateUserNickname();
+      const nowStr = new Date().toLocaleDateString('zh-CN');
+      ctx.font = "14px monospace";
+      ctx.fillStyle = "#9ca3af";
+      ctx.fillText(`持签猫友：${userNick}  |  ${nowStr}`, 270, 520);
+
+      // 底部落款
+      ctx.fillStyle = "#10b981";
+      ctx.font = "bold 18px sans-serif";
+      ctx.fillText("毛毛星球 MeowHub · 智能养宠", 270, 610);
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "12px sans-serif";
+      ctx.fillText("定点云守护 · 每一份爱都有回响", 270, 638);
+
+      const dataUrl = canvas.toDataURL("image/png");
+      fortuneImg.src = dataUrl;
+      downloadFortuneBtn.href = dataUrl;
+      fortuneModal.classList.add("show");
+    }
+
+    fortuneBtn.addEventListener("click", drawFortuneCard);
+    reFortuneBtn.addEventListener("click", drawFortuneCard);
+    closeFortuneBtn.addEventListener("click", () => fortuneModal.classList.remove("show"));
+    fortuneModal.addEventListener("click", (e) => { if (e.target === fortuneModal) fortuneModal.classList.remove("show"); });
+
+    // ================= 4. 赛博功德 + 双击吸猫动效 =================
+    const GONGDE_TEXTS = ["功德+1 ✨", "猫粮+5g 🍗", "毛量+100 🐾", "治愈值+1 💖", "寒冬抵御+1 ☀️", "吸猫快乐+999 😻"];
+    const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
+
+    videoWrapper.addEventListener("dblclick", (e) => {
+      trackEvent("dblclick");
+      const rect = videoWrapper.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      // 爱心/猫爪动效
+      const heart = document.createElement("div");
+      heart.className = "tap-heart";
+      heart.textContent = ICONS[Math.floor(Math.random() * ICONS.length)];
+      heart.style.left = `${x}px`;
+      heart.style.top = `${y}px`;
+      videoWrapper.appendChild(heart);
+      heart.addEventListener("animationend", () => heart.remove());
+
+      // 功德浮字动效
+      const gongde = document.createElement("div");
+      gongde.className = "gongde-pop";
+      gongde.textContent = GONGDE_TEXTS[Math.floor(Math.random() * GONGDE_TEXTS.length)];
+      gongde.style.left = `${x}px`;
+      gongde.style.top = `${y}px`;
+      videoWrapper.appendChild(gongde);
+      gongde.addEventListener("animationend", () => gongde.remove());
+    });
+
+    // ================= 5. 运营公告与机器人 =================
     async function fetchNotice() {
       try {
         const res = await fetch(`${API_ENDPOINT}/api/notice`, { cache: "no-cache" });
@@ -889,7 +1153,6 @@
     }
     fetchNotice();
 
-    // 赛博氛围机器人引擎
     const BOT_NAMES = [
       "猫猫教信徒", "吸猫专业户", "橘猫大军团长", "三花天下第一", "今天也要摸猫",
       "赛博铲屎官", "罐头赞助商", "喵呜星人", "佛系云养猫", "工位偷猫选手",
@@ -973,23 +1236,6 @@
       });
     });
 
-    const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
-    videoWrapper.addEventListener("dblclick", (e) => {
-      trackEvent("dblclick");
-      const rect = videoWrapper.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      const heart = document.createElement("div");
-      heart.className = "tap-heart";
-      heart.textContent = ICONS[Math.floor(Math.random() * ICONS.length)];
-      heart.style.left = `${x}px`;
-      heart.style.top = `${y}px`;
-      videoWrapper.appendChild(heart);
-
-      heart.addEventListener("animationend", () => heart.remove());
-    });
-
     audioBtn.addEventListener("click", () => {
       video.muted = !video.muted;
       audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
@@ -1001,6 +1247,7 @@
       danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
     });
 
+    // 拍立得截图
     snapshotBtn.addEventListener("click", () => {
       if (!video || video.readyState < 2 || video.videoWidth === 0) {
         alert("视频流正在加载中，请稍候再抓拍~");
@@ -1059,6 +1306,7 @@
       ctx.fillText("LIVE SNAP", PHOTO_X + 42, PHOTO_Y + 34);
 
       const userNick = nameInput.value.trim() || getOrCreateUserNickname();
+      const honor = getCurrentHonor();
       const now = new Date();
       const timeStr = now.getFullYear() + "." + 
         String(now.getMonth() + 1).padStart(2, '0') + "." + 
@@ -1077,7 +1325,7 @@
 
       ctx.fillStyle = "#059669";
       ctx.font = "bold 15px -apple-system, sans-serif";
-      ctx.fillText(`🐾 抓拍官：${userNick}`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
+      ctx.fillText(`🐾 抓拍官：${userNick} [${honor.title}]`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
 
       ctx.textAlign = "right";
       ctx.fillStyle = "#10b981";
@@ -1101,13 +1349,8 @@
       }
     });
 
-    closePolaroidBtn.addEventListener("click", () => {
-      polaroidModal.classList.remove("show");
-    });
-
-    polaroidModal.addEventListener("click", (e) => {
-      if (e.target === polaroidModal) polaroidModal.classList.remove("show");
-    });
+    closePolaroidBtn.addEventListener("click", () => polaroidModal.classList.remove("show"));
+    polaroidModal.addEventListener("click", (e) => { if (e.target === polaroidModal) polaroidModal.classList.remove("show"); });
 
     video.addEventListener("timeupdate", () => {
       if (video.currentTime > 0) playerEmpty.style.display = "none";
@@ -1308,7 +1551,6 @@
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
 
-      // 埋点上报机位切换
       trackEvent("room_view", { roomId: currentRoomId });
 
       seenCommentIds.clear();
