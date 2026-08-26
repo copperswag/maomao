@@ -259,7 +259,6 @@
       to { transform: translateX(-100%); }
     }
 
-    /* 赛博功德漂浮动效 */
     .gongde-pop {
       position: absolute;
       font-size: 15px;
@@ -399,7 +398,6 @@
       gap: 8px;
     }
 
-    /* 称号勋章 */
     .honor-badge {
       display: inline-flex;
       align-items: center;
@@ -636,7 +634,6 @@
 
     footer a { color: var(--text-sub); text-decoration: none; }
 
-    /* 通用弹窗模态框 */
     .app-modal {
       position: fixed;
       inset: 0;
@@ -823,7 +820,6 @@
     </footer>
   </div>
 
-  <!-- 拍立得弹窗 -->
   <div class="app-modal" id="polaroidModal">
     <div class="modal-card-box">
       <img id="polaroidImg" style="width: 100%; display: block;" alt="毛毛星球拍立得" />
@@ -835,7 +831,6 @@
     <div style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 10px;">手机端长按图片可直接存入相册 / 发朋友圈</div>
   </div>
 
-  <!-- 猫生运势签弹窗 -->
   <div class="app-modal" id="fortuneModal">
     <div class="modal-card-box">
       <img id="fortuneImg" style="width: 100%; display: block;" alt="今日猫生运势签" />
@@ -866,6 +861,22 @@
     }
 
     trackEvent("pv");
+
+    // ================= 精准机位停留时长追踪引擎 =================
+    let lastDurationFlushTime = Date.now();
+    function flushRoomDuration() {
+      if (!currentRoomId) return;
+      const now = Date.now();
+      const deltaSec = Math.floor((now - lastDurationFlushTime) / 1000);
+      if (deltaSec >= 1) {
+        trackEvent("room_duration", { roomId: currentRoomId, seconds: deltaSec });
+        lastDurationFlushTime = now;
+      }
+    }
+
+    // 每 15 秒心跳增量累加
+    setInterval(flushRoomDuration, 15000);
+    window.addEventListener("beforeunload", flushRoomDuration);
 
     const video = document.getElementById("mainVideo");
     const videoWrapper = document.getElementById("videoWrapper");
@@ -917,7 +928,7 @@
 
     btnDownloadApp.addEventListener("click", () => trackEvent("app_click"));
 
-    // ================= 1. 吸猫时长与荣誉称号体系 =================
+    // 荣誉称号
     let staySeconds = 0;
     const HONOR_TIERS = [
       { minSec: 0, title: "🌱 路过猫奴", class: "" },
@@ -950,7 +961,7 @@
       updateHonorUI();
     }, 1000);
 
-    // ================= 2. Web Audio 猫咪治愈呼噜声合成器 =================
+    // 呼噜声
     let audioCtx = null;
     let purrGain = null;
     let isPurring = false;
@@ -960,17 +971,14 @@
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioCtx = new AudioContext();
 
-      // 主振荡器 (28Hz 低频基音)
       const osc = audioCtx.createOscillator();
       osc.type = "sine";
       osc.frequency.setValueAtTime(28, audioCtx.currentTime);
 
-      // 低通滤波 (过滤高频，突出胸腔共鸣)
       const filter = audioCtx.createBiquadFilter();
       filter.type = "lowpass";
       filter.frequency.setValueAtTime(90, audioCtx.currentTime);
 
-      // 呼噜呼吸节奏调制 LFO (2.2Hz 呼吸频率)
       const lfo = audioCtx.createOscillator();
       lfo.type = "sine";
       lfo.frequency.setValueAtTime(2.2, audioCtx.currentTime);
@@ -1008,7 +1016,7 @@
       }
     });
 
-    // ================= 3. 猫生运势签引擎 =================
+    // 运势签
     const FORTUNES = [
       { title: "大吉 · 招财橘", star: "★★★★★", color: "橘猫色", food: "特级金枪鱼罐", desc: "今日诸事顺遂，吸猫吸到饱，工位财运滚滚来！", wish: "宜：定点投喂，忌：工位焦虑" },
       { title: "大吉 · 绝美三花", star: "★★★★★", color: "三花色", food: "新鲜冻干鸡肉", desc: "气质优雅气场全开，今天遇到的都是喜欢你的人。", wish: "宜：晒太阳，忌：熬夜加班" },
@@ -1024,32 +1032,27 @@
       canvas.width = 540;
       canvas.height = 720;
 
-      // 背景渐变
       const grad = ctx.createLinearGradient(0, 0, 540, 720);
       grad.addColorStop(0, "#18181b");
       grad.addColorStop(1, "#090a0f");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 540, 720);
 
-      // 金色边框
       ctx.strokeStyle = "#f59e0b";
       ctx.lineWidth = 4;
       ctx.strokeRect(20, 20, 500, 680);
 
-      // 内框虚线
       ctx.strokeStyle = "rgba(245, 158, 11, 0.3)";
       ctx.lineWidth = 1;
       ctx.setLineDash([6, 4]);
       ctx.strokeRect(30, 30, 480, 660);
       ctx.setLineDash([]);
 
-      // 标题
       ctx.fillStyle = "#f59e0b";
       ctx.font = "bold 28px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("🐾 今日猫生运势签 🐾", 270, 85);
 
-      // 运势等级
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 36px sans-serif";
       ctx.fillText(f.title, 270, 160);
@@ -1058,7 +1061,6 @@
       ctx.font = "20px sans-serif";
       ctx.fillText(`运势指数：${f.star}`, 270, 205);
 
-      // 属性栏卡片
       ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
       ctx.fillRect(50, 240, 440, 140);
 
@@ -1079,20 +1081,17 @@
       ctx.fillStyle = "#f59e0b";
       ctx.fillText(f.wish, 180, 360);
 
-      // 签文解读
       ctx.fillStyle = "#f3f4f6";
       ctx.font = "17px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(`“ ${f.desc} ”`, 270, 440);
 
-      // 抓拍官与日期
       const userNick = nameInput.value.trim() || getOrCreateUserNickname();
       const nowStr = new Date().toLocaleDateString('zh-CN');
       ctx.font = "14px monospace";
       ctx.fillStyle = "#9ca3af";
       ctx.fillText(`持签猫友：${userNick}  |  ${nowStr}`, 270, 520);
 
-      // 底部落款
       ctx.fillStyle = "#10b981";
       ctx.font = "bold 18px sans-serif";
       ctx.fillText("毛毛星球 MeowHub · 智能养宠", 270, 610);
@@ -1111,7 +1110,7 @@
     closeFortuneBtn.addEventListener("click", () => fortuneModal.classList.remove("show"));
     fortuneModal.addEventListener("click", (e) => { if (e.target === fortuneModal) fortuneModal.classList.remove("show"); });
 
-    // ================= 4. 赛博功德 + 双击吸猫动效 =================
+    // 功德浮字
     const GONGDE_TEXTS = ["功德+1 ✨", "猫粮+5g 🍗", "毛量+100 🐾", "治愈值+1 💖", "寒冬抵御+1 ☀️", "吸猫快乐+999 😻"];
     const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
 
@@ -1121,7 +1120,6 @@
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      // 爱心/猫爪动效
       const heart = document.createElement("div");
       heart.className = "tap-heart";
       heart.textContent = ICONS[Math.floor(Math.random() * ICONS.length)];
@@ -1130,7 +1128,6 @@
       videoWrapper.appendChild(heart);
       heart.addEventListener("animationend", () => heart.remove());
 
-      // 功德浮字动效
       const gongde = document.createElement("div");
       gongde.className = "gongde-pop";
       gongde.textContent = GONGDE_TEXTS[Math.floor(Math.random() * GONGDE_TEXTS.length)];
@@ -1140,7 +1137,6 @@
       gongde.addEventListener("animationend", () => gongde.remove());
     });
 
-    // ================= 5. 运营公告与机器人 =================
     async function fetchNotice() {
       try {
         const res = await fetch(`${API_ENDPOINT}/api/notice`, { cache: "no-cache" });
@@ -1247,7 +1243,6 @@
       danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
     });
 
-    // 拍立得截图
     snapshotBtn.addEventListener("click", () => {
       if (!video || video.readyState < 2 || video.videoWidth === 0) {
         alert("视频流正在加载中，请稍候再抓拍~");
@@ -1544,6 +1539,9 @@
     });
 
     function playStream(roomIndex) {
+      // 结算上一房间的停留时长
+      flushRoomDuration();
+
       const room = roomList[roomIndex];
       if (!room) return;
 
@@ -1551,6 +1549,8 @@
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
 
+      // 开启新房间计时
+      lastDurationFlushTime = Date.now();
       trackEvent("room_view", { roomId: currentRoomId });
 
       seenCommentIds.clear();
@@ -1690,6 +1690,9 @@
         } else if (video.paused) {
           video.play().catch(() => {});
         }
+      } else {
+        // 切出或息屏时立即提交已产生的时长
+        flushRoomDuration();
       }
     });
 
