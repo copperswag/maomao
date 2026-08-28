@@ -769,6 +769,18 @@
       transition: width 0.3s ease;
     }
 
+    .crown-stamp-box {
+      margin: 10px 20px 0;
+      padding: 10px 14px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
     .honor-list {
       padding: 16px 20px;
       display: flex;
@@ -816,19 +828,6 @@
     .honor-item.unlocked .honor-item-status {
       background: rgba(16, 185, 129, 0.15);
       color: #34d399;
-    }
-
-    /* 历史王者印记展示卡 */
-    .crown-stamp-box {
-      margin: 10px 20px 0;
-      padding: 10px 14px;
-      background: rgba(245, 158, 11, 0.08);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
     }
 
     /* 全屏升级礼花 Canvas */
@@ -1036,7 +1035,7 @@
 
       <div style="padding: 0 20px 20px; text-align: center;">
         <p style="font-size: 11px; color: var(--text-sub); margin-bottom: 14px;">段位每周一 00:00 开启新赛季冲级，最高段位将沉淀为永久星标印记 🐾</p>
-        <button id="closeHonorBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">进入新赛季</button>
+        <button id="closeHonorBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">我知道啦</button>
       </div>
     </div>
   </div>
@@ -1067,6 +1066,7 @@
     let currentRoomName = "苏州猫岛";
     let lastDurationFlushTime = Date.now();
 
+    // 跨域稳定埋点通道
     function trackEvent(type, extra = {}) {
       try {
         const payload = JSON.stringify({ type, ...extra });
@@ -1872,7 +1872,33 @@
       }
     }
 
-    async function fetchComments
+    async function fetchComments(isInitial = false) {
+      if (!currentRoomId) return;
+      try {
+        let query = `${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}&_t=${Date.now()}`;
+        
+        if (!isInitial && latestCommentId) {
+          query += `&since=${encodeURIComponent(latestCommentId)}`;
+        }
+
+        const res = await fetch(query, {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
+            "Pragma": "no-cache"
+          }
+        });
+        const data = await res.json();
+        if (data && Array.isArray(data.comments)) {
+          renderComments(data.comments, isInitial);
+        } else {
+          renderComments([], isInitial);
+        }
+      } catch (e) {
+        if (isInitial) renderComments([], isInitial);
+      }
+    }
 
     function startCooldown() {
       let timeLeft = 3;
@@ -2050,7 +2076,8 @@
           return;
         }
 
-        roomList = rawRooms.sort(() => Math.random() - 0.5);
+        // 固定机位顺序，首选默认 1 号机位
+        roomList = rawRooms;
 
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
         roomButtonList.innerHTML = "";
