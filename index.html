@@ -254,7 +254,6 @@
       box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
     }
 
-    /* 高等级弹幕流光特权 */
     .danmaku-item.tier-gold {
       color: #fbbf24;
       background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
@@ -406,6 +405,7 @@
       gap: 8px;
     }
 
+    /* 称号勋章样式 */
     .honor-badge {
       display: inline-flex;
       align-items: center;
@@ -427,7 +427,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
-    /* 10 个层级的勋章样式 */
     .honor-badge.tier-1 { color: #93c5fd; border-color: rgba(147, 197, 253, 0.4); background: rgba(147, 197, 253, 0.12); }
     .honor-badge.tier-2 { color: #6ee7b7; border-color: rgba(110, 231, 183, 0.4); background: rgba(110, 231, 183, 0.12); }
     .honor-badge.tier-3 { color: #34d399; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.12); }
@@ -819,7 +818,20 @@
       color: #34d399;
     }
 
-    /* 升级仪式全屏彩带 Canvas */
+    /* 历史王者印记展示卡 */
+    .crown-stamp-box {
+      margin: 10px 20px 0;
+      padding: 10px 14px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    /* 全屏升级礼花 Canvas */
     #confettiCanvas {
       position: fixed;
       inset: 0;
@@ -827,7 +839,6 @@
       z-index: 2000;
     }
 
-    /* 升级即时庆祝弹窗专属样式 */
     .levelup-card {
       text-align: center;
       padding: 30px 24px;
@@ -871,7 +882,7 @@
         <div class="logo-text">MeowHub <span style="font-weight: 300; opacity: 0.5;">Live</span></div>
       </div>
       <div class="header-right">
-        <span class="honor-badge" id="myHonorBadge" title="点击查看铲屎官成就称号">🌱 路过猫奴 (0m) ⓘ</span>
+        <span class="honor-badge" id="myHonorBadge" title="点击查看本周赛季成就">🌱 路过猫奴 (0m) ⓘ</span>
         <div class="badge-live">
           <div class="pulse-dot"></div>
           <span id="onlineCount">3 直播间在线</span>
@@ -900,7 +911,6 @@
           
           <div class="controls-overlay">
             <button class="player-ctrl-btn btn-fortune" id="fortuneBtn" type="button">🥠 猫生运势</button>
-            <button class="player-ctrl-btn" id="purrBtn" type="button">🎧 呼噜声: 关</button>
             <button class="player-ctrl-btn" id="snapshotBtn" type="button">📷 拍立得</button>
             <button class="player-ctrl-btn" id="danmakuToggleBtn" type="button">💬 弹幕: 开</button>
             <button class="player-ctrl-btn" id="audioBtn" type="button">🔇 开启声音</button>
@@ -1006,8 +1016,9 @@
   <div class="app-modal" id="honorModal">
     <div class="modal-card-box">
       <div class="honor-modal-header">
+        <div style="font-size: 11px; color: #f59e0b; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;" id="modalSeasonLabel">本周赛季冲级中</div>
         <div class="honor-current-title" id="modalHonorTitle">🌱 路过猫奴</div>
-        <div class="honor-stay-stat">累计陪伴时长：<span id="modalStayTimeText" style="color: #34d399; font-weight: 700;">0分钟</span></div>
+        <div class="honor-stay-stat">本周陪伴时长：<span id="modalStayTimeText" style="color: #34d399; font-weight: 700;">0分钟</span></div>
         <div class="honor-progress-wrapper">
           <div class="honor-progress-bar">
             <div class="honor-progress-fill" id="modalProgressFill" style="width: 0%;"></div>
@@ -1016,11 +1027,16 @@
         </div>
       </div>
 
+      <div class="crown-stamp-box">
+        <span style="color: #fbbf24; font-weight: 700;">👑 历史猫岛守护神印记：</span>
+        <span id="modalCrownCount" style="color: #fff; font-weight: 800;">0 枚</span>
+      </div>
+
       <div class="honor-list" id="honorListContainer"></div>
 
       <div style="padding: 0 20px 20px; text-align: center;">
-        <p style="font-size: 11px; color: var(--text-sub); margin-bottom: 14px;">陪伴时长将永久保存在您的设备中，抓拍海报可同步印制最高称号印章 🐾</p>
-        <button id="closeHonorBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">我知道啦</button>
+        <p style="font-size: 11px; color: var(--text-sub); margin-bottom: 14px;">段位每周一 00:00 开启新赛季冲级，最高段位将沉淀为永久星标印记 🐾</p>
+        <button id="closeHonorBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">进入新赛季</button>
       </div>
     </div>
   </div>
@@ -1085,7 +1101,6 @@
     const danmakuToggleBtn = document.getElementById("danmakuToggleBtn");
     const snapshotBtn = document.getElementById("snapshotBtn");
     const fortuneBtn = document.getElementById("fortuneBtn");
-    const purrBtn = document.getElementById("purrBtn");
     const danmakuBox = document.getElementById("danmakuBox");
     const chatList = document.getElementById("chatList");
     const chatForm = document.getElementById("chatForm");
@@ -1124,6 +1139,8 @@
     const modalNextTierTip = document.getElementById("modalNextTierTip");
     const honorListContainer = document.getElementById("honorListContainer");
     const closeHonorBtn = document.getElementById("closeHonorBtn");
+    const modalCrownCount = document.getElementById("modalCrownCount");
+    const modalSeasonLabel = document.getElementById("modalSeasonLabel");
 
     const levelUpModal = document.getElementById("levelUpModal");
     const levelUpIcon = document.getElementById("levelUpIcon");
@@ -1144,22 +1161,46 @@
 
     btnDownloadApp.addEventListener("click", () => trackEvent("app_click"));
 
-    // ================= 10 阶荣誉称号成长体系 =================
-    let staySeconds = parseInt(localStorage.getItem("meow_total_stay_sec") || "0", 10);
+    // ================= 自然周赛季（Weekly Season）引擎 =================
+    function getWeekKey() {
+      const now = new Date();
+      const oneJan = new Date(now.getFullYear(), 0, 1);
+      const numberOfDays = Math.floor((now - oneJan) / (24 * 60 * 60 * 1000));
+      const weekNum = Math.ceil((now.getDay() + 1 + numberOfDays) / 7);
+      return `${now.getFullYear()}_W${weekNum}`;
+    }
+
+    const currentSeasonKey = getWeekKey();
+    const savedSeasonKey = localStorage.getItem("meow_current_season_key");
+    let crownStamps = parseInt(localStorage.getItem("meow_crown_stamps") || "0", 10);
+
+    // 跨周检测与赛季结算
+    if (savedSeasonKey && savedSeasonKey !== currentSeasonKey) {
+      const lastWeekSec = parseInt(localStorage.getItem("meow_weekly_stay_sec") || "0", 10);
+      if (lastWeekSec >= 7200) {
+        crownStamps += 1;
+        localStorage.setItem("meow_crown_stamps", String(crownStamps));
+      }
+      localStorage.setItem("meow_weekly_stay_sec", "0");
+      localStorage.setItem("meow_celebrated_tiers", "[]");
+    }
+    localStorage.setItem("meow_current_season_key", currentSeasonKey);
+
+    let staySeconds = parseInt(localStorage.getItem("meow_weekly_stay_sec") || "0", 10);
     let celebratedTiers = JSON.parse(localStorage.getItem("meow_celebrated_tiers") || "[]");
 
     const HONOR_TIERS = [
       { level: 0, minSec: 0, title: "🌱 路过猫奴", icon: "🌱", desc: "初来乍到，与毛毛星球结缘", class: "" },
-      { level: 1, minSec: 60, title: "🐾 初级铲屎官", icon: "🐾", desc: "累计陪伴满 1 分钟", class: "tier-1" },
-      { level: 2, minSec: 180, title: "🍗 猫条投喂员", icon: "🍗", desc: "累计陪伴满 3 分钟", class: "tier-2" },
-      { level: 3, minSec: 360, title: "🐟 干饭引路人", icon: "🐟", desc: "累计陪伴满 6 分钟", class: "tier-3" },
-      { level: 4, minSec: 600, title: "🧸 金牌陪玩师", icon: "🧸", desc: "累计陪伴满 10 分钟", class: "tier-4" },
-      { level: 5, minSec: 900, title: "🏡 资深云爸妈", icon: "🏡", desc: "累计陪伴满 15 分钟", class: "tier-5" },
-      { level: 6, minSec: 1500, title: "🩺 喵星健康官", icon: "🩺", desc: "累计陪伴满 25 分钟", class: "tier-6" },
-      { level: 7, minSec: 2400, title: "🛡️ 巡逻队长", icon: "🛡️", desc: "累计陪伴满 40 分钟", class: "tier-7" },
-      { level: 8, minSec: 3600, title: "⭐ 护喵大使", icon: "⭐", desc: "累计陪伴满 60 分钟", class: "tier-8" },
-      { level: 9, minSec: 5400, title: "🏰 星球领主", icon: "🏰", desc: "累计陪伴满 90 分钟", class: "tier-9" },
-      { level: 10, minSec: 7200, title: "👑 猫岛守护神", icon: "👑", desc: "累计陪伴满 120 分钟", class: "tier-10" }
+      { level: 1, minSec: 60, title: "🐾 初级铲屎官", icon: "🐾", desc: "本周累计陪伴满 1 分钟", class: "tier-1" },
+      { level: 2, minSec: 180, title: "🍗 猫条投喂员", icon: "🍗", desc: "本周累计陪伴满 3 分钟", class: "tier-2" },
+      { level: 3, minSec: 360, title: "🐟 干饭引路人", icon: "🐟", desc: "本周累计陪伴满 6 分钟", class: "tier-3" },
+      { level: 4, minSec: 600, title: "🧸 金牌陪玩师", icon: "🧸", desc: "本周累计陪伴满 10 分钟", class: "tier-4" },
+      { level: 5, minSec: 900, title: "🏡 资深云爸妈", icon: "🏡", desc: "本周累计陪伴满 15 分钟", class: "tier-5" },
+      { level: 6, minSec: 1500, title: "🩺 喵星健康官", icon: "🩺", desc: "本周累计陪伴满 25 分钟", class: "tier-6" },
+      { level: 7, minSec: 2400, title: "🛡️ 巡逻队长", icon: "🛡️", desc: "本周累计陪伴满 40 分钟", class: "tier-7" },
+      { level: 8, minSec: 3600, title: "⭐ 护喵大使", icon: "⭐", desc: "本周累计陪伴满 60 分钟", class: "tier-8" },
+      { level: 9, minSec: 5400, title: "🏰 星球领主", icon: "🏰", desc: "本周累计陪伴满 90 分钟", class: "tier-9" },
+      { level: 10, minSec: 7200, title: "👑 猫岛守护神", icon: "👑", desc: "本周累计陪伴满 120 分钟", class: "tier-10" }
     ];
 
     function getCurrentHonor() {
@@ -1176,13 +1217,14 @@
     function updateHonorUI() {
       const honor = getCurrentHonor();
       const mins = Math.floor(staySeconds / 60);
-      myHonorBadge.textContent = `${honor.title} (${mins}m) ⓘ`;
+      const starStr = crownStamps > 0 ? ` [★×${crownStamps}]` : "";
+      myHonorBadge.textContent = `${honor.title}${starStr} (${mins}m) ⓘ`;
       myHonorBadge.className = `honor-badge ${honor.class}`;
     }
 
     updateHonorUI();
 
-    // ================= 全屏升级礼花彩带特效引擎 =================
+    // ================= 全屏升级礼花彩带 =================
     let confettiCtx = confettiCanvas.getContext("2d");
     let confettiParticles = [];
     let confettiAnimationId = null;
@@ -1219,7 +1261,7 @@
         confettiParticles.forEach(p => {
           p.x += p.vx;
           p.y += p.vy;
-          p.vy += 0.35; // 重力
+          p.vy += 0.35;
           p.rotation += p.rotationSpeed;
           p.opacity -= 0.008;
 
@@ -1244,18 +1286,17 @@
       render();
     }
 
-    // 触发升级弹窗奖励
     let latestUnlockedTier = null;
     function triggerLevelUpCelebration(tier) {
       latestUnlockedTier = tier;
       levelUpIcon.textContent = tier.icon;
       levelUpTitle.textContent = `晋升受封：${tier.title}！`;
-      levelUpDesc.textContent = `恭喜达成【${tier.desc}】！已点亮专属身份勋章。`;
+      levelUpDesc.textContent = `恭喜达成【${tier.desc}】！已点亮本周专属身份勋章。`;
       levelUpModal.classList.add("show");
       fireConfetti();
     }
 
-    // 荣誉受封证书生成器
+    // 荣誉证书海报生成
     btnGenerateCert.addEventListener("click", () => {
       const tier = latestUnlockedTier || getCurrentHonor();
       const canvas = certCanvas;
@@ -1263,14 +1304,12 @@
       canvas.width = 600;
       canvas.height = 800;
 
-      // 典雅羊皮纸暗金背景
       const grad = ctx.createLinearGradient(0, 0, 600, 800);
       grad.addColorStop(0, "#1c1917");
       grad.addColorStop(1, "#0c0a09");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 600, 800);
 
-      // 双层奢华金边
       ctx.strokeStyle = "#f59e0b";
       ctx.lineWidth = 6;
       ctx.strokeRect(24, 24, 552, 752);
@@ -1279,46 +1318,39 @@
       ctx.lineWidth = 1.5;
       ctx.strokeRect(34, 34, 532, 732);
 
-      // 顶部大徽章
       ctx.font = "60px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText(tier.icon, 300, 120);
 
-      // 证书主标题
       ctx.fillStyle = "#f59e0b";
       ctx.font = "bold 26px -apple-system, sans-serif";
-      ctx.fillText("毛毛星球 · 荣誉受封证书", 300, 180);
+      ctx.fillText("毛毛星球 · 周赛季受封证书", 300, 180);
 
       ctx.fillStyle = "#9ca3af";
       ctx.font = "13px sans-serif";
-      ctx.fillText("HONORARY GUARDIAN CERTIFICATE", 300, 205);
+      ctx.fillText(`SEASON: ${currentSeasonKey} · HONORARY GUARDIAN`, 300, 205);
 
-      // 授予对象
       const userNick = nameInput.value.trim() || getOrCreateUserNickname();
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 28px -apple-system, sans-serif";
       ctx.fillText(`兹授予：${userNick}`, 300, 290);
 
-      // 受封称号
       ctx.fillStyle = "#34d399";
       ctx.font = "bold 34px -apple-system, sans-serif";
       ctx.fillText(`【 ${tier.title} 】`, 300, 360);
 
-      // 颁奖词
       ctx.fillStyle = "#d1d5db";
       ctx.font = "15px sans-serif";
-      ctx.fillText("感谢您在毛毛星球直播间的温情守护与不离陪伴。", 300, 430);
-      ctx.fillText("特授予此荣誉称号，愿爱与善意常伴每一只流浪生灵！", 300, 460);
+      ctx.fillText("感谢您在毛毛星球本赛季的温情守护与不离陪伴。", 300, 430);
+      ctx.fillText("特授予此赛季荣誉称号，愿爱与善意常伴每一只流浪生灵！", 300, 460);
 
-      // 累计时长与日期
       const mins = Math.floor(staySeconds / 60);
       const nowStr = new Date().toLocaleDateString('zh-CN');
       ctx.fillStyle = "#9ca3af";
       ctx.font = "14px monospace";
-      ctx.fillText(`累计守护时长：${mins} 分钟 (${staySeconds} 秒)`, 300, 530);
+      ctx.fillText(`本周陪伴时长：${mins} 分钟 (${staySeconds} 秒)`, 300, 530);
       ctx.fillText(`受封认证日期：${nowStr}`, 300, 560);
 
-      // 底部金印
       ctx.fillStyle = "#ef4444";
       ctx.beginPath();
       ctx.arc(300, 650, 42, 0, Math.PI * 2);
@@ -1349,7 +1381,6 @@
       staySeconds++;
       updateHonorUI();
 
-      // 检测是否解锁了新等级
       HONOR_TIERS.forEach(tier => {
         if (tier.level > 0 && staySeconds >= tier.minSec && !celebratedTiers.includes(tier.level)) {
           celebratedTiers.push(tier.level);
@@ -1359,7 +1390,7 @@
       });
 
       if (staySeconds % 5 === 0) {
-        localStorage.setItem("meow_total_stay_sec", String(staySeconds));
+        localStorage.setItem("meow_weekly_stay_sec", String(staySeconds));
       }
     }, 1000);
 
@@ -1369,8 +1400,10 @@
       const currentIdx = HONOR_TIERS.findIndex(h => h.level === current.level);
       const mins = Math.floor(staySeconds / 60);
 
+      modalSeasonLabel.textContent = `📅 当前赛季：${currentSeasonKey} (每周一重置)`;
       modalHonorTitle.textContent = current.title;
       modalStayTimeText.textContent = `${mins} 分钟 (${staySeconds} 秒)`;
+      modalCrownCount.textContent = `${crownStamps} 枚`;
 
       if (currentIdx < HONOR_TIERS.length - 1) {
         const next = HONOR_TIERS[currentIdx + 1];
@@ -1384,7 +1417,7 @@
         modalNextTierTip.textContent = `距解锁【${next.title}】还需约 ${needMins} 分钟`;
       } else {
         modalProgressFill.style.width = "100%";
-        modalNextTierTip.textContent = "已达成最高殿堂荣耀！感谢守护每一只猫咪 💖";
+        modalNextTierTip.textContent = "已达成最高殿堂荣耀！赛季结算将斩获守护神星标 👑";
       }
 
       honorListContainer.innerHTML = "";
@@ -1412,61 +1445,6 @@
     myHonorBadge.addEventListener("click", openHonorModal);
     closeHonorBtn.addEventListener("click", () => honorModal.classList.remove("show"));
     honorModal.addEventListener("click", (e) => { if (e.target === honorModal) honorModal.classList.remove("show"); });
-
-    // ================= 呼噜声白噪音 =================
-    let audioCtx = null;
-    let purrGain = null;
-    let isPurring = false;
-
-    function initPurrSound() {
-      if (audioCtx) return;
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
-
-      const osc = audioCtx.createOscillator();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(28, audioCtx.currentTime);
-
-      const filter = audioCtx.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.setValueAtTime(90, audioCtx.currentTime);
-
-      const lfo = audioCtx.createOscillator();
-      lfo.type = "sine";
-      lfo.frequency.setValueAtTime(2.2, audioCtx.currentTime);
-
-      const lfoGain = audioCtx.createGain();
-      lfoGain.gain.setValueAtTime(0.35, audioCtx.currentTime);
-
-      purrGain = audioCtx.createGain();
-      purrGain.gain.setValueAtTime(0, audioCtx.currentTime);
-
-      lfo.connect(lfoGain);
-      lfoGain.connect(purrGain.gain);
-
-      osc.connect(filter);
-      filter.connect(purrGain);
-      purrGain.connect(audioCtx.destination);
-
-      osc.start();
-      lfo.start();
-    }
-
-    purrBtn.addEventListener("click", () => {
-      initPurrSound();
-      if (audioCtx.state === "suspended") audioCtx.resume();
-
-      isPurring = !isPurring;
-      if (isPurring) {
-        purrGain.gain.setTargetAtTime(0.6, audioCtx.currentTime, 0.3);
-        purrBtn.textContent = "🎧 呼噜声: 开";
-        purrBtn.classList.add("active");
-      } else {
-        purrGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.2);
-        purrBtn.textContent = "🎧 呼噜声: 关";
-        purrBtn.classList.remove("active");
-      }
-    });
 
     // ================= 运势签 =================
     const FORTUNES = [
