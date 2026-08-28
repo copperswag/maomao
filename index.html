@@ -1872,34 +1872,7 @@
       }
     }
 
-    async function fetchComments(isInitial = false) {
-      if (!currentRoomId) return;
-      try {
-        const timestamp = Date.now();
-        let query = `${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}&_t=${timestamp}`;
-        
-        if (!isInitial && latestCommentId) {
-          query += `&since=${encodeURIComponent(latestCommentId)}`;
-        }
-
-        const res = await fetch(query, {
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, max-age=0",
-            "Pragma": "no-cache"
-          }
-        });
-        const data = await res.json();
-        if (data && Array.isArray(data.comments)) {
-          renderComments(data.comments, isInitial);
-        } else {
-          renderComments([], isInitial);
-        }
-      } catch (e) {
-        renderComments([], isInitial);
-      }
-    }
+    async function fetchComments
 
     function startCooldown() {
       let timeLeft = 3;
