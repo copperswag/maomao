@@ -1155,7 +1155,6 @@
 
     btnDownloadApp.addEventListener("click", () => trackEvent("app_click"));
 
-    // ================= 自然周赛季引擎 =================
     function getWeekKey() {
       const now = new Date();
       const oneJan = new Date(now.getFullYear(), 0, 1);
@@ -1870,12 +1869,7 @@
         }
 
         const res = await fetch(query, {
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
-            "Pragma": "no-cache"
-          }
+          method: "GET"
         });
         const data = await res.json();
         if (data && Array.isArray(data.comments)) {
