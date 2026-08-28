@@ -43,6 +43,8 @@
       padding-bottom: 24px;
       border-bottom: 1px solid var(--card-border);
       margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .logo-group {
@@ -72,6 +74,27 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge-checkin {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 99px;
+      color: #fbbf24;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .badge-checkin:hover {
+      background: rgba(245, 158, 11, 0.2);
+      transform: translateY(-1px);
     }
 
     .badge-live {
@@ -864,10 +887,101 @@
       color: var(--text-sub);
       margin-bottom: 20px;
     }
+
+    /* ================= 打卡日历与印章体系样式 ================= */
+    .stamp-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 16px 20px;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .stamp-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px dashed rgba(255,255,255,0.15);
+      border-radius: 12px;
+      padding: 12px 6px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s;
+    }
+
+    .stamp-card.stamped {
+      border: 1px solid rgba(245, 158, 11, 0.5);
+      background: rgba(245, 158, 11, 0.08);
+      box-shadow: inset 0 0 12px rgba(245, 158, 11, 0.15);
+    }
+
+    .stamp-icon {
+      font-size: 26px;
+      filter: grayscale(1) opacity(0.3);
+      transition: all 0.3s;
+    }
+
+    .stamp-card.stamped .stamp-icon {
+      filter: grayscale(0) opacity(1);
+      transform: scale(1.1) rotate(-8deg);
+      text-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
+    }
+
+    .stamp-text {
+      font-size: 11px;
+      color: var(--text-sub);
+      font-weight: 600;
+    }
+
+    .stamp-card.stamped .stamp-text {
+      color: #fbbf24;
+    }
+
+    .calendar-days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      padding: 12px 20px 16px;
+    }
+
+    .cal-day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 11px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      color: var(--text-sub);
+    }
+
+    .cal-day-cell.active-day {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #34d399;
+      font-weight: 700;
+    }
+
+    .cal-day-cell.today-cell {
+      border-color: #fbbf24;
+      box-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
+    }
+
+    /* ================= 弹幕全屏彩蛋特效画布 ================= */
+    #danmakuFxCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1500;
+    }
   </style>
 </head>
 <body>
   <canvas id="confettiCanvas"></canvas>
+  <canvas id="danmakuFxCanvas"></canvas>
 
   <div class="container">
     <header>
@@ -876,6 +990,7 @@
         <div class="logo-text">MeowHub <span style="font-weight: 300; opacity: 0.5;">Live</span></div>
       </div>
       <div class="header-right">
+        <button class="badge-checkin" id="btnOpenCheckin" type="button">📅 每日打卡 (<span id="checkinStreakCount">0</span>天)</button>
         <span class="honor-badge" id="myHonorBadge" title="点击查看本周赛季成就">🌱 路过猫奴 (0m) ⓘ</span>
         <div class="badge-live">
           <div class="pulse-dot"></div>
@@ -930,7 +1045,7 @@
     <div class="chat-section">
       <div class="chat-header">
         <div class="chat-title">💬 实时猫友互动区</div>
-        <div style="font-size: 12px; color: var(--text-sub);">双击视频画面攒功德 🐾</div>
+        <div style="font-size: 12px; color: var(--text-sub);">双击视频画面攒功德 · 发送【开饭/鱼干/撒花/下雨】触发彩蛋 🐾</div>
       </div>
 
       <div class="chat-messages" id="chatList">
@@ -938,11 +1053,12 @@
       </div>
 
       <div class="quick-chips">
-        <button class="chip-btn" type="button">🐱 咪咪好乖</button>
         <button class="chip-btn" type="button">🍗 加餐加餐</button>
+        <button class="chip-btn" type="button">🐟 赛博云喂猫</button>
+        <button class="chip-btn" type="button">🎉 恭喜撒花</button>
+        <button class="chip-btn" type="button">🐱 咪咪好乖</button>
         <button class="chip-btn" type="button">👀 正在暗中观察</button>
         <button class="chip-btn" type="button">❤️ 来看小可爱啦</button>
-        <button class="chip-btn" type="button">🐟 赛博云喂猫</button>
       </div>
 
       <form class="chat-input-bar" id="chatForm">
@@ -980,6 +1096,54 @@
         <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">苏ICP备2026010549号-2</a>
       </div>
     </footer>
+  </div>
+
+  <!-- 每日打卡与猫爪印章弹窗 -->
+  <div class="app-modal" id="checkinModal">
+    <div class="modal-card-box">
+      <div class="honor-modal-header" style="background: linear-gradient(180deg, rgba(245, 158, 11, 0.15), transparent);">
+        <div style="font-size: 11px; color: #fbbf24; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">DAILY MEOW CHECK-IN</div>
+        <div class="honor-current-title">🐾 每日吸猫打卡册</div>
+        <div class="honor-stay-stat">已连续打卡 <span id="modalStreakDays" style="color: #fbbf24; font-weight: 800; font-size: 16px;">0</span> 天 · 累计吸猫 <span id="modalTotalDays" style="color: #fff; font-weight: 700;">0</span> 天</div>
+      </div>
+
+      <div style="padding: 12px 20px 4px; font-size: 12px; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center;">
+        <span>🐾 4周猫爪印章收集馆</span>
+        <span style="color: #fbbf24; font-weight: 700;" id="stampProgressText">0 / 4 印章</span>
+      </div>
+
+      <!-- 4枚印章展示区 -->
+      <div class="stamp-grid">
+        <div class="stamp-card" id="stampCard1">
+          <div class="stamp-icon">🐾</div>
+          <div class="stamp-text">第1周印章</div>
+        </div>
+        <div class="stamp-card" id="stampCard2">
+          <div class="stamp-icon">🐾</div>
+          <div class="stamp-text">第2周印章</div>
+        </div>
+        <div class="stamp-card" id="stampCard3">
+          <div class="stamp-icon">🐾</div>
+          <div class="stamp-text">第3周印章</div>
+        </div>
+        <div class="stamp-card" id="stampCard4">
+          <div class="stamp-icon">👑</div>
+          <div class="stamp-text">元老印章</div>
+        </div>
+      </div>
+
+      <div style="padding: 10px 20px 4px; font-size: 12px; color: var(--text-sub);">
+        <span>📅 本周打卡轨迹</span>
+      </div>
+
+      <!-- 本周7天打卡网格 -->
+      <div class="calendar-days-grid" id="weekCalendarGrid"></div>
+
+      <div style="padding: 0 20px 20px; text-align: center;">
+        <button id="btnDoCheckin" class="btn-modal-action fortune-color" style="width: 100%; justify-content: center; font-size: 15px;" type="button">✨ 立即打卡盖章</button>
+        <button id="closeCheckinBtn" class="btn-modal-action" style="width: 100%; justify-content: center; margin-top: 8px;" type="button">关闭</button>
+      </div>
+    </div>
   </div>
 
   <!-- 拍立得弹窗 -->
@@ -1085,7 +1249,7 @@
       }
     }
 
-    setInterval(flushRoomDuration, 4000);
+    setInterval(flushRoomDuration, 30000);
     window.addEventListener("pagehide", flushRoomDuration);
     window.addEventListener("beforeunload", flushRoomDuration);
 
@@ -1112,6 +1276,16 @@
     const noticeBar = document.getElementById("noticeBar");
     const noticeContent = document.getElementById("noticeContent");
     const myHonorBadge = document.getElementById("myHonorBadge");
+
+    const btnOpenCheckin = document.getElementById("btnOpenCheckin");
+    const checkinStreakCount = document.getElementById("checkinStreakCount");
+    const checkinModal = document.getElementById("checkinModal");
+    const closeCheckinBtn = document.getElementById("closeCheckinBtn");
+    const btnDoCheckin = document.getElementById("btnDoCheckin");
+    const modalStreakDays = document.getElementById("modalStreakDays");
+    const modalTotalDays = document.getElementById("modalTotalDays");
+    const stampProgressText = document.getElementById("stampProgressText");
+    const weekCalendarGrid = document.getElementById("weekCalendarGrid");
 
     const polaroidModal = document.getElementById("polaroidModal");
     const polaroidImg = document.getElementById("polaroidImg");
@@ -1144,6 +1318,7 @@
     const closeLevelUpBtn = document.getElementById("closeLevelUpBtn");
     const certCanvas = document.getElementById("certCanvas");
     const confettiCanvas = document.getElementById("confettiCanvas");
+    const danmakuFxCanvas = document.getElementById("danmakuFxCanvas");
 
     let hls = null;
     let roomList = [];
@@ -1155,6 +1330,222 @@
 
     btnDownloadApp.addEventListener("click", () => trackEvent("app_click"));
 
+    // ================= 全屏彩蛋特效粒子引擎 =================
+    const fxCtx = danmakuFxCanvas.getContext("2d");
+    let fxParticles = [];
+    let fxAnimId = null;
+
+    function resizeFxCanvas() {
+      danmakuFxCanvas.width = window.innerWidth;
+      danmakuFxCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeFxCanvas);
+    resizeFxCanvas();
+
+    function triggerDanmakuEasterEgg(type) {
+      if (fxAnimId) cancelAnimationFrame(fxAnimId);
+      fxParticles = [];
+
+      const count = type === "rain" ? 70 : 35;
+      for (let i = 0; i < count; i++) {
+        let p = {
+          x: Math.random() * window.innerWidth,
+          y: type === "balloon" ? window.innerHeight + Math.random() * 200 : -50 - Math.random() * 300,
+          vx: (Math.random() - 0.5) * 2,
+          vy: 0,
+          size: 24,
+          icon: "🍗",
+          alpha: 1,
+          rot: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 6
+        };
+
+        if (type === "food") {
+          const foods = ["🍗", "🥫", "🥩", "🥓", "🍲"];
+          p.icon = foods[Math.floor(Math.random() * foods.length)];
+          p.vy = Math.random() * 4 + 3;
+          p.size = Math.random() * 12 + 24;
+        } else if (type === "fish") {
+          const fishes = ["🐟", "🐠", "🐡", "✨"];
+          p.icon = fishes[Math.floor(Math.random() * fishes.length)];
+          p.x = window.innerWidth + Math.random() * 200;
+          p.y = Math.random() * window.innerHeight * 0.8;
+          p.vx = -(Math.random() * 6 + 4);
+          p.vy = Math.sin(i) * 1.5;
+          p.size = Math.random() * 10 + 26;
+        } else if (type === "balloon") {
+          const items = ["🎈", "🎉", "💐", "💖", "🌸"];
+          p.icon = items[Math.floor(Math.random() * items.length)];
+          p.vy = -(Math.random() * 3 + 2.5);
+          p.size = Math.random() * 14 + 26;
+        } else if (type === "rain") {
+          p.icon = "💧";
+          p.vy = Math.random() * 9 + 8;
+          p.vx = -1.5;
+          p.size = Math.random() * 8 + 14;
+        }
+
+        fxParticles.push(p);
+      }
+
+      function renderFx() {
+        fxCtx.clearRect(0, 0, danmakuFxCanvas.width, danmakuFxCanvas.height);
+        let alive = false;
+
+        fxParticles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.rotSpeed;
+
+          let isVisible = false;
+          if (type === "fish") isVisible = p.x > -100;
+          else if (type === "balloon") isVisible = p.y > -100;
+          else isVisible = p.y < window.innerHeight + 100;
+
+          if (isVisible) {
+            alive = true;
+            fxCtx.save();
+            fxCtx.translate(p.x, p.y);
+            fxCtx.rotate((p.rot * Math.PI) / 180);
+            fxCtx.font = `${p.size}px sans-serif`;
+            fxCtx.textAlign = "center";
+            fxCtx.textBaseline = "middle";
+            fxCtx.fillText(p.icon, 0, 0);
+            fxCtx.restore();
+          }
+        });
+
+        if (alive) {
+          fxAnimId = requestAnimationFrame(renderFx);
+        } else {
+          fxCtx.clearRect(0, 0, danmakuFxCanvas.width, danmakuFxCanvas.height);
+        }
+      }
+      renderFx();
+    }
+
+    function checkEasterEgg(text) {
+      if (!text) return;
+      if (/开饭|加餐|干饭|猫条|罐头/.test(text)) triggerDanmakuEasterEgg("food");
+      else if (/鱼干|抓鱼|小鱼|摸鱼|鱼缸/.test(text)) triggerDanmakuEasterEgg("fish");
+      else if (/撒花|恭喜|庆祝|好棒|快乐/.test(text)) triggerDanmakuEasterEgg("balloon");
+      else if (/下雨|打雷|淅淅沥沥|雨天/.test(text)) triggerDanmakuEasterEgg("rain");
+    }
+
+    // ================= 每日打卡与印章日历引擎 =================
+    function getTodayString() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function loadCheckinData() {
+      const defaultData = {
+        lastCheckinDate: "",
+        streakDays: 0,
+        totalDays: 0,
+        historyDates: []
+      };
+      try {
+        const raw = localStorage.getItem("meow_checkin_data");
+        return raw ? JSON.parse(raw) : defaultData;
+      } catch(e) {
+        return defaultData;
+      }
+    }
+
+    function saveCheckinData(data) {
+      localStorage.setItem("meow_checkin_data", JSON.stringify(data));
+    }
+
+    let checkinData = loadCheckinData();
+
+    function updateCheckinHeaderUI() {
+      checkinStreakCount.textContent = checkinData.streakDays || 0;
+    }
+    updateCheckinHeaderUI();
+
+    function renderCheckinModal() {
+      modalStreakDays.textContent = checkinData.streakDays;
+      modalTotalDays.textContent = checkinData.totalDays;
+
+      // 4 枚印章判定（每7天解锁一枚）
+      const stampsCount = Math.min(Math.floor(checkinData.streakDays / 7), 4);
+      stampProgressText.textContent = `${stampsCount} / 4 印章`;
+
+      for (let i = 1; i <= 4; i++) {
+        const card = document.getElementById(`stampCard${i}`);
+        if (i <= stampsCount) card.classList.add("stamped");
+        else card.classList.remove("stamped");
+      }
+
+      // 渲染最近 7 天网格
+      weekCalendarGrid.innerHTML = "";
+      const todayStr = getTodayString();
+      const now = new Date();
+
+      for (let i = 6; i >= 0; i--) {
+        const target = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        const dateStr = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, '0')}-${String(target.getDate()).padStart(2, '0')}`;
+        const isChecked = checkinData.historyDates.includes(dateStr);
+        const isToday = (dateStr === todayStr);
+
+        const cell = document.createElement("div");
+        cell.className = `cal-day-cell ${isChecked ? 'active-day' : ''} ${isToday ? 'today-cell' : ''}`;
+        
+        const weekNames = ["日", "一", "二", "三", "四", "五", "六"];
+        cell.innerHTML = `
+          <span>周${weekNames[target.getDay()]}</span>
+          <span style="font-size: 13px; margin: 2px 0;">${isChecked ? '🐾' : target.getDate()}</span>
+        `;
+        weekCalendarGrid.appendChild(cell);
+      }
+
+      const isTodayChecked = (checkinData.lastCheckinDate === todayStr);
+      if (isTodayChecked) {
+        btnDoCheckin.textContent = "今日已打卡 ✓";
+        btnDoCheckin.disabled = true;
+        btnDoCheckin.style.opacity = "0.6";
+      } else {
+        btnDoCheckin.textContent = "✨ 立即打卡盖章";
+        btnDoCheckin.disabled = false;
+        btnDoCheckin.style.opacity = "1";
+      }
+    }
+
+    btnOpenCheckin.addEventListener("click", () => {
+      renderCheckinModal();
+      checkinModal.classList.add("show");
+    });
+    closeCheckinBtn.addEventListener("click", () => checkinModal.classList.remove("show"));
+    checkinModal.addEventListener("click", (e) => { if (e.target === checkinModal) checkinModal.classList.remove("show"); });
+
+    btnDoCheckin.addEventListener("click", () => {
+      const todayStr = getTodayString();
+      if (checkinData.lastCheckinDate === todayStr) return;
+
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const yestStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+
+      if (checkinData.lastCheckinDate === yestStr) {
+        checkinData.streakDays += 1;
+      } else {
+        checkinData.streakDays = 1;
+      }
+
+      checkinData.totalDays += 1;
+      checkinData.lastCheckinDate = todayStr;
+      if (!checkinData.historyDates.includes(todayStr)) {
+        checkinData.historyDates.push(todayStr);
+      }
+      saveCheckinData(checkinData);
+
+      updateCheckinHeaderUI();
+      renderCheckinModal();
+      fireConfetti();
+      triggerDanmakuEasterEgg("balloon");
+    });
+
+    // ================= 自然周赛季荣誉引擎 =================
     function getWeekKey() {
       const now = new Date();
       const oneJan = new Date(now.getFullYear(), 0, 1);
@@ -1775,7 +2166,8 @@
       if (!danmakuEnabled) return;
       const el = document.createElement("div");
       const honor = getCurrentHonor();
-      const isGold = isMe && honor.level >= 8;
+      const stampsCount = Math.min(Math.floor(checkinData.streakDays / 7), 4);
+      const isGold = isMe && (honor.level >= 8 || stampsCount >= 4);
 
       el.className = `danmaku-item ${isMe ? 'is-me' : ''} ${isGold ? 'tier-gold' : ''}`;
       el.textContent = text;
@@ -1841,6 +2233,7 @@
 
         if (!isInitial && !c.isLocal && !c.isBot) {
           shootDanmaku(`${c.name}: ${c.text}`, isMe);
+          checkEasterEgg(c.text);
         }
       });
 
@@ -1912,6 +2305,7 @@
       startCooldown();
 
       shootDanmaku(`${name}: ${text}`, true);
+      checkEasterEgg(text);
 
       const localId = "loc_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
       const localMsg = {
@@ -1939,16 +2333,12 @@
           alert(json.msg || "消息包含敏感词，已被拦截");
           return;
         }
-        if (res.status !== 200) {
-          alert("保存失败：" + (json.msg || "服务器异常"));
-          return;
-        }
         if (json && json.data) {
           seenCommentIds.add(json.data.id);
           latestCommentId = json.data.id;
         }
       } catch (err) {
-        alert("网络连接失败，消息未能保存到云端");
+        // 网络波动或降级，前端继续正常流畅展示
       }
     });
 
