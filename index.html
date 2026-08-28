@@ -2076,7 +2076,6 @@
           return;
         }
 
-        // 固定机位顺序，首选默认 1 号机位
         roomList = rawRooms;
 
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
@@ -2101,6 +2100,7 @@
           roomButtonList.appendChild(btn);
         });
 
+        // 默认进入第一个机位，并确保 currentRoomId 动态对齐真实 ID
         playStream(0);
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
