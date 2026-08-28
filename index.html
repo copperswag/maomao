@@ -405,7 +405,6 @@
       gap: 8px;
     }
 
-    /* 称号勋章样式 */
     .honor-badge {
       display: inline-flex;
       align-items: center;
@@ -657,7 +656,6 @@
 
     footer a { color: var(--text-sub); text-decoration: none; }
 
-    /* 通用弹窗模态框 */
     .app-modal {
       position: fixed;
       inset: 0;
@@ -729,7 +727,6 @@
       color: #090a0f;
     }
 
-    /* 称号成就面板样式 */
     .honor-modal-header {
       padding: 24px 20px 16px;
       background: linear-gradient(180deg, rgba(16, 185, 129, 0.12), transparent);
@@ -830,7 +827,6 @@
       color: #34d399;
     }
 
-    /* 全屏升级礼花 Canvas */
     #confettiCanvas {
       position: fixed;
       inset: 0;
@@ -871,7 +867,6 @@
   </style>
 </head>
 <body>
-  <!-- 全屏升级礼花 Canvas -->
   <canvas id="confettiCanvas"></canvas>
 
   <div class="container">
@@ -1011,7 +1006,7 @@
     </div>
   </div>
 
-  <!-- 铲屎官荣誉称号二级页面弹窗 -->
+  <!-- 荣誉称号二级图鉴弹窗 -->
   <div class="app-modal" id="honorModal">
     <div class="modal-card-box">
       <div class="honor-modal-header">
@@ -1040,7 +1035,7 @@
     </div>
   </div>
 
-  <!-- 晋升即时祝贺与证书弹窗 -->
+  <!-- 晋升祝贺弹窗 -->
   <div class="app-modal" id="levelUpModal">
     <div class="modal-card-box levelup-card">
       <div class="levelup-icon-glow" id="levelUpIcon">🏆</div>
@@ -1066,7 +1061,6 @@
     let currentRoomName = "苏州猫岛";
     let lastDurationFlushTime = Date.now();
 
-    // 跨域稳定埋点通道
     function trackEvent(type, extra = {}) {
       try {
         const payload = JSON.stringify({ type, ...extra });
@@ -1161,7 +1155,7 @@
 
     btnDownloadApp.addEventListener("click", () => trackEvent("app_click"));
 
-    // ================= 自然周赛季（Weekly Season）引擎 =================
+    // ================= 自然周赛季引擎 =================
     function getWeekKey() {
       const now = new Date();
       const oneJan = new Date(now.getFullYear(), 0, 1);
@@ -1174,7 +1168,6 @@
     const savedSeasonKey = localStorage.getItem("meow_current_season_key");
     let crownStamps = parseInt(localStorage.getItem("meow_crown_stamps") || "0", 10);
 
-    // 跨周检测与赛季结算
     if (savedSeasonKey && savedSeasonKey !== currentSeasonKey) {
       const lastWeekSec = parseInt(localStorage.getItem("meow_weekly_stay_sec") || "0", 10);
       if (lastWeekSec >= 7200) {
@@ -1224,7 +1217,6 @@
 
     updateHonorUI();
 
-    // ================= 全屏升级礼花彩带 =================
     let confettiCtx = confettiCanvas.getContext("2d");
     let confettiParticles = [];
     let confettiAnimationId = null;
@@ -1296,7 +1288,6 @@
       fireConfetti();
     }
 
-    // 荣誉证书海报生成
     btnGenerateCert.addEventListener("click", () => {
       const tier = latestUnlockedTier || getCurrentHonor();
       const canvas = certCanvas;
@@ -1376,7 +1367,6 @@
     closeLevelUpBtn.addEventListener("click", () => levelUpModal.classList.remove("show"));
     levelUpModal.addEventListener("click", (e) => { if (e.target === levelUpModal) levelUpModal.classList.remove("show"); });
 
-    // 计时与升级检测循环
     setInterval(() => {
       staySeconds++;
       updateHonorUI();
@@ -1394,7 +1384,6 @@
       }
     }, 1000);
 
-    // 荣誉称号二级图鉴弹窗
     function openHonorModal() {
       const current = getCurrentHonor();
       const currentIdx = HONOR_TIERS.findIndex(h => h.level === current.level);
@@ -1446,7 +1435,6 @@
     closeHonorBtn.addEventListener("click", () => honorModal.classList.remove("show"));
     honorModal.addEventListener("click", (e) => { if (e.target === honorModal) honorModal.classList.remove("show"); });
 
-    // ================= 运势签 =================
     const FORTUNES = [
       { title: "大吉 · 招财橘", star: "★★★★★", color: "橘猫色", food: "特级金枪鱼罐", desc: "今日诸事顺遂，吸猫吸到饱，工位财运滚滚来！", wish: "宜：定点投喂，忌：工位焦虑" },
       { title: "大吉 · 绝美三花", star: "★★★★★", color: "三花色", food: "新鲜冻干鸡肉", desc: "气质优雅气场全开，今天遇到的都是喜欢你的人。", wish: "宜：晒太阳，忌：熬夜加班" },
@@ -1540,7 +1528,6 @@
     closeFortuneBtn.addEventListener("click", () => fortuneModal.classList.remove("show"));
     fortuneModal.addEventListener("click", (e) => { if (e.target === fortuneModal) fortuneModal.classList.remove("show"); });
 
-    // ================= 功德浮字动效 =================
     const GONGDE_TEXTS = ["功德+1 ✨", "猫粮+5g 🍗", "毛量+100 🐾", "治愈值+1 💖", "寒冬抵御+1 ☀️", "吸猫快乐+999 😻"];
     const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
 
@@ -1802,6 +1789,7 @@
     function renderComments(comments, isInitial = false) {
       if (isInitial) {
         chatList.innerHTML = "";
+        seenCommentIds.clear();
       }
 
       if (!comments || comments.length === 0) {
@@ -1858,12 +1846,12 @@
       });
 
       if (isInitial && comments.length > 0) {
-        const historyList = comments.slice(-8);
+        const historyList = comments.slice(-6);
         historyList.forEach((item, index) => {
           setTimeout(() => {
             const isMe = (myCurrentName && item.name === myCurrentName);
             shootDanmaku(`${item.name}: ${item.text}`, isMe);
-          }, index * 800 + 400);
+          }, index * 600 + 300);
         });
       }
 
@@ -2100,7 +2088,6 @@
           roomButtonList.appendChild(btn);
         });
 
-        // 默认进入第一个机位，并确保 currentRoomId 动态对齐真实 ID
         playStream(0);
       } catch (err) {
         emptyTitle.textContent = "服务连接异常";
