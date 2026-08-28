@@ -479,18 +479,45 @@
 
     .message-item {
       display: flex;
-      align-items: baseline;
-      gap: 6px;
+      align-items: center;
+      gap: 8px;
       font-size: 13px;
       line-height: 1.5;
-      padding: 4px 8px;
-      border-radius: 6px;
+      padding: 5px 8px;
+      border-radius: 8px;
       transition: background 0.2s;
     }
 
     .message-item.is-me {
       background: rgba(16, 185, 129, 0.09);
       border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+
+    /* 头像样式 */
+    .msg-avatar {
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .message-item.is-me .msg-avatar {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    .msg-content-wrapper {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex: 1;
+      flex-wrap: wrap;
     }
 
     .msg-user {
@@ -553,6 +580,27 @@
       display: flex;
       gap: 10px;
       position: relative;
+      align-items: center;
+    }
+
+    .avatar-picker-btn {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      font-size: 20px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .avatar-picker-btn:hover {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--accent-green);
+      transform: scale(1.06);
     }
 
     .nickname-wrapper {
@@ -620,6 +668,7 @@
       border-radius: 10px;
       font-weight: 700;
       font-size: 13px;
+      height: 40px;
       cursor: pointer;
       transition: all 0.2s;
       white-space: nowrap;
@@ -652,8 +701,9 @@
         align-items: flex-start;
         gap: 16px;
       }
-      .chat-input-bar { flex-direction: column; }
-      .nickname-wrapper { width: 100%; }
+      .chat-input-bar { flex-wrap: wrap; }
+      .nickname-wrapper { width: calc(100% - 52px); }
+      .input-text { width: 100%; }
     }
 
     .btn-main {
@@ -888,7 +938,6 @@
       margin-bottom: 20px;
     }
 
-    /* ================= 打卡日历与印章体系样式 ================= */
     .stamp-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -970,12 +1019,43 @@
       box-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
     }
 
-    /* ================= 弹幕全屏彩蛋特效画布 ================= */
     #danmakuFxCanvas {
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: 1500;
+    }
+
+    /* 头像选择模态框网格 */
+    .avatar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .avatar-option-btn {
+      aspect-ratio: 1;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      font-size: 28px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .avatar-option-btn:hover {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--accent-green);
+      transform: scale(1.1);
+    }
+
+    .avatar-option-btn.selected {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: var(--accent-green);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
     }
   </style>
 </head>
@@ -1064,6 +1144,9 @@
       <form class="chat-input-bar" id="chatForm">
         <input type="text" name="hp_website" id="hpWebsite" class="hp-field" tabindex="-1" autocomplete="off" />
         
+        <!-- 萌系猫咪头像自选按钮 -->
+        <button type="button" class="avatar-picker-btn" id="btnChooseAvatar" title="点击更换猫咪头像">🐱</button>
+
         <div class="nickname-wrapper">
           <input type="text" class="chat-input input-name" id="nameInput" placeholder="昵称" maxlength="12" />
           <button type="button" class="btn-dice" id="btnRandomName" title="随机换一个名字">🎲</button>
@@ -1098,6 +1181,20 @@
     </footer>
   </div>
 
+  <!-- 猫咪头像选择弹窗 -->
+  <div class="app-modal" id="avatarModal">
+    <div class="modal-card-box">
+      <div class="honor-modal-header">
+        <div class="honor-current-title">🐾 选择你的猫咪头像</div>
+        <div class="honor-stay-stat">挑选一个专属头像，在弹幕互动中展现个性吧</div>
+      </div>
+      <div class="avatar-grid" id="avatarGrid"></div>
+      <div style="padding: 0 20px 20px; text-align: center;">
+        <button id="closeAvatarBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">确定</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 每日打卡与猫爪印章弹窗 -->
   <div class="app-modal" id="checkinModal">
     <div class="modal-card-box">
@@ -1112,7 +1209,6 @@
         <span style="color: #fbbf24; font-weight: 700;" id="stampProgressText">0 / 4 印章</span>
       </div>
 
-      <!-- 4枚印章展示区 -->
       <div class="stamp-grid">
         <div class="stamp-card" id="stampCard1">
           <div class="stamp-icon">🐾</div>
@@ -1136,7 +1232,6 @@
         <span>📅 本周打卡轨迹</span>
       </div>
 
-      <!-- 本周7天打卡网格 -->
       <div class="calendar-days-grid" id="weekCalendarGrid"></div>
 
       <div style="padding: 0 20px 20px; text-align: center;">
@@ -1277,6 +1372,55 @@
     const noticeContent = document.getElementById("noticeContent");
     const myHonorBadge = document.getElementById("myHonorBadge");
 
+    // 头像选择组件
+    const btnChooseAvatar = document.getElementById("btnChooseAvatar");
+    const avatarModal = document.getElementById("avatarModal");
+    const avatarGrid = document.getElementById("avatarGrid");
+    const closeAvatarBtn = document.getElementById("closeAvatarBtn");
+
+    const AVATAR_LIST = ["🐱", "😸", "😻", "😽", "😼", "🦁", "🐯", "🦊", "🐼", "🐨", "🐶", "🐾"];
+    
+    function getUserAvatar() {
+      let av = localStorage.getItem("meow_user_avatar");
+      if (!av) {
+        av = AVATAR_LIST[Math.floor(Math.random() * AVATAR_LIST.length)];
+        localStorage.setItem("meow_user_avatar", av);
+      }
+      return av;
+    }
+
+    function setUserAvatar(av) {
+      localStorage.setItem("meow_user_avatar", av);
+      btnChooseAvatar.textContent = av;
+    }
+
+    btnChooseAvatar.textContent = getUserAvatar();
+
+    function renderAvatarGrid() {
+      avatarGrid.innerHTML = "";
+      const cur = getUserAvatar();
+      AVATAR_LIST.forEach(av => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `avatar-option-btn ${av === cur ? 'selected' : ''}`;
+        btn.textContent = av;
+        btn.addEventListener("click", () => {
+          setUserAvatar(av);
+          renderAvatarGrid();
+          avatarModal.classList.remove("show");
+        });
+        avatarGrid.appendChild(btn);
+      });
+    }
+
+    btnChooseAvatar.addEventListener("click", () => {
+      renderAvatarGrid();
+      avatarModal.classList.add("show");
+    });
+    closeAvatarBtn.addEventListener("click", () => avatarModal.classList.remove("show"));
+    avatarModal.addEventListener("click", (e) => { if (e.target === avatarModal) avatarModal.classList.remove("show"); });
+
+    // 打卡组件
     const btnOpenCheckin = document.getElementById("btnOpenCheckin");
     const checkinStreakCount = document.getElementById("checkinStreakCount");
     const checkinModal = document.getElementById("checkinModal");
@@ -1468,7 +1612,6 @@
       modalStreakDays.textContent = checkinData.streakDays;
       modalTotalDays.textContent = checkinData.totalDays;
 
-      // 4 枚印章判定（每7天解锁一枚）
       const stampsCount = Math.min(Math.floor(checkinData.streakDays / 7), 4);
       stampProgressText.textContent = `${stampsCount} / 4 印章`;
 
@@ -1478,7 +1621,6 @@
         else card.classList.remove("stamped");
       }
 
-      // 渲染最近 7 天网格
       weekCalendarGrid.innerHTML = "";
       const todayStr = getTodayString();
       const now = new Date();
@@ -1985,11 +2127,13 @@
     function triggerBotComment() {
       const randomName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
       const randomText = BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)];
+      const randomAvatar = AVATAR_LIST[Math.floor(Math.random() * AVATAR_LIST.length)];
       const botMsg = {
         id: "bot_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
         name: randomName,
         text: randomText,
         time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        avatar: randomAvatar,
         isBot: true
       };
 
@@ -2177,6 +2321,15 @@
       el.addEventListener("animationend", () => el.remove());
     }
 
+    // 针对历史与远程消息，根据昵称哈希稳定计算一个猫咪头像
+    function getAvatarByName(name) {
+      if (!name) return "🐱";
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      const index = Math.abs(hash) % AVATAR_LIST.length;
+      return AVATAR_LIST[index];
+    }
+
     function renderComments(comments, isInitial = false) {
       if (isInitial) {
         chatList.innerHTML = "";
@@ -2206,6 +2359,14 @@
         const row = document.createElement("div");
         row.className = `message-item ${isMe ? 'is-me' : ''}`;
 
+        // 渲染头像
+        const avatarDiv = document.createElement("div");
+        avatarDiv.className = "msg-avatar";
+        avatarDiv.textContent = isMe ? getUserAvatar() : (c.avatar || getAvatarByName(c.name));
+
+        const contentWrapper = document.createElement("div");
+        contentWrapper.className = "msg-content-wrapper";
+
         const userSpan = document.createElement("span");
         userSpan.className = "msg-user";
         userSpan.textContent = `${c.name || '热心猫友'}:`;
@@ -2225,9 +2386,12 @@
         timeSpan.className = "msg-time";
         timeSpan.textContent = c.time || '';
 
-        row.appendChild(userSpan);
-        row.appendChild(textSpan);
-        row.appendChild(timeSpan);
+        contentWrapper.appendChild(userSpan);
+        contentWrapper.appendChild(textSpan);
+        contentWrapper.appendChild(timeSpan);
+
+        row.appendChild(avatarDiv);
+        row.appendChild(contentWrapper);
 
         chatList.appendChild(row);
 
@@ -2261,9 +2425,7 @@
           query += `&since=${encodeURIComponent(latestCommentId)}`;
         }
 
-        const res = await fetch(query, {
-          method: "GET"
-        });
+        const res = await fetch(query, { method: "GET" });
         const data = await res.json();
         if (data && Array.isArray(data.comments)) {
           renderComments(data.comments, isInitial);
@@ -2300,6 +2462,7 @@
       if (!text) return;
       const name = nameInput.value.trim() || getOrCreateUserNickname();
       const hp = hpWebsite ? hpWebsite.value : "";
+      const myAvatar = getUserAvatar();
 
       textInput.value = "";
       startCooldown();
@@ -2313,6 +2476,7 @@
         name: name,
         text: text,
         time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        avatar: myAvatar,
         isLocal: true
       };
       renderComments([localMsg], false);
@@ -2337,9 +2501,7 @@
           seenCommentIds.add(json.data.id);
           latestCommentId = json.data.id;
         }
-      } catch (err) {
-        // 网络波动或降级，前端继续正常流畅展示
-      }
+      } catch (err) {}
     });
 
     function playStream(roomIndex) {
