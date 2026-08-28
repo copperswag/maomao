@@ -1318,9 +1318,11 @@
 
     trackEvent("pv");
 
-    // 增加后台检查，标签页不可见或视频暂停时不产生虚假时长上报与 KV 写入
-    function flushRoomDuration() {
-      if (document.hidden || !currentRoomId || (video && video.paused)) return;
+    // 修复：离开前允许最后一次结算，但在隐藏期间不重复周期上报
+    function flushRoomDuration(force = false) {
+      if (!force && (document.hidden || !currentRoomId || (video && video.paused))) return;
+      if (!currentRoomId) return;
+
       const now = Date.now();
       const deltaSec = Math.floor((now - lastDurationFlushTime) / 1000);
       if (deltaSec >= 1) {
@@ -1329,9 +1331,9 @@
       }
     }
 
-    setInterval(flushRoomDuration, 30000);
-    window.addEventListener("pagehide", flushRoomDuration);
-    window.addEventListener("beforeunload", flushRoomDuration);
+    setInterval(() => flushRoomDuration(false), 30000);
+    window.addEventListener("pagehide", () => flushRoomDuration(true));
+    window.addEventListener("beforeunload", () => flushRoomDuration(true));
 
     const video = document.getElementById("mainVideo");
     const videoWrapper = document.getElementById("videoWrapper");
@@ -1455,8 +1457,6 @@
     let latestCommentId = "";
     let pollTimer = null;
     let cooldownTimer = null;
-
-    btnDownloadApp.addEventListener("click", () => trackEvent("app_click"));
 
     // ================= 全屏彩蛋特效粒子引擎 =================
     const fxCtx = danmakuFxCanvas.getContext("2d");
@@ -2047,8 +2047,7 @@
     const GONGDE_TEXTS = ["功德+1 ✨", "猫粮+5g 🍗", "毛量+100 🐾", "治愈值+1 💖", "寒冬抵御+1 ☀️", "吸猫快乐+999 😻"];
     const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
 
-    let dblclickDebounceTimer = null;
-
+    // 纯前端功德动效，不再向后端发送无意义的 400 埋点，极大节省 Worker 额度
     videoWrapper.addEventListener("dblclick", (e) => {
       const rect = videoWrapper.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -2069,11 +2068,6 @@
       gongde.style.top = `${y}px`;
       videoWrapper.appendChild(gongde);
       gongde.addEventListener("animationend", () => gongde.remove());
-
-      if (dblclickDebounceTimer) clearTimeout(dblclickDebounceTimer);
-      dblclickDebounceTimer = setTimeout(() => {
-        trackEvent("dblclick");
-      }, 1000);
     });
 
     async function fetchNotice() {
@@ -2189,7 +2183,6 @@
         alert("视频流正在加载中，请稍候再抓拍~");
         return;
       }
-      trackEvent("snapshot");
 
       const canvas = snapshotCanvas;
       const ctx = canvas.getContext("2d");
@@ -2496,7 +2489,7 @@
     });
 
     function playStream(roomIndex) {
-      flushRoomDuration();
+      flushRoomDuration(false);
 
       const room = roomList[roomIndex];
       if (!room) return;
@@ -2506,7 +2499,6 @@
       currentRoomTitle.textContent = currentRoomName;
 
       lastDurationFlushTime = Date.now();
-      trackEvent("room_view", { roomId: String(currentRoomId) });
 
       seenCommentIds.clear();
       latestCommentId = "";
@@ -2516,7 +2508,6 @@
       startAtmosphereBot();
 
       if (pollTimer) clearInterval(pollTimer);
-      // 优雅 8 秒轮询，配合 Worker 2秒缓存，大幅压降服务器/KV 读取压力
       pollTimer = setInterval(() => {
         if (document.visibilityState === "visible") {
           fetchComments(false);
@@ -2644,10 +2635,10 @@
       }
     }
 
-    // 后台彻底暂停轮询与虚假时长统计
+    // 后台休眠前先强制结算一次，然后停止轮询
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
-        flushRoomDuration();
+        flushRoomDuration(true);
         if (pollTimer) {
           clearInterval(pollTimer);
           pollTimer = null;
