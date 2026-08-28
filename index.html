@@ -254,6 +254,14 @@
       box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
     }
 
+    /* 高等级弹幕流光特权 */
+    .danmaku-item.tier-gold {
+      color: #fbbf24;
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
+      border: 1px solid rgba(245, 158, 11, 0.6);
+      box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+    }
+
     @keyframes danmaku-move {
       from { transform: translateX(100vw); }
       to { transform: translateX(-100%); }
@@ -398,7 +406,6 @@
       gap: 8px;
     }
 
-    /* 荣誉称号样式（支持点击交互） */
     .honor-badge {
       display: inline-flex;
       align-items: center;
@@ -420,10 +427,17 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
-    .honor-badge.tier-1 { color: #60a5fa; border-color: rgba(96, 165, 250, 0.4); background: rgba(96, 165, 250, 0.12); }
-    .honor-badge.tier-2 { color: #34d399; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.12); }
-    .honor-badge.tier-3 { color: #c084fc; border-color: rgba(192, 132, 252, 0.4); background: rgba(192, 132, 252, 0.12); }
-    .honor-badge.tier-4 { color: #fbbf24; border-color: rgba(251, 191, 36, 0.5); background: rgba(251, 191, 36, 0.18); box-shadow: 0 0 12px rgba(245, 158, 11, 0.3); }
+    /* 10 个层级的勋章样式 */
+    .honor-badge.tier-1 { color: #93c5fd; border-color: rgba(147, 197, 253, 0.4); background: rgba(147, 197, 253, 0.12); }
+    .honor-badge.tier-2 { color: #6ee7b7; border-color: rgba(110, 231, 183, 0.4); background: rgba(110, 231, 183, 0.12); }
+    .honor-badge.tier-3 { color: #34d399; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.12); }
+    .honor-badge.tier-4 { color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.12); }
+    .honor-badge.tier-5 { color: #818cf8; border-color: rgba(129, 140, 248, 0.4); background: rgba(129, 140, 248, 0.12); }
+    .honor-badge.tier-6 { color: #c084fc; border-color: rgba(192, 132, 252, 0.4); background: rgba(192, 132, 252, 0.12); }
+    .honor-badge.tier-7 { color: #f472b6; border-color: rgba(244, 114, 182, 0.4); background: rgba(244, 114, 182, 0.12); }
+    .honor-badge.tier-8 { color: #fb923c; border-color: rgba(251, 146, 60, 0.4); background: rgba(251, 146, 60, 0.12); }
+    .honor-badge.tier-9 { color: #facc15; border-color: rgba(250, 204, 21, 0.5); background: rgba(250, 204, 21, 0.18); box-shadow: 0 0 10px rgba(250, 204, 21, 0.25); }
+    .honor-badge.tier-10 { color: #fbbf24; border-color: rgba(251, 191, 36, 0.6); background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3)); box-shadow: 0 0 14px rgba(245, 158, 11, 0.4); }
 
     .chat-messages {
       height: 180px;
@@ -716,7 +730,7 @@
       color: #090a0f;
     }
 
-    /* 称号成就面板专属样式 */
+    /* 称号成就面板样式 */
     .honor-modal-header {
       padding: 24px 20px 16px;
       background: linear-gradient(180deg, rgba(16, 185, 129, 0.12), transparent);
@@ -787,21 +801,9 @@
       gap: 10px;
     }
 
-    .honor-item-icon {
-      font-size: 22px;
-    }
-
-    .honor-item-name {
-      font-size: 14px;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .honor-item-req {
-      font-size: 11px;
-      color: var(--text-sub);
-      margin-top: 2px;
-    }
+    .honor-item-icon { font-size: 22px; }
+    .honor-item-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .honor-item-req { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
 
     .honor-item-status {
       font-size: 11px;
@@ -816,9 +818,52 @@
       background: rgba(16, 185, 129, 0.15);
       color: #34d399;
     }
+
+    /* 升级仪式全屏彩带 Canvas */
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2000;
+    }
+
+    /* 升级即时庆祝弹窗专属样式 */
+    .levelup-card {
+      text-align: center;
+      padding: 30px 24px;
+      background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.18), #161b22 75%);
+    }
+
+    .levelup-icon-glow {
+      font-size: 56px;
+      margin-bottom: 12px;
+      animation: bounce-scale 1s infinite alternate ease-in-out;
+      display: inline-block;
+    }
+
+    @keyframes bounce-scale {
+      from { transform: scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.5)); }
+      to { transform: scale(1.12) translateY(-6px); filter: drop-shadow(0 0 25px rgba(245, 158, 11, 0.9)); }
+    }
+
+    .levelup-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #fbbf24;
+      margin-bottom: 6px;
+    }
+
+    .levelup-desc {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
+  <!-- 全屏升级礼花 Canvas -->
+  <canvas id="confettiCanvas"></canvas>
+
   <div class="container">
     <header>
       <div class="logo-group">
@@ -980,8 +1025,23 @@
     </div>
   </div>
 
+  <!-- 晋升即时祝贺与证书弹窗 -->
+  <div class="app-modal" id="levelUpModal">
+    <div class="modal-card-box levelup-card">
+      <div class="levelup-icon-glow" id="levelUpIcon">🏆</div>
+      <div class="levelup-title" id="levelUpTitle">受封：初级铲屎官！</div>
+      <div class="levelup-desc" id="levelUpDesc">感谢你在毛毛星球的真诚陪伴，荣誉特权已点亮！</div>
+      
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button id="btnGenerateCert" class="btn-modal-action fortune-color" style="width: 100%; justify-content: center;" type="button">📜 生成并保存受封证书</button>
+        <button id="closeLevelUpBtn" class="btn-modal-action" style="width: 100%; justify-content: center;" type="button">收下荣誉</button>
+      </div>
+    </div>
+  </div>
+
   <canvas id="snapshotCanvas" style="display: none;"></canvas>
   <canvas id="fortuneCanvas" style="display: none;"></canvas>
+  <canvas id="certCanvas" style="display: none;"></canvas>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script>
@@ -1065,6 +1125,15 @@
     const honorListContainer = document.getElementById("honorListContainer");
     const closeHonorBtn = document.getElementById("closeHonorBtn");
 
+    const levelUpModal = document.getElementById("levelUpModal");
+    const levelUpIcon = document.getElementById("levelUpIcon");
+    const levelUpTitle = document.getElementById("levelUpTitle");
+    const levelUpDesc = document.getElementById("levelUpDesc");
+    const btnGenerateCert = document.getElementById("btnGenerateCert");
+    const closeLevelUpBtn = document.getElementById("closeLevelUpBtn");
+    const certCanvas = document.getElementById("certCanvas");
+    const confettiCanvas = document.getElementById("confettiCanvas");
+
     let hls = null;
     let roomList = [];
     let danmakuEnabled = true;
@@ -1075,15 +1144,22 @@
 
     btnDownloadApp.addEventListener("click", () => trackEvent("app_click"));
 
-    // ================= 永久累加荣誉称号体系 =================
+    // ================= 10 阶荣誉称号成长体系 =================
     let staySeconds = parseInt(localStorage.getItem("meow_total_stay_sec") || "0", 10);
+    let celebratedTiers = JSON.parse(localStorage.getItem("meow_celebrated_tiers") || "[]");
 
     const HONOR_TIERS = [
-      { minSec: 0, title: "🌱 路过猫奴", icon: "🌱", desc: "初来乍到，与毛毛星球结缘", class: "" },
-      { minSec: 60, title: "🐾 见习铲屎官", icon: "🐾", desc: "累计陪伴满 1 分钟", class: "tier-1" },
-      { minSec: 300, title: "🍖 资深云爸妈", icon: "🍖", desc: "累计陪伴满 5 分钟", class: "tier-2" },
-      { minSec: 900, title: "⭐ 金牌护喵官", icon: "⭐", desc: "累计陪伴满 15 分钟", class: "tier-3" },
-      { minSec: 1800, title: "👑 猫岛守护神", icon: "👑", desc: "累计陪伴满 30 分钟", class: "tier-4" }
+      { level: 0, minSec: 0, title: "🌱 路过猫奴", icon: "🌱", desc: "初来乍到，与毛毛星球结缘", class: "" },
+      { level: 1, minSec: 60, title: "🐾 初级铲屎官", icon: "🐾", desc: "累计陪伴满 1 分钟", class: "tier-1" },
+      { level: 2, minSec: 180, title: "🍗 猫条投喂员", icon: "🍗", desc: "累计陪伴满 3 分钟", class: "tier-2" },
+      { level: 3, minSec: 360, title: "🐟 干饭引路人", icon: "🐟", desc: "累计陪伴满 6 分钟", class: "tier-3" },
+      { level: 4, minSec: 600, title: "🧸 金牌陪玩师", icon: "🧸", desc: "累计陪伴满 10 分钟", class: "tier-4" },
+      { level: 5, minSec: 900, title: "🏡 资深云爸妈", icon: "🏡", desc: "累计陪伴满 15 分钟", class: "tier-5" },
+      { level: 6, minSec: 1500, title: "🩺 喵星健康官", icon: "🩺", desc: "累计陪伴满 25 分钟", class: "tier-6" },
+      { level: 7, minSec: 2400, title: "🛡️ 巡逻队长", icon: "🛡️", desc: "累计陪伴满 40 分钟", class: "tier-7" },
+      { level: 8, minSec: 3600, title: "⭐ 护喵大使", icon: "⭐", desc: "累计陪伴满 60 分钟", class: "tier-8" },
+      { level: 9, minSec: 5400, title: "🏰 星球领主", icon: "🏰", desc: "累计陪伴满 90 分钟", class: "tier-9" },
+      { level: 10, minSec: 7200, title: "👑 猫岛守护神", icon: "👑", desc: "累计陪伴满 120 分钟", class: "tier-10" }
     ];
 
     function getCurrentHonor() {
@@ -1106,18 +1182,191 @@
 
     updateHonorUI();
 
+    // ================= 全屏升级礼花彩带特效引擎 =================
+    let confettiCtx = confettiCanvas.getContext("2d");
+    let confettiParticles = [];
+    let confettiAnimationId = null;
+
+    function resizeConfetti() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeConfetti);
+    resizeConfetti();
+
+    function fireConfetti() {
+      confettiParticles = [];
+      const colors = ["#10b981", "#f59e0b", "#3b82f6", "#ec4899", "#8b5cf6", "#ffffff"];
+      for (let i = 0; i < 120; i++) {
+        confettiParticles.push({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          vx: (Math.random() - 0.5) * 16,
+          vy: (Math.random() - 0.7) * 18,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 10,
+          opacity: 1
+        });
+      }
+
+      if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+
+      function render() {
+        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        let alive = false;
+        confettiParticles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35; // 重力
+          p.rotation += p.rotationSpeed;
+          p.opacity -= 0.008;
+
+          if (p.opacity > 0) {
+            alive = true;
+            confettiCtx.save();
+            confettiCtx.translate(p.x, p.y);
+            confettiCtx.rotate((p.rotation * Math.PI) / 180);
+            confettiCtx.globalAlpha = p.opacity;
+            confettiCtx.fillStyle = p.color;
+            confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            confettiCtx.restore();
+          }
+        });
+
+        if (alive) {
+          confettiAnimationId = requestAnimationFrame(render);
+        } else {
+          confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        }
+      }
+      render();
+    }
+
+    // 触发升级弹窗奖励
+    let latestUnlockedTier = null;
+    function triggerLevelUpCelebration(tier) {
+      latestUnlockedTier = tier;
+      levelUpIcon.textContent = tier.icon;
+      levelUpTitle.textContent = `晋升受封：${tier.title}！`;
+      levelUpDesc.textContent = `恭喜达成【${tier.desc}】！已点亮专属身份勋章。`;
+      levelUpModal.classList.add("show");
+      fireConfetti();
+    }
+
+    // 荣誉受封证书生成器
+    btnGenerateCert.addEventListener("click", () => {
+      const tier = latestUnlockedTier || getCurrentHonor();
+      const canvas = certCanvas;
+      const ctx = canvas.getContext("2d");
+      canvas.width = 600;
+      canvas.height = 800;
+
+      // 典雅羊皮纸暗金背景
+      const grad = ctx.createLinearGradient(0, 0, 600, 800);
+      grad.addColorStop(0, "#1c1917");
+      grad.addColorStop(1, "#0c0a09");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 600, 800);
+
+      // 双层奢华金边
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 6;
+      ctx.strokeRect(24, 24, 552, 752);
+
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.4)";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(34, 34, 532, 732);
+
+      // 顶部大徽章
+      ctx.font = "60px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(tier.icon, 300, 120);
+
+      // 证书主标题
+      ctx.fillStyle = "#f59e0b";
+      ctx.font = "bold 26px -apple-system, sans-serif";
+      ctx.fillText("毛毛星球 · 荣誉受封证书", 300, 180);
+
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "13px sans-serif";
+      ctx.fillText("HONORARY GUARDIAN CERTIFICATE", 300, 205);
+
+      // 授予对象
+      const userNick = nameInput.value.trim() || getOrCreateUserNickname();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 28px -apple-system, sans-serif";
+      ctx.fillText(`兹授予：${userNick}`, 300, 290);
+
+      // 受封称号
+      ctx.fillStyle = "#34d399";
+      ctx.font = "bold 34px -apple-system, sans-serif";
+      ctx.fillText(`【 ${tier.title} 】`, 300, 360);
+
+      // 颁奖词
+      ctx.fillStyle = "#d1d5db";
+      ctx.font = "15px sans-serif";
+      ctx.fillText("感谢您在毛毛星球直播间的温情守护与不离陪伴。", 300, 430);
+      ctx.fillText("特授予此荣誉称号，愿爱与善意常伴每一只流浪生灵！", 300, 460);
+
+      // 累计时长与日期
+      const mins = Math.floor(staySeconds / 60);
+      const nowStr = new Date().toLocaleDateString('zh-CN');
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "14px monospace";
+      ctx.fillText(`累计守护时长：${mins} 分钟 (${staySeconds} 秒)`, 300, 530);
+      ctx.fillText(`受封认证日期：${nowStr}`, 300, 560);
+
+      // 底部金印
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath();
+      ctx.arc(300, 650, 42, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 13px sans-serif";
+      ctx.fillText("毛毛星球", 300, 645);
+      ctx.fillText("官方印鉴", 300, 663);
+
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "11px sans-serif";
+      ctx.fillText("定点云守护 · 每一份爱都有回响", 300, 735);
+
+      const dataUrl = canvas.toDataURL("image/png");
+      polaroidImg.src = dataUrl;
+      downloadPolaroidBtn.href = dataUrl;
+      downloadPolaroidBtn.download = `meow_cert_${tier.title}_${Date.now()}.png`;
+      levelUpModal.classList.remove("show");
+      polaroidModal.classList.add("show");
+    });
+
+    closeLevelUpBtn.addEventListener("click", () => levelUpModal.classList.remove("show"));
+    levelUpModal.addEventListener("click", (e) => { if (e.target === levelUpModal) levelUpModal.classList.remove("show"); });
+
+    // 计时与升级检测循环
     setInterval(() => {
       staySeconds++;
       updateHonorUI();
+
+      // 检测是否解锁了新等级
+      HONOR_TIERS.forEach(tier => {
+        if (tier.level > 0 && staySeconds >= tier.minSec && !celebratedTiers.includes(tier.level)) {
+          celebratedTiers.push(tier.level);
+          localStorage.setItem("meow_celebrated_tiers", JSON.stringify(celebratedTiers));
+          triggerLevelUpCelebration(tier);
+        }
+      });
+
       if (staySeconds % 5 === 0) {
         localStorage.setItem("meow_total_stay_sec", String(staySeconds));
       }
     }, 1000);
 
-    // 弹出荣誉称号二级面板
+    // 荣誉称号二级图鉴弹窗
     function openHonorModal() {
       const current = getCurrentHonor();
-      const currentIdx = HONOR_TIERS.findIndex(h => h.title === current.title);
+      const currentIdx = HONOR_TIERS.findIndex(h => h.level === current.level);
       const mins = Math.floor(staySeconds / 60);
 
       modalHonorTitle.textContent = current.title;
@@ -1148,7 +1397,7 @@
           <div class="honor-item-left">
             <div class="honor-item-icon">${tier.icon}</div>
             <div>
-              <div class="honor-item-name">${tier.title}</div>
+              <div class="honor-item-name">Lv.${tier.level} ${tier.title}</div>
               <div class="honor-item-req">${tier.desc}</div>
             </div>
           </div>
@@ -1561,7 +1810,10 @@
     function shootDanmaku(text, isMe = false) {
       if (!danmakuEnabled) return;
       const el = document.createElement("div");
-      el.className = `danmaku-item ${isMe ? 'is-me' : ''}`;
+      const honor = getCurrentHonor();
+      const isGold = isMe && honor.level >= 8;
+
+      el.className = `danmaku-item ${isMe ? 'is-me' : ''} ${isGold ? 'tier-gold' : ''}`;
       el.textContent = text;
       const topPos = Math.floor(Math.random() * 60) + 15;
       el.style.top = `${topPos}%`;
