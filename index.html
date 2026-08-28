@@ -2046,7 +2046,6 @@
     const GONGDE_TEXTS = ["功德+1 ✨", "猫粮+5g 🍗", "毛量+100 🐾", "治愈值+1 💖", "寒冬抵御+1 ☀️", "吸猫快乐+999 😻"];
     const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
 
-    // 功德双击上报防抖，避免刷爆 KV 写入
     let dblclickDebounceTimer = null;
 
     videoWrapper.addEventListener("dblclick", (e) => {
@@ -2516,7 +2515,11 @@
       startAtmosphereBot();
 
       if (pollTimer) clearInterval(pollTimer);
-      pollTimer = setInterval(() => fetchComments(false), 2500);
+      pollTimer = setInterval(() => {
+        if (document.visibilityState === "visible") {
+          fetchComments(false);
+        }
+      }, 3000);
 
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
@@ -2591,7 +2594,8 @@
       try {
         nameInput.value = getOrCreateUserNickname();
 
-        const response = await fetch(API_ENDPOINT, { cache: "no-cache" });
+        // 精准请求 /api/rooms，充分利用边缘 30s 缓存
+        const response = await fetch(`${API_ENDPOINT}/api/rooms`);
         const data = await response.json();
         let rawRooms = data.rooms || [];
 
@@ -2606,17 +2610,25 @@
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
         roomButtonList.innerHTML = "";
 
+        // 安全构建 DOM 节点
         roomList.forEach((room, idx) => {
           const btn = document.createElement("button");
           btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
 
-          btn.innerHTML = `
-            <span>${room.name}</span>
-            <span class="status-indicator">
-              <span class="pulse-dot"></span>
-              LIVE
-            </span>
-          `;
+          const nameSpan = document.createElement("span");
+          nameSpan.textContent = String(room.name || `直播间 ${idx + 1}`);
+
+          const statusSpan = document.createElement("span");
+          statusSpan.className = "status-indicator";
+
+          const dot = document.createElement("span");
+          dot.className = "pulse-dot";
+
+          statusSpan.appendChild(dot);
+          statusSpan.appendChild(document.createTextNode(" LIVE"));
+
+          btn.appendChild(nameSpan);
+          btn.appendChild(statusSpan);
 
           btn.addEventListener("click", () => {
             playStream(idx);
@@ -2632,10 +2644,22 @@
       }
     }
 
+    // 切入后台彻底暂停轮询，切回前台恢复
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") {
+      if (document.hidden) {
+        if (pollTimer) {
+          clearInterval(pollTimer);
+          pollTimer = null;
+        }
+        flushRoomDuration();
+      } else {
         lastDurationFlushTime = Date.now();
         fetchComments(false);
+        if (!pollTimer) {
+          pollTimer = setInterval(() => {
+            if (document.visibilityState === "visible") fetchComments(false);
+          }, 3000);
+        }
 
         if (hls && hls.liveSyncPosition) {
           const latency = hls.liveSyncPosition - video.currentTime;
@@ -2646,8 +2670,6 @@
         } else if (video.paused) {
           video.play().catch(() => {});
         }
-      } else {
-        flushRoomDuration();
       }
     });
 
