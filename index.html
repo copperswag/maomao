@@ -2515,11 +2515,12 @@
       startAtmosphereBot();
 
       if (pollTimer) clearInterval(pollTimer);
+      // 优雅 6 秒轮询，且仅在页面可见时执行
       pollTimer = setInterval(() => {
         if (document.visibilityState === "visible") {
           fetchComments(false);
         }
-      }, 3000);
+      }, 6000);
 
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
@@ -2594,7 +2595,7 @@
       try {
         nameInput.value = getOrCreateUserNickname();
 
-        // 精准请求 /api/rooms，充分利用边缘 30s 缓存
+        // 精准请求 /api/rooms 并允许命中 30s 边缘缓存
         const response = await fetch(`${API_ENDPOINT}/api/rooms`);
         const data = await response.json();
         let rawRooms = data.rooms || [];
@@ -2644,7 +2645,7 @@
       }
     }
 
-    // 切入后台彻底暂停轮询，切回前台恢复
+    // 切入后台彻底暂停轮询，切回前台立即恢复
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         if (pollTimer) {
@@ -2658,7 +2659,7 @@
         if (!pollTimer) {
           pollTimer = setInterval(() => {
             if (document.visibilityState === "visible") fetchComments(false);
-          }, 3000);
+          }, 6000);
         }
 
         if (hls && hls.liveSyncPosition) {
