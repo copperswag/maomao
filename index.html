@@ -1165,7 +1165,6 @@
     </footer>
   </div>
 
-  <!-- 猫咪头像选择弹窗 -->
   <div class="app-modal" id="avatarModal">
     <div class="modal-card-box">
       <div class="honor-modal-header">
@@ -1179,7 +1178,6 @@
     </div>
   </div>
 
-  <!-- 每日打卡与猫爪印章弹窗 -->
   <div class="app-modal" id="checkinModal">
     <div class="modal-card-box">
       <div class="honor-modal-header" style="background: linear-gradient(180deg, rgba(245, 158, 11, 0.15), transparent);">
@@ -1225,7 +1223,6 @@
     </div>
   </div>
 
-  <!-- 拍立得弹窗 -->
   <div class="app-modal" id="polaroidModal">
     <div class="modal-card-box" style="background:#fff;">
       <img id="polaroidImg" style="width: 100%; display: block;" alt="毛毛星球拍立得" />
@@ -1237,7 +1234,6 @@
     <div style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 10px;">手机端长按图片可直接存入相册 / 发朋友圈</div>
   </div>
 
-  <!-- 猫生运势签弹窗 -->
   <div class="app-modal" id="fortuneModal">
     <div class="modal-card-box" style="background:#fff;">
       <img id="fortuneImg" style="width: 100%; display: block;" alt="今日猫生运势签" />
@@ -1249,7 +1245,6 @@
     </div>
   </div>
 
-  <!-- 荣誉称号二级图鉴弹窗 -->
   <div class="app-modal" id="honorModal">
     <div class="modal-card-box">
       <div class="honor-modal-header">
@@ -1278,7 +1273,6 @@
     </div>
   </div>
 
-  <!-- 晋升祝贺弹窗 -->
   <div class="app-modal" id="levelUpModal">
     <div class="modal-card-box levelup-card">
       <div class="levelup-icon-glow" id="levelUpIcon">🏆</div>
@@ -1302,7 +1296,6 @@
 
     let currentRoomId = "1";
     let currentRoomName = "苏州猫岛";
-    let lastDurationFlushTime = Date.now();
 
     function trackEvent(type, extra = {}) {
       try {
@@ -1313,27 +1306,10 @@
           body: payload,
           keepalive: true
         }).catch(() => {});
-      } catch(e) {}
+      } catch (e) {}
     }
 
     trackEvent("pv");
-
-    // 修复：离开前允许最后一次结算，但在隐藏期间不重复周期上报
-    function flushRoomDuration(force = false) {
-      if (!force && (document.hidden || !currentRoomId || (video && video.paused))) return;
-      if (!currentRoomId) return;
-
-      const now = Date.now();
-      const deltaSec = Math.floor((now - lastDurationFlushTime) / 1000);
-      if (deltaSec >= 1) {
-        trackEvent("room_duration", { roomId: String(currentRoomId), seconds: deltaSec });
-        lastDurationFlushTime = now;
-      }
-    }
-
-    setInterval(() => flushRoomDuration(false), 30000);
-    window.addEventListener("pagehide", () => flushRoomDuration(true));
-    window.addEventListener("beforeunload", () => flushRoomDuration(true));
 
     const video = document.getElementById("mainVideo");
     const videoWrapper = document.getElementById("videoWrapper");
@@ -1358,7 +1334,20 @@
     const noticeContent = document.getElementById("noticeContent");
     const myHonorBadge = document.getElementById("myHonorBadge");
 
-    // 头像选择组件
+    // 精准活跃播放累加器（杜绝暂停或后台被算作观看时长）
+    let activePlayingSeconds = 0;
+
+    function flushRoomDuration() {
+      if (activePlayingSeconds <= 0 || !currentRoomId) return;
+      const secToReport = activePlayingSeconds;
+      activePlayingSeconds = 0;
+      trackEvent("room_duration", { roomId: String(currentRoomId), seconds: secToReport });
+    }
+
+    setInterval(flushRoomDuration, 30000);
+    window.addEventListener("pagehide", flushRoomDuration);
+    window.addEventListener("beforeunload", flushRoomDuration);
+
     const btnChooseAvatar = document.getElementById("btnChooseAvatar");
     const avatarModal = document.getElementById("avatarModal");
     const avatarGrid = document.getElementById("avatarGrid");
@@ -1406,7 +1395,6 @@
     closeAvatarBtn.addEventListener("click", () => avatarModal.classList.remove("show"));
     avatarModal.addEventListener("click", (e) => { if (e.target === avatarModal) avatarModal.classList.remove("show"); });
 
-    // 打卡组件
     const btnOpenCheckin = document.getElementById("btnOpenCheckin");
     const checkinStreakCount = document.getElementById("checkinStreakCount");
     const checkinModal = document.getElementById("checkinModal");
@@ -1458,7 +1446,6 @@
     let pollTimer = null;
     let cooldownTimer = null;
 
-    // ================= 全屏彩蛋特效粒子引擎 =================
     const fxCtx = danmakuFxCanvas.getContext("2d");
     let fxParticles = [];
     let fxAnimId = null;
@@ -1560,7 +1547,6 @@
       else if (/下雨|打雷|淅淅沥沥|雨天/.test(text)) triggerDanmakuEasterEgg("rain");
     }
 
-    // ================= 每日打卡与印章日历引擎 =================
     function getTodayString() {
       const d = new Date();
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -1576,7 +1562,7 @@
       try {
         const raw = localStorage.getItem("meow_checkin_data");
         return raw ? JSON.parse(raw) : defaultData;
-      } catch(e) {
+      } catch (e) {
         return defaultData;
       }
     }
@@ -1671,7 +1657,6 @@
       triggerDanmakuEasterEgg("balloon");
     });
 
-    // ================= 自然周赛季荣誉引擎 =================
     function getWeekKey() {
       const now = new Date();
       const oneJan = new Date(now.getFullYear(), 0, 1);
@@ -1883,20 +1868,24 @@
     closeLevelUpBtn.addEventListener("click", () => levelUpModal.classList.remove("show"));
     levelUpModal.addEventListener("click", (e) => { if (e.target === levelUpModal) levelUpModal.classList.remove("show"); });
 
+    // 活跃状态真实累加计时器（非播放/隐藏标签页不增加陪伴时长）
     setInterval(() => {
-      staySeconds++;
-      updateHonorUI();
+      if (!document.hidden && video && !video.paused && video.readyState >= 2) {
+        activePlayingSeconds++;
+        staySeconds++;
+        updateHonorUI();
 
-      HONOR_TIERS.forEach(tier => {
-        if (tier.level > 0 && staySeconds >= tier.minSec && !celebratedTiers.includes(tier.level)) {
-          celebratedTiers.push(tier.level);
-          localStorage.setItem("meow_celebrated_tiers", JSON.stringify(celebratedTiers));
-          triggerLevelUpCelebration(tier);
+        HONOR_TIERS.forEach(tier => {
+          if (tier.level > 0 && staySeconds >= tier.minSec && !celebratedTiers.includes(tier.level)) {
+            celebratedTiers.push(tier.level);
+            localStorage.setItem("meow_celebrated_tiers", JSON.stringify(celebratedTiers));
+            triggerLevelUpCelebration(tier);
+          }
+        });
+
+        if (staySeconds % 5 === 0) {
+          localStorage.setItem("meow_weekly_stay_sec", String(staySeconds));
         }
-      });
-
-      if (staySeconds % 5 === 0) {
-        localStorage.setItem("meow_weekly_stay_sec", String(staySeconds));
       }
     }, 1000);
 
@@ -2047,7 +2036,6 @@
     const GONGDE_TEXTS = ["功德+1 ✨", "猫粮+5g 🍗", "毛量+100 🐾", "治愈值+1 💖", "寒冬抵御+1 ☀️", "吸猫快乐+999 😻"];
     const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
 
-    // 纯前端功德动效，不再向后端发送无意义的 400 埋点，极大节省 Worker 额度
     videoWrapper.addEventListener("dblclick", (e) => {
       const rect = videoWrapper.getBoundingClientRect();
       const x = e.clientX - rect.left;
@@ -2339,6 +2327,7 @@
         const isMe = Boolean(c.isLocal) || (myCurrentName && c.name === myCurrentName);
 
         const row = document.createElement("div");
+        row.id = `msg_${c.id}`;
         row.className = `message-item ${isMe ? 'is-me' : ''}`;
 
         const avatarDiv = document.createElement("div");
@@ -2451,9 +2440,6 @@
       textInput.value = "";
       startCooldown();
 
-      shootDanmaku(`${name}: ${text}`, true);
-      checkEasterEgg(text);
-
       const localId = "loc_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
       const localMsg = {
         id: localId,
@@ -2463,7 +2449,11 @@
         avatar: myAvatar,
         isLocal: true
       };
+      
+      // 乐观渲染
       renderComments([localMsg], false);
+      shootDanmaku(`${name}: ${text}`, true);
+      checkEasterEgg(text);
 
       try {
         const res = await fetch(`${API_ENDPOINT}/api/comments`, {
@@ -2473,23 +2463,27 @@
         });
         const json = await res.json();
         
-        if (res.status === 429) {
-          alert(json.msg || "发言太快了，请休息几秒~");
+        if (!res.ok || json.code !== 200) {
+          // 失败自动回滚乐观渲染
+          const el = document.getElementById(`msg_${localId}`);
+          if (el) el.remove();
+          alert(json.msg || "发送失败，请稍后再试~");
           return;
         }
-        if (res.status === 403) {
-          alert(json.msg || "消息包含敏感词，已被拦截");
-          return;
-        }
+
         if (json && json.data) {
           seenCommentIds.add(json.data.id);
           latestCommentId = json.data.id;
         }
-      } catch (err) {}
+      } catch (err) {
+        const el = document.getElementById(`msg_${localId}`);
+        if (el) el.remove();
+        alert("网络连接异常，弹幕发送失败");
+      }
     });
 
     function playStream(roomIndex) {
-      flushRoomDuration(false);
+      flushRoomDuration();
 
       const room = roomList[roomIndex];
       if (!room) return;
@@ -2497,8 +2491,6 @@
       currentRoomId = String(room.id || "1");
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
-
-      lastDurationFlushTime = Date.now();
 
       seenCommentIds.clear();
       latestCommentId = "";
@@ -2635,16 +2627,14 @@
       }
     }
 
-    // 后台休眠前先强制结算一次，然后停止轮询
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
-        flushRoomDuration(true);
+        flushRoomDuration();
         if (pollTimer) {
           clearInterval(pollTimer);
           pollTimer = null;
         }
       } else {
-        lastDurationFlushTime = Date.now();
         fetchComments(false);
         if (!pollTimer) {
           pollTimer = setInterval(() => {
