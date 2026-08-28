@@ -3,32 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>毛毛星球 | 运营数据与管理中台</title>
+  <title>毛毛星球 | 运营管理后台</title>
   <style>
     :root {
       --bg: #0d1117;
-      --card: #161b22;
+      --card-bg: #161b22;
       --border: #30363d;
       --text: #c9d1d9;
-      --text-main: #f0f6fc;
-      --green: #2ea043;
-      --green-light: #3fb950;
-      --red: #da3633;
-      --blue: #58a6ff;
-      --gold: #f59e0b;
+      --text-bright: #f0f6fc;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
       background: var(--bg);
       color: var(--text);
-      padding: 24px;
+      padding: 24px 16px;
       min-height: 100vh;
     }
 
-    .container { max-width: 1240px; margin: 0 auto; }
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
 
     header {
       display: flex;
@@ -37,177 +38,130 @@
       padding-bottom: 20px;
       border-bottom: 1px solid var(--border);
       margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
-    .header-title {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text-main);
+    .brand {
       display: flex;
       align-items: center;
       gap: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-bright);
     }
 
-    .header-btns { display: flex; gap: 10px; }
+    .auth-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
 
-    .btn-header {
+    input, textarea, select {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-bright);
+      padding: 8px 12px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
       background: #21262d;
       border: 1px solid var(--border);
-      color: var(--text-main);
+      color: var(--text-bright);
       padding: 8px 16px;
       border-radius: 8px;
       font-size: 13px;
-      cursor: pointer;
       font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
       display: inline-flex;
       align-items: center;
       gap: 6px;
     }
-    .btn-header:hover { background: #30363d; }
 
-    .grid-4 {
+    .btn:hover { background: #30363d; }
+    .btn-primary { background: var(--accent); color: #0d1117; border-color: var(--accent); }
+    .btn-primary:hover { background: #059669; }
+    .btn-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.4); }
+    .btn-danger:hover { background: rgba(239, 68, 68, 0.3); }
+
+    .grid-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
       margin-bottom: 24px;
     }
 
-    .card {
-      background: var(--card);
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .stat-title {
+      font-size: 12px;
+      color: #8b949e;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .stat-val {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-bright);
+    }
+
+    .section-card {
+      background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 20px;
       margin-bottom: 24px;
     }
 
-    .card-title {
-      font-size: 13px;
-      color: #8b949e;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .card-num { font-size: 28px; font-weight: 800; color: var(--text-main); }
-    .card-sub { font-size: 12px; color: #8b949e; margin-top: 6px; }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-
-    @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
-
     .section-title {
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 700;
-      color: var(--text-main);
+      color: var(--text-bright);
       margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    /* 停留时长表格 */
-    .dur-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      text-align: left;
-    }
-
-    .dur-table th {
-      padding: 10px 12px;
-      color: #8b949e;
-      font-weight: 600;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .dur-table td {
-      padding: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      color: var(--text-main);
-    }
-
-    .input-box {
-      width: 100%;
-      background: #0d1117;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      color: #fff;
-      font-size: 13px;
-      margin-bottom: 12px;
-      outline: none;
-    }
-    .input-box:focus { border-color: var(--green-light); }
-
-    .btn-action {
-      background: var(--green);
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-action:hover { background: var(--green-light); }
-
-    .btn-danger {
-      background: #21262d;
-      border: 1px solid var(--red);
-      color: #ff7b72;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .btn-danger:hover { background: var(--red); color: #fff; }
-
-    .btn-warn {
-      background: #21262d;
-      border: 1px solid #d29922;
-      color: #d29922;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .btn-warn:hover { background: #d29922; color: #fff; }
-
-    .tag-list {
+    .tag-container {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 14px;
+      margin-top: 10px;
     }
 
     .tag-item {
       background: #21262d;
       border: 1px solid var(--border);
-      color: var(--text-main);
       padding: 4px 10px;
       border-radius: 6px;
       font-size: 12px;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .tag-del { cursor: pointer; color: #8b949e; font-weight: bold; }
-    .tag-del:hover { color: #ff7b72; }
-
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      margin-bottom: 12px;
+    .tag-close {
+      cursor: pointer;
+      color: #8b949e;
+      font-weight: 700;
     }
+    .tag-close:hover { color: var(--danger); }
 
     .comment-list {
       max-height: 380px;
@@ -215,489 +169,442 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding-right: 6px;
     }
 
     .comment-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       background: #0d1117;
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 10px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
       font-size: 13px;
     }
 
-    .c-user { color: var(--green-light); font-weight: 600; margin-right: 6px; }
-    .c-text { color: var(--text-main); }
-    .c-meta { color: #8b949e; font-size: 11px; margin-left: 8px; }
+    .c-meta { display: flex; align-items: baseline; gap: 8px; flex: 1; flex-wrap: wrap; }
+    .c-user { color: var(--accent); font-weight: 700; }
+    .c-text { color: var(--text-bright); word-break: break-all; }
+    .c-time { color: #8b949e; font-size: 11px; margin-left: auto; }
 
-    .select-room {
-      background: #0d1117;
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 13px;
-    }
-
-    .auth-overlay {
+    .toast {
       position: fixed;
-      inset: 0;
-      background: rgba(13, 17, 23, 0.96);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
+      bottom: 24px;
+      right: 24px;
+      background: #238636;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 1000;
     }
-
-    .auth-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 30px;
-      width: 360px;
-      text-align: center;
-    }
+    .toast.show { opacity: 1; }
   </style>
 </head>
 <body>
-
-  <div class="auth-overlay" id="authOverlay">
-    <div class="auth-box">
-      <h3 style="color: var(--text-main); margin-bottom: 8px;">🔐 管理员鉴权</h3>
-      <p style="font-size: 13px; color: #8b949e; margin-bottom: 20px;">请输入毛毛星球中台管理密钥</p>
-      <input type="password" class="input-box" id="adminKeyInput" placeholder="输入密钥..." />
-      <button class="btn-action" style="width: 100%;" id="btnAuth">进入中台</button>
-    </div>
-  </div>
-
   <div class="container">
     <header>
-      <div class="header-title">
+      <div class="brand">
         <span>🐾</span>
-        <span>毛毛星球 MeowHub · 运营中台</span>
+        <span>MeowHub 运营管理控制台</span>
       </div>
-      <div class="header-btns">
-        <button class="btn-header" id="btnExportCSV">📊 导出报表 (CSV)</button>
-        <button class="btn-header" id="btnRefresh">🔄 刷新数据</button>
+      <div class="auth-bar">
+        <input type="password" id="adminKeyInput" placeholder="输入 ADMIN_KEY" style="width: 200px;" />
+        <button class="btn btn-primary" id="btnSaveKey" type="button">登录验证</button>
       </div>
     </header>
 
-    <!-- 4 个核心流量与转化卡片 -->
-    <div class="grid-4">
-      <div class="card">
-        <div class="card-title">今日独立访客 (UV) <span>👥</span></div>
-        <div class="card-num" id="uvToday">0</div>
-        <div class="card-sub">历史累计 UV：<span id="uvTotal">0</span></div>
+    <!-- 核心统计概览 -->
+    <div class="grid-stats">
+      <div class="stat-card">
+        <div class="stat-title">今日浏览量 (PV)</div>
+        <div class="stat-val" id="statPvToday">-</div>
+        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">历史总 PV: <span id="statPvTotal">-</span></div>
       </div>
-      <div class="card">
-        <div class="card-title">全站累计观看时长 <span>⏱️</span></div>
-        <div class="card-num" id="durationTotal" style="color: var(--gold);">0分</div>
-        <div class="card-sub">累计浏览 (PV)：<span id="pvTotal">0</span> 次</div>
+      <div class="stat-card">
+        <div class="stat-title">今日访客数 (UV)</div>
+        <div class="stat-val" id="statUvToday">-</div>
+        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">历史总 UV: <span id="statUvTotal">-</span></div>
       </div>
-      <div class="card">
-        <div class="card-title">App 导流点击数 <span>📲</span></div>
-        <div class="card-num" id="appToday" style="color: var(--green-light);">0</div>
-        <div class="card-sub">累计导流：<span id="appTotal">0</span> 次</div>
+      <div class="stat-card">
+        <div class="stat-title">总互动弹幕数</div>
+        <div class="stat-val" id="statCommentsTotal">-</div>
+        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">功德点击: <span id="statDblTotal">-</span></div>
       </div>
-      <div class="card">
-        <div class="card-title">真实互动总量 <span>💬</span></div>
-        <div class="card-num" id="commTotal" style="color: var(--blue);">0</div>
-        <div class="card-sub">拍立得生成：<span id="snapTotal">0</span> | 吸猫：<span id="likeTotal">0</span></div>
-      </div>
-    </div>
-
-    <!-- 中部：机位停留时长深度分析 & 应急控制与广播 -->
-    <div class="grid-2">
-      <div class="card">
-        <div class="section-title">⏱️ 各直播间停留时长与人均深度</div>
-        <table class="dur-table">
-          <thead>
-            <tr>
-              <th>机位名称</th>
-              <th>访问次数</th>
-              <th>总观看时长</th>
-              <th>人均停留</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>苏州猫岛</strong></td>
-              <td id="vCount1">0</td>
-              <td id="dTotal1" style="color: var(--gold); font-weight: 600;">0分</td>
-              <td id="dAvg1" style="color: var(--green-light); font-weight: 600;">0秒</td>
-            </tr>
-            <tr>
-              <td><strong>沛霖</strong></td>
-              <td id="vCount2">0</td>
-              <td id="dTotal2" style="color: var(--gold); font-weight: 600;">0分</td>
-              <td id="dAvg2" style="color: var(--green-light); font-weight: 600;">0秒</td>
-            </tr>
-            <tr>
-              <td><strong>南庄</strong></td>
-              <td id="vCount3">0</td>
-              <td id="dTotal3" style="color: var(--gold); font-weight: 600;">0分</td>
-              <td id="dAvg3" style="color: var(--green-light); font-weight: 600;">0秒</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <div style="margin-top: 24px;">
-          <div class="section-title">📢 全局运营跑马灯广播</div>
-          <input type="text" class="input-box" id="noticeInput" placeholder="输入顶部滚动公告（留空并保存则隐藏）..." />
-          <button class="btn-action" id="btnSaveNotice">发布公告</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="section-title">🛡️ 应急控制与动态词库</div>
-        
-        <div class="toggle-row">
-          <div>
-            <div style="color: var(--text-main); font-weight: 600;">全站互动弹幕开关</div>
-            <div style="font-size: 12px; color: #8b949e;">关闭后前台将进入全员禁言状态</div>
-          </div>
-          <button class="btn-action" id="btnToggleChat">已开启</button>
-        </div>
-
-        <div style="margin-top: 16px;">
-          <div style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">动态敏感词拦截库</div>
-          <div class="tag-list" id="forbiddenTagList"></div>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" class="input-box" id="newWordInput" placeholder="添加新敏感词..." style="margin-bottom: 0;" />
-            <button class="btn-action" id="btnAddWord">添加</button>
-          </div>
-        </div>
-
-        <div style="margin-top: 16px;">
-          <div style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 8px;">已封禁 IP 名单 (<span id="bannedIpCount">0</span>)</div>
-          <div class="tag-list" id="bannedIpTagList"></div>
-        </div>
+      <div class="stat-card">
+        <div class="stat-title">陪伴总时长</div>
+        <div class="stat-val" id="statDurTotal">-</div>
+        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">App 下载点击: <span id="statAppTotal">-</span></div>
       </div>
     </div>
 
-    <!-- 底部：弹幕内容审核、单条删除与一键封禁 -->
-    <div class="card">
+    <!-- 全局公告管理 -->
+    <div class="section-card">
+      <div class="section-title">📢 全局滚动公告维护</div>
+      <div style="display: flex; gap: 10px;">
+        <input type="text" id="noticeInput" placeholder="填写在前台顶部滚动的公告（留空则不展示）..." style="flex: 1;" maxlength="80" />
+        <button class="btn btn-primary" id="btnUpdateNotice" type="button">发布公告</button>
+      </div>
+    </div>
+
+    <!-- 弹幕与安全控制 -->
+    <div class="section-card">
       <div class="section-title">
-        <span>🛡️ 弹幕内容实时治理</span>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <select class="select-room" id="selectRoom">
-            <option value="1">苏州猫岛</option>
-            <option value="2">沛霖</option>
-            <option value="3">南庄</option>
-          </select>
-          <button class="btn-danger" id="btnClearRoom">清空此机位历史留言</button>
+        <span>🛡️ 互动与安全开关</span>
+        <button class="btn btn-primary" id="btnSaveConfig" type="button">保存安全配置</button>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer;">
+          <input type="checkbox" id="chatEnabledCheck" style="accent-color: var(--accent); width: 16px; height: 16px;" />
+          允许前台发送弹幕（关闭后全员禁言）
+        </label>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px;">动态违禁词拦截库</div>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="forbiddenWordInput" placeholder="新增屏蔽词..." style="flex: 1;" />
+            <button class="btn" id="btnAddForbiddenWord" type="button">添加</button>
+          </div>
+          <div class="tag-container" id="forbiddenWordList"></div>
+        </div>
+
+        <div>
+          <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px;">封禁 IP 黑名单</div>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="bannedIpInput" placeholder="新增封禁 IP..." style="flex: 1;" />
+            <button class="btn" id="btnAddBannedIp" type="button">封禁</button>
+          </div>
+          <div class="tag-container" id="bannedIpList"></div>
         </div>
       </div>
+    </div>
+
+    <!-- 弹幕内容审查与管理 -->
+    <div class="section-card">
+      <div class="section-title">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span>💬 房间弹幕管理</span>
+          <select id="roomSelect">
+            <option value="1">1号 - 苏州猫岛</option>
+            <option value="2">2号 - 沛霖机位</option>
+            <option value="3">3号 - 南庄机位</option>
+          </select>
+        </div>
+        <button class="btn btn-danger" id="btnClearRoomComments" type="button">一键清空该房弹幕</button>
+      </div>
+
       <div class="comment-list" id="adminCommentList">
-        <div style="text-align: center; color: #8b949e; padding: 20px;">正在拉取数据...</div>
+        <div style="color: #8b949e; text-align: center; padding: 40px 0;">请先输入管理密钥完成登录验证</div>
       </div>
     </div>
   </div>
 
+  <div class="toast" id="toastBox">操作成功</div>
+
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
-    let adminToken = localStorage.getItem("maomao_admin_token") || "";
 
-    let currentStats = null;
-    let systemConfig = { chatEnabled: true, forbiddenWords: [], bannedIps: [] };
-
-    const authOverlay = document.getElementById("authOverlay");
-    const adminKeyInput = document.getElementById("adminKeyInput");
-    const btnAuth = document.getElementById("btnAuth");
-    const btnRefresh = document.getElementById("btnRefresh");
-    const btnExportCSV = document.getElementById("btnExportCSV");
-    const selectRoom = document.getElementById("selectRoom");
-    const adminCommentList = document.getElementById("adminCommentList");
-    const btnSaveNotice = document.getElementById("btnSaveNotice");
-    const noticeInput = document.getElementById("noticeInput");
-    const btnClearRoom = document.getElementById("btnClearRoom");
-    const btnToggleChat = document.getElementById("btnToggleChat");
-    const forbiddenTagList = document.getElementById("forbiddenTagList");
-    const newWordInput = document.getElementById("newWordInput");
-    const btnAddWord = document.getElementById("btnAddWord");
-    const bannedIpTagList = document.getElementById("bannedIpTagList");
-    const bannedIpCount = document.getElementById("bannedIpCount");
-
-    if (adminToken) {
-      authOverlay.style.display = "none";
-      loadAllData();
+    // 1. 安全存储：仅保存在 sessionStorage 中，关闭标签页立即销毁
+    function getAdminKey() {
+      return sessionStorage.getItem("maomao_admin_token") || "";
     }
 
-    btnAuth.addEventListener("click", () => {
+    function setAdminKey(val) {
+      sessionStorage.setItem("maomao_admin_token", val.trim());
+    }
+
+    const adminKeyInput = document.getElementById("adminKeyInput");
+    const btnSaveKey = document.getElementById("btnSaveKey");
+    const toastBox = document.getElementById("toastBox");
+
+    adminKeyInput.value = getAdminKey();
+
+    function showToast(msg) {
+      toastBox.textContent = msg;
+      toastBox.classList.add("show");
+      setTimeout(() => toastBox.classList.remove("show"), 2000);
+    }
+
+    function getAuthHeaders() {
+      return {
+        "Content-Type": "application/json",
+        "X-Admin-Key": getAdminKey()
+      };
+    }
+
+    btnSaveKey.addEventListener("click", () => {
       const val = adminKeyInput.value.trim();
-      if (!val) return;
-      adminToken = val;
-      localStorage.setItem("maomao_admin_token", val);
-      authOverlay.style.display = "none";
-      loadAllData();
+      if (!val) {
+        alert("请输入后台管理密钥");
+        return;
+      }
+      setAdminKey(val);
+      loadAllAdminData();
+      showToast("密钥已更新验证");
     });
 
-    function formatDuration(seconds) {
-      const s = parseInt(seconds, 10) || 0;
-      if (s < 60) return `${s}秒`;
-      const mins = Math.floor(s / 60);
-      const remSec = s % 60;
-      if (mins < 60) return `${mins}分${remSec > 0 ? remSec + '秒' : ''}`;
-      const hours = Math.floor(mins / 60);
-      const remMins = mins % 60;
-      return `${hours}时${remMins}分`;
-    }
-
+    // 2. 加载数据统计
     async function loadStats() {
       try {
-        const res = await fetch(`${API_ENDPOINT}/api/admin/stats?_t=${Date.now()}`, {
-          cache: "no-store",
-          headers: { "X-Admin-Key": adminToken }
+        const res = await fetch(`${API_ENDPOINT}/api/admin/stats`, {
+          headers: getAuthHeaders()
         });
-        if (res.status === 401) {
-          alert("密钥错误，请重新输入");
-          localStorage.removeItem("maomao_admin_token");
-          location.reload();
-          return;
+        if (res.status === 401) return;
+        const data = await res.json();
+        if (data && data.data) {
+          const s = data.data;
+          document.getElementById("statPvToday").textContent = s.pvToday || 0;
+          document.getElementById("statPvTotal").textContent = s.pvTotal || 0;
+          document.getElementById("statUvToday").textContent = s.uvToday || 0;
+          document.getElementById("statUvTotal").textContent = s.uvTotal || 0;
+          document.getElementById("statCommentsTotal").textContent = s.commentsTotal || 0;
+          document.getElementById("statDblTotal").textContent = s.dblclicksTotal || 0;
+          document.getElementById("statDurTotal").textContent = `${Math.floor((s.durationTotal || 0) / 60)} 分钟`;
+          document.getElementById("statAppTotal").textContent = s.appClicksTotal || 0;
         }
-        const json = await res.json();
-        const d = json.data;
-        currentStats = d;
-
-        document.getElementById("uvToday").textContent = d.uvToday.toLocaleString();
-        document.getElementById("uvTotal").textContent = d.uvTotal.toLocaleString();
-        document.getElementById("pvTotal").textContent = d.pvTotal.toLocaleString();
-        document.getElementById("appToday").textContent = d.appClicksToday.toLocaleString();
-        document.getElementById("appTotal").textContent = d.appClicksTotal.toLocaleString();
-        document.getElementById("commTotal").textContent = d.commentsTotal.toLocaleString();
-        document.getElementById("snapTotal").textContent = d.snapshotsTotal.toLocaleString();
-        document.getElementById("likeTotal").textContent = d.dblclicksTotal.toLocaleString();
-        document.getElementById("durationTotal").textContent = formatDuration(d.durationTotal);
-
-        const v1 = d.roomViews["1"] || 0;
-        const v2 = d.roomViews["2"] || 0;
-        const v3 = d.roomViews["3"] || 0;
-
-        const dur1 = d.roomDurations["1"] || 0;
-        const dur2 = d.roomDurations["2"] || 0;
-        const dur3 = d.roomDurations["3"] || 0;
-
-        document.getElementById("vCount1").textContent = `${v1} 次`;
-        document.getElementById("vCount2").textContent = `${v2} 次`;
-        document.getElementById("vCount3").textContent = `${v3} 次`;
-
-        document.getElementById("dTotal1").textContent = formatDuration(dur1);
-        document.getElementById("dTotal2").textContent = formatDuration(dur2);
-        document.getElementById("dTotal3").textContent = formatDuration(dur3);
-
-        document.getElementById("dAvg1").textContent = v1 > 0 ? formatDuration(Math.round(dur1 / v1)) : "0秒";
-        document.getElementById("dAvg2").textContent = v2 > 0 ? formatDuration(Math.round(dur2 / v2)) : "0秒";
-        document.getElementById("dAvg3").textContent = v3 > 0 ? formatDuration(Math.round(dur3 / v3)) : "0秒";
-      } catch (e) {}
+      } catch(e) {}
     }
 
-    async function loadConfig() {
-      try {
-        const res = await fetch(`${API_ENDPOINT}/api/admin/config`, {
-          headers: { "X-Admin-Key": adminToken }
-        });
-        const json = await res.json();
-        if (json.data) {
-          systemConfig = json.data;
-          renderConfigUI();
-        }
-      } catch (e) {}
-    }
-
-    function renderConfigUI() {
-      btnToggleChat.textContent = systemConfig.chatEnabled ? "已开启" : "已禁言";
-      btnToggleChat.style.background = systemConfig.chatEnabled ? "var(--green)" : "var(--red)";
-
-      forbiddenTagList.innerHTML = "";
-      systemConfig.forbiddenWords.forEach(w => {
-        const span = document.createElement("span");
-        span.className = "tag-item";
-        span.innerHTML = `<span>${w}</span><span class="tag-del" onclick="removeWord('${w}')">×</span>`;
-        forbiddenTagList.appendChild(span);
-      });
-
-      bannedIpTagList.innerHTML = "";
-      bannedIpCount.textContent = systemConfig.bannedIps.length;
-      systemConfig.bannedIps.forEach(ip => {
-        const span = document.createElement("span");
-        span.className = "tag-item";
-        span.innerHTML = `<span>${ip}</span><span class="tag-del" onclick="unbanIp('${ip}')">×</span>`;
-        bannedIpTagList.appendChild(span);
-      });
-    }
-
-    async function saveConfig() {
-      try {
-        await fetch(`${API_ENDPOINT}/api/admin/config`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "X-Admin-Key": adminToken },
-          body: JSON.stringify(systemConfig)
-        });
-        renderConfigUI();
-      } catch (e) {}
-    }
-
-    btnToggleChat.addEventListener("click", () => {
-      systemConfig.chatEnabled = !systemConfig.chatEnabled;
-      saveConfig();
-    });
-
-    btnAddWord.addEventListener("click", () => {
-      const val = newWordInput.value.trim();
-      if (!val || systemConfig.forbiddenWords.includes(val)) return;
-      systemConfig.forbiddenWords.push(val);
-      newWordInput.value = "";
-      saveConfig();
-    });
-
-    window.removeWord = function(w) {
-      systemConfig.forbiddenWords = systemConfig.forbiddenWords.filter(item => item !== w);
-      saveConfig();
-    };
-
-    window.unbanIp = function(ip) {
-      systemConfig.bannedIps = systemConfig.bannedIps.filter(item => item !== ip);
-      saveConfig();
-    };
-
-    window.banIp = function(ip) {
-      if (!ip || ip === "unknown") return;
-      if (!confirm(`确定要封禁 IP: ${ip} 吗？被封禁后该设备将无法发送弹幕。`)) return;
-      if (!systemConfig.bannedIps.includes(ip)) {
-        systemConfig.bannedIps.push(ip);
-        saveConfig();
-      }
-    };
-
+    // 3. 公告管理
     async function loadNotice() {
       try {
         const res = await fetch(`${API_ENDPOINT}/api/notice`);
-        const json = await res.json();
-        if (json && json.notice) noticeInput.value = json.notice;
-      } catch (e) {}
+        const data = await res.json();
+        if (data && data.notice !== undefined) {
+          document.getElementById("noticeInput").value = data.notice;
+        }
+      } catch(e) {}
     }
 
-    btnSaveNotice.addEventListener("click", async () => {
-      const text = noticeInput.value.trim();
+    document.getElementById("btnUpdateNotice").addEventListener("click", async () => {
+      const text = document.getElementById("noticeInput").value.trim();
       try {
         const res = await fetch(`${API_ENDPOINT}/api/notice`, {
           method: "POST",
-          headers: { "Content-Type": "application/json", "X-Admin-Key": adminToken },
+          headers: getAuthHeaders(),
           body: JSON.stringify({ text })
         });
         const json = await res.json();
-        alert(json.msg || "保存成功！");
-      } catch (e) {}
+        if (res.status === 401) alert("密钥错误，无权操作！");
+        else showToast(json.msg || "公告已更新");
+      } catch(e) {
+        alert("网络请求异常");
+      }
     });
 
-    async function loadComments() {
-      const roomId = selectRoom.value;
+    // 4. 安全配置管理
+    let currentForbiddenWords = [];
+    let currentBannedIps = [];
+
+    function renderTags() {
+      const fwBox = document.getElementById("forbiddenWordList");
+      const ipBox = document.getElementById("bannedIpList");
+      fwBox.innerHTML = "";
+      ipBox.innerHTML = "";
+
+      // 安全渲染：纯 textContent 节点，防 XSS 注入
+      currentForbiddenWords.forEach((word, idx) => {
+        const tag = document.createElement("div");
+        tag.className = "tag-item";
+        
+        const label = document.createElement("span");
+        label.textContent = word;
+        
+        const close = document.createElement("span");
+        close.className = "tag-close";
+        close.textContent = "✕";
+        close.addEventListener("click", () => {
+          currentForbiddenWords.splice(idx, 1);
+          renderTags();
+        });
+
+        tag.appendChild(label);
+        tag.appendChild(close);
+        fwBox.appendChild(tag);
+      });
+
+      currentBannedIps.forEach((ip, idx) => {
+        const tag = document.createElement("div");
+        tag.className = "tag-item";
+
+        const label = document.createElement("span");
+        label.textContent = ip;
+
+        const close = document.createElement("span");
+        close.className = "tag-close";
+        close.textContent = "✕";
+        close.addEventListener("click", () => {
+          currentBannedIps.splice(idx, 1);
+          renderTags();
+        });
+
+        tag.appendChild(label);
+        tag.appendChild(close);
+        ipBox.appendChild(tag);
+      });
+    }
+
+    document.getElementById("btnAddForbiddenWord").addEventListener("click", () => {
+      const val = document.getElementById("forbiddenWordInput").value.trim();
+      if (val && !currentForbiddenWords.includes(val)) {
+        currentForbiddenWords.push(val);
+        document.getElementById("forbiddenWordInput").value = "";
+        renderTags();
+      }
+    });
+
+    document.getElementById("btnAddBannedIp").addEventListener("click", () => {
+      const val = document.getElementById("bannedIpInput").value.trim();
+      if (val && !currentBannedIps.includes(val)) {
+        currentBannedIps.push(val);
+        document.getElementById("bannedIpInput").value = "";
+        renderTags();
+      }
+    });
+
+    async function loadConfig() {
       try {
-        const res = await fetch(`${API_ENDPOINT}/api/admin/comments?room=${roomId}`, {
-          headers: { "X-Admin-Key": adminToken }
+        const res = await fetch(`${API_ENDPOINT}/api/admin/config`, { headers: getAuthHeaders() });
+        if (res.status === 401) return;
+        const json = await res.json();
+        if (json && json.data) {
+          document.getElementById("chatEnabledCheck").checked = Boolean(json.data.chatEnabled);
+          currentForbiddenWords = json.data.forbiddenWords || [];
+          currentBannedIps = json.data.bannedIps || [];
+          renderTags();
+        }
+      } catch(e) {}
+    }
+
+    document.getElementById("btnSaveConfig").addEventListener("click", async () => {
+      const chatEnabled = document.getElementById("chatEnabledCheck").checked;
+      try {
+        const res = await fetch(`${API_ENDPOINT}/api/admin/config`, {
+          method: "POST",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            chatEnabled,
+            forbiddenWords: currentForbiddenWords,
+            bannedIps: currentBannedIps
+          })
         });
         const json = await res.json();
-        const list = json.comments || [];
+        if (res.status === 401) alert("密钥错误，无权操作！");
+        else showToast(json.msg || "安全配置已保存");
+      } catch(e) {
+        alert("网络请求异常");
+      }
+    });
 
+    // 5. 弹幕内容审查与管理
+    const roomSelect = document.getElementById("roomSelect");
+    const adminCommentList = document.getElementById("adminCommentList");
+
+    async function loadRoomComments() {
+      const roomId = roomSelect.value;
+      try {
+        const res = await fetch(`${API_ENDPOINT}/api/admin/comments?room=${roomId}`, { headers: getAuthHeaders() });
+        if (res.status === 401) {
+          adminCommentList.innerHTML = '<div style="color: #f87171; text-align: center; padding: 40px 0;">管理密钥错误或未输入</div>';
+          return;
+        }
+        const json = await res.json();
+        const comments = json.comments || [];
         adminCommentList.innerHTML = "";
-        if (list.length === 0) {
-          adminCommentList.innerHTML = '<div style="text-align: center; color: #8b949e; padding: 20px;">当前房间暂无留言</div>';
+
+        if (comments.length === 0) {
+          adminCommentList.innerHTML = '<div style="color: #8b949e; text-align: center; padding: 40px 0;">该房间暂无弹幕记录</div>';
           return;
         }
 
-        list.slice().reverse().forEach(c => {
+        // 安全构建 DOM 节点，彻底杜绝 innerHTML 注入风险
+        comments.slice().reverse().forEach(c => {
           const row = document.createElement("div");
           row.className = "comment-row";
-          const ipStr = c.ip ? `IP: ${c.ip}` : "";
 
-          row.innerHTML = `
-            <div>
-              <span class="c-user">${c.name}:</span>
-              <span class="c-text">${c.text}</span>
-              <span class="c-meta">${c.time || ''} | ${ipStr}</span>
-            </div>
-            <div style="display: flex; gap: 6px;">
-              ${c.ip ? `<button class="btn-warn" onclick="banIp('${c.ip}')">封禁IP</button>` : ''}
-              <button class="btn-danger" onclick="deleteComment('${roomId}', '${c.id}')">删除</button>
-            </div>
-          `;
+          const meta = document.createElement("div");
+          meta.className = "c-meta";
 
+          const user = document.createElement("span");
+          user.className = "c-user";
+          user.textContent = `${c.name || '热心猫友'}:`;
+
+          const msg = document.createElement("span");
+          msg.className = "c-text";
+          msg.textContent = c.text || '';
+
+          const time = document.createElement("span");
+          time.className = "c-time";
+          time.textContent = `${c.time || ''} ${c.ip ? `(${c.ip})` : ''}`;
+
+          meta.appendChild(user);
+          meta.appendChild(msg);
+          meta.appendChild(time);
+
+          const delBtn = document.createElement("button");
+          delBtn.className = "btn btn-danger";
+          delBtn.style.padding = "4px 10px";
+          delBtn.style.fontSize = "12px";
+          delBtn.textContent = "删除";
+          delBtn.addEventListener("click", async () => {
+            if (!confirm(`确认删除此条弹幕？\n"${c.text}"`)) return;
+            await deleteComment(roomId, c.id);
+          });
+
+          row.appendChild(meta);
+          row.appendChild(delBtn);
           adminCommentList.appendChild(row);
         });
-      } catch (e) {}
+      } catch(e) {}
     }
 
-    window.deleteComment = async function(roomId, commentId) {
-      if (!confirm("确定要删除这条留言吗？")) return;
+    async function deleteComment(roomId, commentId) {
       try {
-        await fetch(`${API_ENDPOINT}/api/admin/comments/delete`, {
+        const res = await fetch(`${API_ENDPOINT}/api/admin/comments/delete`, {
           method: "POST",
-          headers: { "Content-Type": "application/json", "X-Admin-Key": adminToken },
+          headers: getAuthHeaders(),
           body: JSON.stringify({ roomId, commentId })
         });
-        loadComments();
-      } catch (e) {}
-    };
+        const json = await res.json();
+        showToast(json.msg || "已删除");
+        loadRoomComments();
+      } catch(e) {}
+    }
 
-    btnClearRoom.addEventListener("click", async () => {
-      const roomId = selectRoom.value;
-      if (!confirm(`确定要清空 机位${roomId} 的全部历史留言吗？此操作不可恢复！`)) return;
+    document.getElementById("btnClearRoomComments").addEventListener("click", async () => {
+      const roomId = roomSelect.value;
+      if (!confirm(`⚠️ 危险操作：确认清空【${roomId}号房间】的全部弹幕吗？此操作不可恢复！`)) return;
       try {
-        await fetch(`${API_ENDPOINT}/api/admin/comments/clear`, {
+        const res = await fetch(`${API_ENDPOINT}/api/admin/comments/clear`, {
           method: "POST",
-          headers: { "Content-Type": "application/json", "X-Admin-Key": adminToken },
+          headers: getAuthHeaders(),
           body: JSON.stringify({ roomId })
         });
-        loadComments();
-      } catch (e) {}
+        const json = await res.json();
+        showToast(json.msg || "房间已清空");
+        loadRoomComments();
+      } catch(e) {}
     });
 
-    btnExportCSV.addEventListener("click", () => {
-      if (!currentStats) { alert("数据正在加载中..."); return; }
-      const now = new Date().toLocaleDateString('zh-CN');
-      const rows = [
-        ["统计日期", now],
-        ["指标名称", "数值"],
-        ["今日独立访客 (UV)", currentStats.uvToday],
-        ["累计独立访客 (UV)", currentStats.uvTotal],
-        ["累计页面浏览 (PV)", currentStats.pvTotal],
-        ["全站累计观看总时长 (秒)", currentStats.durationTotal],
-        ["全站累计观看总时长 (格式化)", formatDuration(currentStats.durationTotal)],
-        ["机位1 (苏州猫岛) 访问量", currentStats.roomViews["1"] || 0],
-        ["机位1 (苏州猫岛) 总停留时长 (秒)", currentStats.roomDurations["1"] || 0],
-        ["机位1 (苏州猫岛) 人均停留时长", currentStats.roomViews["1"] > 0 ? formatDuration(Math.round(currentStats.roomDurations["1"] / currentStats.roomViews["1"])) : "0秒"],
-        ["机位2 (沛霖) 访问量", currentStats.roomViews["2"] || 0],
-        ["机位2 (沛霖) 总停留时长 (秒)", currentStats.roomDurations["2"] || 0],
-        ["机位2 (沛霖) 人均停留时长", currentStats.roomViews["2"] > 0 ? formatDuration(Math.round(currentStats.roomDurations["2"] / currentStats.roomViews["2"])) : "0秒"],
-        ["机位3 (南庄) 访问量", currentStats.roomViews["3"] || 0],
-        ["机位3 (南庄) 总停留时长 (秒)", currentStats.roomDurations["3"] || 0],
-        ["机位3 (南庄) 人均停留时长", currentStats.roomViews["3"] > 0 ? formatDuration(Math.round(currentStats.roomDurations["3"] / currentStats.roomViews["3"])) : "0秒"],
-        ["App 导流点击数 (累计)", currentStats.appClicksTotal],
-        ["拍立得海报生成总量", currentStats.snapshotsTotal],
-        ["双击吸猫点赞总量", currentStats.dblclicksTotal]
-      ];
+    roomSelect.addEventListener("change", loadRoomComments);
 
-      let csvContent = "\uFEFF";
-      rows.forEach(r => { csvContent += r.join(",") + "\n"; });
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `毛毛星球运营报表_${now.replace(/\//g, "-")}.csv`;
-      link.click();
-    });
-
-    selectRoom.addEventListener("change", loadComments);
-    btnRefresh.addEventListener("click", loadAllData);
-
-    function loadAllData() {
+    function loadAllAdminData() {
       loadStats();
-      loadConfig();
       loadNotice();
-      loadComments();
+      loadConfig();
+      loadRoomComments();
+    }
+
+    if (getAdminKey()) {
+      loadAllAdminData();
     }
   </script>
 </body>
