@@ -1318,8 +1318,9 @@
 
     trackEvent("pv");
 
+    // 增加后台检查，标签页不可见或视频暂停时不产生虚假时长上报与 KV 写入
     function flushRoomDuration() {
-      if (!currentRoomId) return;
+      if (document.hidden || !currentRoomId || (video && video.paused)) return;
       const now = Date.now();
       const deltaSec = Math.floor((now - lastDurationFlushTime) / 1000);
       if (deltaSec >= 1) {
@@ -2515,12 +2516,12 @@
       startAtmosphereBot();
 
       if (pollTimer) clearInterval(pollTimer);
-      // 优雅 6 秒轮询，且仅在页面可见时执行
+      // 优雅 8 秒轮询，配合 Worker 2秒缓存，大幅压降服务器/KV 读取压力
       pollTimer = setInterval(() => {
         if (document.visibilityState === "visible") {
           fetchComments(false);
         }
-      }, 6000);
+      }, 8000);
 
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
@@ -2595,7 +2596,6 @@
       try {
         nameInput.value = getOrCreateUserNickname();
 
-        // 精准请求 /api/rooms 并允许命中 30s 边缘缓存
         const response = await fetch(`${API_ENDPOINT}/api/rooms`);
         const data = await response.json();
         let rawRooms = data.rooms || [];
@@ -2611,7 +2611,6 @@
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
         roomButtonList.innerHTML = "";
 
-        // 安全构建 DOM 节点
         roomList.forEach((room, idx) => {
           const btn = document.createElement("button");
           btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
@@ -2645,21 +2644,21 @@
       }
     }
 
-    // 切入后台彻底暂停轮询，切回前台立即恢复
+    // 后台彻底暂停轮询与虚假时长统计
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
+        flushRoomDuration();
         if (pollTimer) {
           clearInterval(pollTimer);
           pollTimer = null;
         }
-        flushRoomDuration();
       } else {
         lastDurationFlushTime = Date.now();
         fetchComments(false);
         if (!pollTimer) {
           pollTimer = setInterval(() => {
             if (document.visibilityState === "visible") fetchComments(false);
-          }, 6000);
+          }, 8000);
         }
 
         if (hls && hls.liveSyncPosition) {
