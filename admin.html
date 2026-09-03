@@ -14,6 +14,7 @@
       --accent: #10b981;
       --danger: #ef4444;
       --warning: #f59e0b;
+      --blue: #3b82f6;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -105,6 +106,7 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 16px;
+      transition: transform 0.2s;
     }
 
     .stat-title {
@@ -118,6 +120,19 @@
       font-size: 24px;
       font-weight: 800;
       color: var(--text-bright);
+    }
+
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 99px;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
     }
 
     .section-card {
@@ -219,7 +234,7 @@
       </div>
     </header>
 
-    <!-- 核心统计概览 -->
+    <!-- 全站核心统计概览 -->
     <div class="grid-stats">
       <div class="stat-card">
         <div class="stat-title">今日浏览量 (PV)</div>
@@ -234,12 +249,61 @@
       <div class="stat-card">
         <div class="stat-title">总互动弹幕数</div>
         <div class="stat-val" id="statCommentsTotal">-</div>
-        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">功德点击: <span id="statDblTotal">-</span></div>
+        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">功德点击: <span id="statDblTotal">0</span></div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">陪伴总时长</div>
+        <div class="stat-title">全站陪伴总时长</div>
         <div class="stat-val" id="statDurTotal">-</div>
-        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">App 下载点击: <span id="statAppTotal">-</span></div>
+        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">App 下载点击: <span id="statAppTotal">0</span></div>
+      </div>
+    </div>
+
+    <!-- 各直播间专属数据监控看板 -->
+    <div class="section-card" style="padding: 16px 20px;">
+      <div class="section-title" style="margin-bottom: 12px; font-size: 14px;">
+        <span>📊 各机位专属数据监控</span>
+        <span style="font-size: 12px; font-weight: normal; color: #8b949e;">数据随拉流实时累加更新</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+        <!-- 1号机位：苏州猫岛 -->
+        <div class="stat-card" style="background: #0d1117; border-left: 3px solid var(--accent);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 700; color: var(--text-bright);">1号 · 苏州猫岛</span>
+            <span class="badge-live">LIVE</span>
+          </div>
+          <div style="font-size: 24px; font-weight: 800; color: var(--accent);" id="room1Duration">- 分钟</div>
+          <div style="font-size: 12px; color: #8b949e; margin-top: 8px; display: flex; justify-content: space-between;">
+            <span>现存弹幕：<b id="room1Comments" style="color: var(--text-bright);">-</b> 条</span>
+            <span>时长占比：<b id="room1Ratio" style="color: var(--warning);">-</b></span>
+          </div>
+        </div>
+
+        <!-- 2号机位：沛霖 -->
+        <div class="stat-card" style="background: #0d1117; border-left: 3px solid var(--blue);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 700; color: var(--text-bright);">2号 · 沛霖机位</span>
+            <span class="badge-live">LIVE</span>
+          </div>
+          <div style="font-size: 24px; font-weight: 800; color: var(--blue);" id="room2Duration">- 分钟</div>
+          <div style="font-size: 12px; color: #8b949e; margin-top: 8px; display: flex; justify-content: space-between;">
+            <span>现存弹幕：<b id="room2Comments" style="color: var(--text-bright);">-</b> 条</span>
+            <span>时长占比：<b id="room2Ratio" style="color: var(--warning);">-</b></span>
+          </div>
+        </div>
+
+        <!-- 3号机位：南庄 -->
+        <div class="stat-card" style="background: #0d1117; border-left: 3px solid var(--warning);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 700; color: var(--text-bright);">3号 · 南庄机位</span>
+            <span class="badge-live">LIVE</span>
+          </div>
+          <div style="font-size: 24px; font-weight: 800; color: var(--warning);" id="room3Duration">- 分钟</div>
+          <div style="font-size: 12px; color: #8b949e; margin-top: 8px; display: flex; justify-content: space-between;">
+            <span>现存弹幕：<b id="room3Comments" style="color: var(--text-bright);">-</b> 条</span>
+            <span>时长占比：<b id="room3Ratio" style="color: var(--warning);">-</b></span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -312,7 +376,6 @@
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
-    // 1. 安全存储：仅保存在 sessionStorage 中，关闭标签页立即销毁
     function getAdminKey() {
       return sessionStorage.getItem("maomao_admin_token") || "";
     }
@@ -351,8 +414,11 @@
       showToast("密钥已更新验证");
     });
 
-    // 2. 加载数据统计
+    // 2. 加载全站统计与机位专属看板
     async function loadStats() {
+      const key = getAdminKey();
+      if (!key) return;
+
       try {
         const res = await fetch(`${API_ENDPOINT}/api/admin/stats`, {
           headers: getAuthHeaders()
@@ -366,9 +432,37 @@
           document.getElementById("statUvToday").textContent = s.uvToday || 0;
           document.getElementById("statUvTotal").textContent = s.uvTotal || 0;
           document.getElementById("statCommentsTotal").textContent = s.commentsTotal || 0;
-          document.getElementById("statDblTotal").textContent = s.dblclicksTotal || 0;
           document.getElementById("statDurTotal").textContent = `${Math.floor((s.durationTotal || 0) / 60)} 分钟`;
-          document.getElementById("statAppTotal").textContent = s.appClicksTotal || 0;
+
+          // 渲染各直播间独立看板数据
+          if (s.roomDurations) {
+            const dur1 = s.roomDurations["1"] || 0;
+            const dur2 = s.roomDurations["2"] || 0;
+            const dur3 = s.roomDurations["3"] || 0;
+            const totalSec = dur1 + dur2 + dur3 || 1;
+
+            document.getElementById("room1Duration").textContent = `${Math.floor(dur1 / 60)} 分钟`;
+            document.getElementById("room2Duration").textContent = `${Math.floor(dur2 / 60)} 分钟`;
+            document.getElementById("room3Duration").textContent = `${Math.floor(dur3 / 60)} 分钟`;
+
+            document.getElementById("room1Ratio").textContent = `${Math.round((dur1 / totalSec) * 100)}%`;
+            document.getElementById("room2Ratio").textContent = `${Math.round((dur2 / totalSec) * 100)}%`;
+            document.getElementById("room3Ratio").textContent = `${Math.round((dur3 / totalSec) * 100)}%`;
+          }
+
+          // 异步加载各房间弹幕总数
+          ["1", "2", "3"].forEach(async (rid) => {
+            try {
+              const cRes = await fetch(`${API_ENDPOINT}/api/admin/comments?room=${rid}`, {
+                headers: getAuthHeaders()
+              });
+              const cJson = await cRes.json();
+              if (cJson.code === 200 && Array.isArray(cJson.comments)) {
+                const el = document.getElementById(`room${rid}Comments`);
+                if (el) el.textContent = cJson.comments.length;
+              }
+            } catch(e) {}
+          });
         }
       } catch(e) {}
     }
@@ -410,7 +504,6 @@
       fwBox.innerHTML = "";
       ipBox.innerHTML = "";
 
-      // 安全渲染：纯 textContent 节点，防 XSS 注入
       currentForbiddenWords.forEach((word, idx) => {
         const tag = document.createElement("div");
         tag.className = "tag-item";
@@ -525,7 +618,6 @@
           return;
         }
 
-        // 安全构建 DOM 节点，彻底杜绝 innerHTML 注入风险
         comments.slice().reverse().forEach(c => {
           const row = document.createElement("div");
           row.className = "comment-row";
@@ -576,6 +668,7 @@
         const json = await res.json();
         showToast(json.msg || "已删除");
         loadRoomComments();
+        loadStats();
       } catch(e) {}
     }
 
@@ -591,6 +684,7 @@
         const json = await res.json();
         showToast(json.msg || "房间已清空");
         loadRoomComments();
+        loadStats();
       } catch(e) {}
     });
 
