@@ -258,53 +258,35 @@
       </div>
     </div>
 
-    <!-- 各直播间专属数据监控看板 -->
+    <!-- 各直播间专属数据监控看板（自适应全部机位） -->
     <div class="section-card" style="padding: 16px 20px;">
       <div class="section-title" style="margin-bottom: 12px; font-size: 14px;">
         <span>📊 各机位专属数据监控</span>
-        <span style="font-size: 12px; font-weight: normal; color: #8b949e;">数据随拉流实时累加更新</span>
+        <span style="font-size: 12px; font-weight: normal; color: #8b949e;">自动统计所有在线机位</span>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
-        <!-- 1号机位：苏州猫岛 -->
-        <div class="stat-card" style="background: #0d1117; border-left: 3px solid var(--accent);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-weight: 700; color: var(--text-bright);">1号 · 苏州猫岛</span>
-            <span class="badge-live">LIVE</span>
-          </div>
-          <div style="font-size: 24px; font-weight: 800; color: var(--accent);" id="room1Duration">- 分钟</div>
-          <div style="font-size: 12px; color: #8b949e; margin-top: 8px; display: flex; justify-content: space-between;">
-            <span>现存弹幕：<b id="room1Comments" style="color: var(--text-bright);">-</b> 条</span>
-            <span>时长占比：<b id="room1Ratio" style="color: var(--warning);">-</b></span>
-          </div>
-        </div>
-
-        <!-- 2号机位：沛霖 -->
-        <div class="stat-card" style="background: #0d1117; border-left: 3px solid var(--blue);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-weight: 700; color: var(--text-bright);">2号 · 沛霖机位</span>
-            <span class="badge-live">LIVE</span>
-          </div>
-          <div style="font-size: 24px; font-weight: 800; color: var(--blue);" id="room2Duration">- 分钟</div>
-          <div style="font-size: 12px; color: #8b949e; margin-top: 8px; display: flex; justify-content: space-between;">
-            <span>现存弹幕：<b id="room2Comments" style="color: var(--text-bright);">-</b> 条</span>
-            <span>时长占比：<b id="room2Ratio" style="color: var(--warning);">-</b></span>
-          </div>
-        </div>
-
-        <!-- 3号机位：南庄 -->
-        <div class="stat-card" style="background: #0d1117; border-left: 3px solid var(--warning);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-weight: 700; color: var(--text-bright);">3号 · 南庄机位</span>
-            <span class="badge-live">LIVE</span>
-          </div>
-          <div style="font-size: 24px; font-weight: 800; color: var(--warning);" id="room3Duration">- 分钟</div>
-          <div style="font-size: 12px; color: #8b949e; margin-top: 8px; display: flex; justify-content: space-between;">
-            <span>现存弹幕：<b id="room3Comments" style="color: var(--text-bright);">-</b> 条</span>
-            <span>时长占比：<b id="room3Ratio" style="color: var(--warning);">-</b></span>
-          </div>
-        </div>
+      <div id="roomStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+        <div style="color: #8b949e; text-align: center; grid-column: 1 / -1; padding: 20px 0;">正在加载机位数据...</div>
       </div>
+    </div>
+
+    <!-- 直播机位可视化管理 -->
+    <div class="section-card">
+      <div class="section-title">
+        <span>📹 直播间机位配置管理</span>
+        <span style="font-size: 12px; color: #8b949e; font-weight: normal;">添加或删除后即刻生效</span>
+      </div>
+
+      <!-- 新增机位表单 -->
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+        <input type="text" id="newRoomName" placeholder="机位名称 (如: 沛霖机位)" style="flex: 1; min-width: 150px;" maxlength="20" />
+        <input type="text" id="newRoomSerial" placeholder="萤石设备码 (Serial:Channel)" style="flex: 2; min-width: 260px;" />
+        <input type="number" id="newRoomChannel" placeholder="通道号" value="1" style="width: 80px;" min="1" max="16" />
+        <button class="btn btn-primary" id="btnAddRoomDevice" type="button">➕ 添加新机位</button>
+      </div>
+
+      <!-- 当前已配置机位列表 -->
+      <div id="deviceTableContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
     </div>
 
     <!-- 全局公告管理 -->
@@ -356,11 +338,7 @@
       <div class="section-title">
         <div style="display: flex; align-items: center; gap: 12px;">
           <span>💬 房间弹幕管理</span>
-          <select id="roomSelect">
-            <option value="1">1号 - 苏州猫岛</option>
-            <option value="2">2号 - 沛霖机位</option>
-            <option value="3">3号 - 南庄机位</option>
-          </select>
+          <select id="roomSelect"></select>
         </div>
         <button class="btn btn-danger" id="btnClearRoomComments" type="button">一键清空该房弹幕</button>
       </div>
@@ -414,7 +392,58 @@
       showToast("密钥已更新验证");
     });
 
-    // 2. 加载全站统计与机位专属看板
+    let currentDevices = [];
+    const THEME_COLORS = ["var(--accent)", "var(--blue)", "var(--warning)", "#a855f7", "#ec4899", "#06b6d4"];
+
+    // 2. 渲染各机位专属数据监控卡片
+    function renderRoomStats(devices, roomDurations) {
+      const grid = document.getElementById("roomStatsGrid");
+      grid.innerHTML = "";
+
+      let totalSec = 0;
+      devices.forEach(d => {
+        totalSec += (roomDurations[d.id] || 0);
+      });
+      if (totalSec === 0) totalSec = 1;
+
+      devices.forEach((dev, idx) => {
+        const durSec = roomDurations[dev.id] || 0;
+        const color = THEME_COLORS[idx % THEME_COLORS.length];
+        const card = document.createElement("div");
+        card.className = "stat-card";
+        card.style.background = "#0d1117";
+        card.style.borderLeft = `3px solid ${color}`;
+
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-weight: 700; color: var(--text-bright);">${dev.id}号 · ${dev.name}</span>
+            <span class="badge-live">LIVE</span>
+          </div>
+          <div style="font-size: 24px; font-weight: 800; color: ${color};">${Math.floor(durSec / 60)} 分钟</div>
+          <div style="font-size: 12px; color: #8b949e; margin-top: 8px; display: flex; justify-content: space-between;">
+            <span>现存弹幕：<b id="room${dev.id}Comments" style="color: var(--text-bright);">-</b> 条</span>
+            <span>时长占比：<b style="color: var(--warning);">${Math.round((durSec / totalSec) * 100)}%</b></span>
+          </div>
+        `;
+
+        grid.appendChild(card);
+
+        // 异步查询弹幕条数
+        fetch(`${API_ENDPOINT}/api/admin/comments?room=${dev.id}`, {
+          headers: getAuthHeaders()
+        })
+        .then(res => res.json())
+        .then(cJson => {
+          if (cJson.code === 200 && Array.isArray(cJson.comments)) {
+            const el = document.getElementById(`room${dev.id}Comments`);
+            if (el) el.textContent = cJson.comments.length;
+          }
+        })
+        .catch(() => {});
+      });
+    }
+
+    // 3. 加载全站统计
     async function loadStats() {
       const key = getAdminKey();
       if (!key) return;
@@ -434,40 +463,122 @@
           document.getElementById("statCommentsTotal").textContent = s.commentsTotal || 0;
           document.getElementById("statDurTotal").textContent = `${Math.floor((s.durationTotal || 0) / 60)} 分钟`;
 
-          // 渲染各直播间独立看板数据
-          if (s.roomDurations) {
-            const dur1 = s.roomDurations["1"] || 0;
-            const dur2 = s.roomDurations["2"] || 0;
-            const dur3 = s.roomDurations["3"] || 0;
-            const totalSec = dur1 + dur2 + dur3 || 1;
-
-            document.getElementById("room1Duration").textContent = `${Math.floor(dur1 / 60)} 分钟`;
-            document.getElementById("room2Duration").textContent = `${Math.floor(dur2 / 60)} 分钟`;
-            document.getElementById("room3Duration").textContent = `${Math.floor(dur3 / 60)} 分钟`;
-
-            document.getElementById("room1Ratio").textContent = `${Math.round((dur1 / totalSec) * 100)}%`;
-            document.getElementById("room2Ratio").textContent = `${Math.round((dur2 / totalSec) * 100)}%`;
-            document.getElementById("room3Ratio").textContent = `${Math.round((dur3 / totalSec) * 100)}%`;
-          }
-
-          // 异步加载各房间弹幕总数
-          ["1", "2", "3"].forEach(async (rid) => {
-            try {
-              const cRes = await fetch(`${API_ENDPOINT}/api/admin/comments?room=${rid}`, {
-                headers: getAuthHeaders()
-              });
-              const cJson = await cRes.json();
-              if (cJson.code === 200 && Array.isArray(cJson.comments)) {
-                const el = document.getElementById(`room${rid}Comments`);
-                if (el) el.textContent = cJson.comments.length;
-              }
-            } catch(e) {}
-          });
+          const devices = s.customDevices || currentDevices;
+          renderRoomStats(devices, s.roomDurations || {});
         }
       } catch(e) {}
     }
 
-    // 3. 公告管理
+    // 4. 机位管理可视化
+    function renderDeviceList() {
+      const container = document.getElementById("deviceTableContainer");
+      container.innerHTML = "";
+
+      if (currentDevices.length === 0) {
+        container.innerHTML = '<div style="color: #8b949e; text-align: center; padding: 12px 0;">暂无机位，使用系统默认配置</div>';
+        return;
+      }
+
+      currentDevices.forEach((dev, idx) => {
+        const row = document.createElement("div");
+        row.className = "comment-row";
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.alignItems = "center";
+
+        row.innerHTML = `
+          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            <span class="badge-live">ID: ${dev.id}</span>
+            <b style="color: var(--text-bright);">${dev.name}</b>
+            <span style="color: #8b949e; font-size: 11px; font-family: monospace;">设备码: ${dev.deviceSerial} (通道: ${dev.channelNo || 1})</span>
+          </div>
+        `;
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "btn btn-danger";
+        delBtn.style.padding = "4px 10px";
+        delBtn.style.fontSize = "12px";
+        delBtn.textContent = "删除";
+        delBtn.addEventListener("click", async () => {
+          if (!confirm(`确认删除机位【${dev.name}】？`)) return;
+          currentDevices.splice(idx, 1);
+          currentDevices.forEach((d, i) => d.id = String(i + 1));
+          await saveDevicesConfig();
+          renderDeviceList();
+          updateRoomSelectOptions();
+          loadStats();
+        });
+
+        row.appendChild(delBtn);
+        container.appendChild(row);
+      });
+    }
+
+    function updateRoomSelectOptions() {
+      const sel = document.getElementById("roomSelect");
+      if (!sel) return;
+      const curVal = sel.value;
+      sel.innerHTML = "";
+      currentDevices.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d.id;
+        opt.textContent = `${d.id}号 - ${d.name}`;
+        sel.appendChild(opt);
+      });
+      if (curVal && currentDevices.some(d => d.id === curVal)) {
+        sel.value = curVal;
+      } else if (currentDevices.length > 0) {
+        sel.value = currentDevices[0].id;
+      }
+      loadRoomComments();
+    }
+
+    async function saveDevicesConfig() {
+      try {
+        const res = await fetch(`${API_ENDPOINT}/api/admin/config`, {
+          method: "POST",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({ customDevices: currentDevices })
+        });
+        const json = await res.json();
+        if (json.code === 200) {
+          showToast("机位配置已更新，前台已同步！");
+        } else {
+          alert(json.msg || "保存失败");
+        }
+      } catch (e) {
+        alert("网络请求异常");
+      }
+    }
+
+    document.getElementById("btnAddRoomDevice").addEventListener("click", async () => {
+      const name = document.getElementById("newRoomName").value.trim();
+      const serial = document.getElementById("newRoomSerial").value.trim();
+      const channel = parseInt(document.getElementById("newRoomChannel").value || "1", 10);
+
+      if (!name || !serial) {
+        alert("请填写机位名称和设备序列号！");
+        return;
+      }
+
+      const newId = String(currentDevices.length + 1);
+      currentDevices.push({
+        id: newId,
+        name: name,
+        deviceSerial: serial,
+        channelNo: channel
+      });
+
+      document.getElementById("newRoomName").value = "";
+      document.getElementById("newRoomSerial").value = "";
+
+      await saveDevicesConfig();
+      renderDeviceList();
+      updateRoomSelectOptions();
+      loadStats();
+    });
+
+    // 5. 公告管理
     async function loadNotice() {
       try {
         const res = await fetch(`${API_ENDPOINT}/api/notice`);
@@ -494,7 +605,7 @@
       }
     });
 
-    // 4. 安全配置管理
+    // 6. 安全配置管理
     let currentForbiddenWords = [];
     let currentBannedIps = [];
 
@@ -572,7 +683,10 @@
           document.getElementById("chatEnabledCheck").checked = Boolean(json.data.chatEnabled);
           currentForbiddenWords = json.data.forbiddenWords || [];
           currentBannedIps = json.data.bannedIps || [];
+          currentDevices = json.data.customDevices || [];
           renderTags();
+          renderDeviceList();
+          updateRoomSelectOptions();
         }
       } catch(e) {}
     }
@@ -586,7 +700,8 @@
           body: JSON.stringify({
             chatEnabled,
             forbiddenWords: currentForbiddenWords,
-            bannedIps: currentBannedIps
+            bannedIps: currentBannedIps,
+            customDevices: currentDevices
           })
         });
         const json = await res.json();
@@ -597,12 +712,14 @@
       }
     });
 
-    // 5. 弹幕内容审查与管理
+    // 7. 弹幕审查
     const roomSelect = document.getElementById("roomSelect");
     const adminCommentList = document.getElementById("adminCommentList");
 
     async function loadRoomComments() {
       const roomId = roomSelect.value;
+      if (!roomId) return;
+
       try {
         const res = await fetch(`${API_ENDPOINT}/api/admin/comments?room=${roomId}`, { headers: getAuthHeaders() });
         if (res.status === 401) {
@@ -691,10 +808,9 @@
     roomSelect.addEventListener("change", loadRoomComments);
 
     function loadAllAdminData() {
+      loadConfig();
       loadStats();
       loadNotice();
-      loadConfig();
-      loadRoomComments();
     }
 
     if (getAdminKey()) {
