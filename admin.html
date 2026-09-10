@@ -258,7 +258,7 @@
       </div>
     </div>
 
-    <!-- 各直播间专属数据监控看板（自适应全部机位） -->
+    <!-- 各直播间专属数据监控看板 -->
     <div class="section-card" style="padding: 16px 20px;">
       <div class="section-title" style="margin-bottom: 12px; font-size: 14px;">
         <span>📊 各机位专属数据监控</span>
@@ -270,11 +270,11 @@
       </div>
     </div>
 
-    <!-- 直播机位可视化管理 -->
+    <!-- 直播机位可视化管理（支持随时修改机位名称） -->
     <div class="section-card">
       <div class="section-title">
         <span>📹 直播间机位配置管理</span>
-        <span style="font-size: 12px; color: #8b949e; font-weight: normal;">添加或删除后即刻生效</span>
+        <span style="font-size: 12px; color: #8b949e; font-weight: normal;">支持在线改名、添加与删除，即刻生效</span>
       </div>
 
       <!-- 新增机位表单 -->
@@ -469,7 +469,7 @@
       } catch(e) {}
     }
 
-    // 4. 机位管理可视化
+    // 4. 机位管理可视化（支持在线改名）
     function renderDeviceList() {
       const container = document.getElementById("deviceTableContainer");
       container.innerHTML = "";
@@ -485,15 +485,43 @@
         row.style.display = "flex";
         row.style.justifyContent = "space-between";
         row.style.alignItems = "center";
+        row.style.gap = "10px";
+        row.style.flexWrap = "wrap";
 
         row.innerHTML = `
-          <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <div style="display: flex; gap: 10px; align-items: center; flex: 1; min-width: 280px; flex-wrap: wrap;">
             <span class="badge-live">ID: ${dev.id}</span>
-            <b style="color: var(--text-bright);">${dev.name}</b>
+            <input type="text" id="editName_${dev.id}" value="${dev.name}" style="width: 140px; padding: 4px 8px; font-weight: 700; font-size: 13px;" maxlength="20" placeholder="机位名称" />
             <span style="color: #8b949e; font-size: 11px; font-family: monospace;">设备码: ${dev.deviceSerial} (通道: ${dev.channelNo || 1})</span>
           </div>
         `;
 
+        const btnGroup = document.createElement("div");
+        btnGroup.style.display = "flex";
+        btnGroup.style.gap = "8px";
+
+        // 保存名称按钮
+        const renameBtn = document.createElement("button");
+        renameBtn.className = "btn btn-primary";
+        renameBtn.style.padding = "4px 10px";
+        renameBtn.style.fontSize = "12px";
+        renameBtn.textContent = "保存名称";
+        renameBtn.addEventListener("click", async () => {
+          const inputEl = document.getElementById(`editName_${dev.id}`);
+          const newName = inputEl ? inputEl.value.trim() : "";
+          if (!newName) {
+            alert("机位名称不能为空！");
+            return;
+          }
+          currentDevices[idx].name = newName;
+          await saveDevicesConfig();
+          renderDeviceList();
+          updateRoomSelectOptions();
+          loadStats();
+          showToast(`已成功修改为【${newName}】`);
+        });
+
+        // 删除按钮
         const delBtn = document.createElement("button");
         delBtn.className = "btn btn-danger";
         delBtn.style.padding = "4px 10px";
@@ -509,7 +537,9 @@
           loadStats();
         });
 
-        row.appendChild(delBtn);
+        btnGroup.appendChild(renameBtn);
+        btnGroup.appendChild(delBtn);
+        row.appendChild(btnGroup);
         container.appendChild(row);
       });
     }
