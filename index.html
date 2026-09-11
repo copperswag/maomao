@@ -1479,7 +1479,7 @@
         if (data.code === 200) {
           AuthState.setLogin(token, data.user);
           profileModal.classList.remove("show");
-          alert("昵称修改成功，已同步云端！");
+          alert("昵称修改成功！");
         } else {
           alert(data.msg || "修改失败");
         }
