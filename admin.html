@@ -6,15 +6,19 @@
   <title>毛毛星球 | 运营管理后台</title>
   <style>
     :root {
-      --bg: #0d1117;
-      --card-bg: #161b22;
-      --border: #30363d;
-      --text: #c9d1d9;
-      --text-bright: #f0f6fc;
+      --bg: #090d16;
+      --sidebar-bg: #0f172a;
+      --card-bg: #131d31;
+      --border: #1e293b;
+      --border-focus: #334155;
+      --text: #94a3b8;
+      --text-bright: #f8fafc;
       --accent: #10b981;
+      --accent-hover: #059669;
       --danger: #ef4444;
       --warning: #f59e0b;
-      --blue: #3b82f6;
+      --blue: #38bdf8;
+      --radius: 12px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,32 +27,106 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
       background: var(--bg);
       color: var(--text);
-      padding: 24px 16px;
       min-height: 100vh;
+      display: flex;
     }
 
-    .container {
-      max-width: 1080px;
-      margin: 0 auto;
+    /* 侧边导航栏 */
+    aside {
+      width: 230px;
+      min-width: 230px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      user-select: none;
+      z-index: 10;
     }
 
-    header {
+    .sidebar-brand {
+      padding: 24px 20px;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-bright);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-menu {
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-bright);
+    }
+
+    .nav-item.active {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: var(--accent);
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* 主内容区 */
+    main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    /* 顶部导航条 */
+    .top-header {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 24px;
+      position: sticky;
+      top: 0;
+      z-index: 9;
       flex-wrap: wrap;
       gap: 12px;
     }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 20px;
-      font-weight: 700;
+    .page-title {
+      font-size: 18px;
+      font-weight: 800;
       color: var(--text-bright);
     }
 
@@ -58,12 +136,31 @@
       align-items: center;
     }
 
+    .content-body {
+      padding: 24px 28px 48px;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    /* Tab 页面切换容器 */
+    .tab-pane {
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+    .tab-pane.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 表单与输入通用组件 */
     input, textarea, select {
-      background: #0d1117;
+      background: #090d16;
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--text-bright);
-      padding: 8px 12px;
+      padding: 9px 12px;
       font-size: 13px;
       outline: none;
       transition: border-color 0.2s;
@@ -74,7 +171,7 @@
     }
 
     .btn {
-      background: #21262d;
+      background: #1e293b;
       border: 1px solid var(--border);
       color: var(--text-bright);
       padding: 8px 16px;
@@ -88,15 +185,16 @@
       gap: 6px;
     }
 
-    .btn:hover { background: #30363d; }
-    .btn-primary { background: var(--accent); color: #0d1117; border-color: var(--accent); }
-    .btn-primary:hover { background: #059669; }
+    .btn:hover { background: #334155; }
+    .btn-primary { background: var(--accent); color: #090d16; border-color: var(--accent); }
+    .btn-primary:hover { background: var(--accent-hover); }
     .btn-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.4); }
     .btn-danger:hover { background: rgba(239, 68, 68, 0.3); }
 
+    /* 数据卡片 */
     .grid-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
       gap: 16px;
       margin-bottom: 24px;
     }
@@ -104,53 +202,86 @@
     .stat-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      transition: transform 0.2s;
+      border-radius: var(--radius);
+      padding: 18px;
     }
 
     .stat-title {
       font-size: 12px;
-      color: #8b949e;
+      color: #64748b;
       margin-bottom: 6px;
+      font-weight: 600;
       text-transform: uppercase;
     }
 
     .stat-val {
-      font-size: 24px;
+      font-size: 26px;
       font-weight: 800;
       color: var(--text-bright);
-    }
-
-    .badge-live {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      border-radius: 99px;
-      color: var(--accent);
-      font-size: 10px;
-      font-weight: 700;
     }
 
     .section-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: var(--radius);
       padding: 20px;
       margin-bottom: 24px;
     }
 
     .section-title {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: var(--text-bright);
       margin-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 99px;
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* 表格 */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .data-table th {
+      padding: 12px 14px;
+      color: #64748b;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      background: rgba(0,0,0,0.15);
+    }
+
+    .data-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-bright);
+    }
+
+    .user-avatar-tag {
+      font-size: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 50%;
     }
 
     .tag-container {
@@ -161,7 +292,7 @@
     }
 
     .tag-item {
-      background: #21262d;
+      background: #1e293b;
       border: 1px solid var(--border);
       padding: 4px 10px;
       border-radius: 6px;
@@ -173,13 +304,13 @@
 
     .tag-close {
       cursor: pointer;
-      color: #8b949e;
+      color: #64748b;
       font-weight: 700;
     }
     .tag-close:hover { color: var(--danger); }
 
     .comment-list {
-      max-height: 380px;
+      max-height: 520px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -190,60 +321,23 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #0d1117;
+      background: #090d16;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
+      border-radius: 10px;
+      padding: 12px 16px;
       font-size: 13px;
-    }
-
-    .c-meta { display: flex; align-items: baseline; gap: 8px; flex: 1; flex-wrap: wrap; }
-    .c-user { color: var(--accent); font-weight: 700; }
-    .c-text { color: var(--text-bright); word-break: break-all; }
-    .c-time { color: #8b949e; font-size: 11px; margin-left: auto; }
-
-    /* 用户表格样式 */
-    .user-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      text-align: left;
-    }
-
-    .user-table th {
-      padding: 10px 12px;
-      color: #8b949e;
-      border-bottom: 1px solid var(--border);
-      font-weight: 600;
-    }
-
-    .user-table td {
-      padding: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      color: var(--text-bright);
-    }
-
-    .user-avatar-tag {
-      font-size: 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 50%;
     }
 
     .toast {
       position: fixed;
       bottom: 24px;
       right: 24px;
-      background: #238636;
-      color: #fff;
+      background: #10b981;
+      color: #090d16;
       padding: 10px 18px;
       border-radius: 8px;
       font-size: 13px;
-      font-weight: 600;
+      font-weight: 700;
       box-shadow: 0 8px 24px rgba(0,0,0,0.5);
       opacity: 0;
       transition: opacity 0.3s ease;
@@ -251,165 +345,201 @@
       z-index: 1000;
     }
     .toast.show { opacity: 1; }
+
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      aside { width: 100%; height: auto; position: static; }
+      .nav-menu { flex-direction: row; overflow-x: auto; padding: 8px; }
+      .nav-item { white-space: nowrap; }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <span>🐾</span>
-        <span>MeowHub 运营管理控制台</span>
-      </div>
+  <!-- 侧边导航 -->
+  <aside>
+    <div class="sidebar-brand">
+      <span>🐾</span>
+      <span>MeowHub 控制台</span>
+    </div>
+    <nav class="nav-menu">
+      <div class="nav-item active" data-tab="tab-overview">📊 数据概览</div>
+      <div class="nav-item" data-tab="tab-users">👥 用户管理</div>
+      <div class="nav-item" data-tab="tab-rooms">📹 机位管理</div>
+      <div class="nav-item" data-tab="tab-danmaku">💬 弹幕审查</div>
+      <div class="nav-item" data-tab="tab-settings">🛡️ 运营与安全</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div>毛毛星球 v2.0</div>
+      <div>Cloudflare Edge Serverless</div>
+    </div>
+  </aside>
+
+  <!-- 主工作区 -->
+  <main>
+    <div class="top-header">
+      <div class="page-title" id="currentTabTitle">📊 数据概览</div>
       <div class="auth-bar">
-        <input type="password" id="adminKeyInput" placeholder="输入 ADMIN_KEY" style="width: 200px;" />
+        <input type="password" id="adminKeyInput" placeholder="输入 ADMIN_KEY" style="width: 180px;" />
         <button class="btn btn-primary" id="btnSaveKey" type="button">登录验证</button>
       </div>
-    </header>
-
-    <!-- 全站核心统计概览 -->
-    <div class="grid-stats">
-      <div class="stat-card">
-        <div class="stat-title">总注册用户</div>
-        <div class="stat-val" id="statUsersTotal" style="color: #38bdf8;">-</div>
-        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">手机实名注册用户</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-title">今日浏览量 (PV)</div>
-        <div class="stat-val" id="statPvToday">-</div>
-        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">历史总 PV: <span id="statPvTotal">-</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-title">今日访客数 (UV)</div>
-        <div class="stat-val" id="statUvToday">-</div>
-        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">历史总 UV: <span id="statUvTotal">-</span></div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-title">总互动弹幕数</div>
-        <div class="stat-val" id="statCommentsTotal">-</div>
-        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">功德点击已记录</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-title">全站陪伴总时长</div>
-        <div class="stat-val" id="statDurTotal">-</div>
-        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">活跃观看总时长</div>
-      </div>
     </div>
 
-    <!-- 用户基础档案列表 -->
-    <div class="section-card">
-      <div class="section-title">
-        <span>👥 用户基础档案列表</span>
-        <button class="btn" id="btnRefreshUsers" type="button">🔄 刷新用户</button>
-      </div>
-      <div style="max-height: 300px; overflow-y: auto;">
-        <table class="user-table">
-          <thead>
-            <tr>
-              <th>头像</th>
-              <th>昵称</th>
-              <th>手机号码</th>
-              <th>注册时间</th>
-              <th>最后登录</th>
-              <th>登录次数</th>
-            </tr>
-          </thead>
-          <tbody id="userTableBody">
-            <tr>
-              <td colspan="6" style="text-align: center; color: #8b949e; padding: 24px 0;">请先输入管理密钥登录查看</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 直播机位专属监控 -->
-    <div class="section-card" style="padding: 16px 20px;">
-      <div class="section-title" style="margin-bottom: 12px; font-size: 14px;">
-        <span>📊 各机位专属数据监控</span>
-        <span style="font-size: 12px; font-weight: normal; color: #8b949e;">自动统计所有在线机位</span>
-      </div>
-
-      <div id="roomStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
-        <div style="color: #8b949e; text-align: center; grid-column: 1 / -1; padding: 20px 0;">正在加载机位数据...</div>
-      </div>
-    </div>
-
-    <!-- 直播机位可视化管理 -->
-    <div class="section-card">
-      <div class="section-title">
-        <span>📹 直播间机位配置管理</span>
-        <span style="font-size: 12px; color: #8b949e; font-weight: normal;">支持在线改名、添加与删除，即刻生效</span>
-      </div>
-
-      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
-        <input type="text" id="newRoomName" placeholder="机位名称 (如: 沛霖机位)" style="flex: 1; min-width: 150px;" maxlength="20" />
-        <input type="text" id="newRoomSerial" placeholder="萤石设备码 (Serial:Channel)" style="flex: 2; min-width: 260px;" />
-        <input type="number" id="newRoomChannel" placeholder="通道号" value="1" style="width: 80px;" min="1" max="16" />
-        <button class="btn btn-primary" id="btnAddRoomDevice" type="button">➕ 添加新机位</button>
-      </div>
-
-      <div id="deviceTableContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
-    </div>
-
-    <!-- 全局公告管理 -->
-    <div class="section-card">
-      <div class="section-title">📢 全局滚动公告维护</div>
-      <div style="display: flex; gap: 10px;">
-        <input type="text" id="noticeInput" placeholder="填写在前台顶部滚动的公告（留空则不展示）..." style="flex: 1;" maxlength="80" />
-        <button class="btn btn-primary" id="btnUpdateNotice" type="button">发布公告</button>
-      </div>
-    </div>
-
-    <!-- 弹幕与安全控制 -->
-    <div class="section-card">
-      <div class="section-title">
-        <span>🛡️ 互动与安全开关</span>
-        <button class="btn btn-primary" id="btnSaveConfig" type="button">保存安全配置</button>
-      </div>
-
-      <div style="margin-bottom: 16px;">
-        <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer;">
-          <input type="checkbox" id="chatEnabledCheck" style="accent-color: var(--accent); width: 16px; height: 16px;" />
-          允许前台发送弹幕（关闭后全员禁言）
-        </label>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-        <div>
-          <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px;">动态违禁词拦截库</div>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="forbiddenWordInput" placeholder="新增屏蔽词..." style="flex: 1;" />
-            <button class="btn" id="btnAddForbiddenWord" type="button">添加</button>
+    <div class="content-body">
+      <!-- 菜单 1: 数据概览 -->
+      <div class="tab-pane active" id="tab-overview">
+        <div class="grid-stats">
+          <div class="stat-card">
+            <div class="stat-title">总注册用户</div>
+            <div class="stat-val" id="statUsersTotal" style="color: var(--blue);">-</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">手机实名注册用户</div>
           </div>
-          <div class="tag-container" id="forbiddenWordList"></div>
-        </div>
-
-        <div>
-          <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px;">封禁 IP 黑名单</div>
-          <div style="display: flex; gap: 8px;">
-            <input type="text" id="bannedIpInput" placeholder="新增封禁 IP..." style="flex: 1;" />
-            <button class="btn" id="btnAddBannedIp" type="button">封禁</button>
+          <div class="stat-card">
+            <div class="stat-title">今日浏览量 (PV)</div>
+            <div class="stat-val" id="statPvToday">-</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">历史总 PV: <span id="statPvTotal">-</span></div>
           </div>
-          <div class="tag-container" id="bannedIpList"></div>
+          <div class="stat-card">
+            <div class="stat-title">今日访客数 (UV)</div>
+            <div class="stat-val" id="statUvToday">-</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">历史总 UV: <span id="statUvTotal">-</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">总互动弹幕数</div>
+            <div class="stat-val" id="statCommentsTotal">-</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">全站累计发言</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">全站陪伴总时长</div>
+            <div class="stat-val" id="statDurTotal">-</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">活跃播放统计</div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-title">
+            <span>📊 各机位专属数据监控</span>
+            <button class="btn" id="btnRefreshOverview" type="button">🔄 刷新数据</button>
+          </div>
+          <div id="roomStatsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;">
+            <div style="color: #64748b; text-align: center; grid-column: 1 / -1; padding: 20px 0;">正在加载机位数据...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 菜单 2: 用户管理 -->
+      <div class="tab-pane" id="tab-users">
+        <div class="section-card">
+          <div class="section-title">
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <span>👥 注册用户档案库</span>
+              <input type="text" id="userSearchInput" placeholder="搜索手机号或昵称..." style="width: 200px; padding: 6px 10px;" />
+            </div>
+            <button class="btn btn-primary" id="btnRefreshUsers" type="button">🔄 刷新用户</button>
+          </div>
+          <div style="overflow-x: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>头像</th>
+                  <th>用户昵称</th>
+                  <th>手机号码</th>
+                  <th>注册时间</th>
+                  <th>最后登录</th>
+                  <th>登录频次</th>
+                </tr>
+              </thead>
+              <tbody id="userTableBody">
+                <tr><td colspan="6" style="text-align: center; color: #64748b; padding: 30px 0;">请先输入管理密钥登录查看</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 菜单 3: 机位管理 -->
+      <div class="tab-pane" id="tab-rooms">
+        <div class="section-card">
+          <div class="section-title">➕ 接入新直播机位</div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="newRoomName" placeholder="机位名称 (如: 苏州猫岛)" style="flex: 1; min-width: 140px;" maxlength="20" />
+            <input type="text" id="newRoomSerial" placeholder="萤石设备码 (Serial:Channel)" style="flex: 2; min-width: 260px;" />
+            <input type="number" id="newRoomChannel" placeholder="通道号" value="1" style="width: 80px;" min="1" max="16" />
+            <button class="btn btn-primary" id="btnAddRoomDevice" type="button">确认添加</button>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-title">
+            <span>📹 在线机位调度列表</span>
+            <span style="font-size: 12px; color: #64748b; font-weight: normal;">改名/增删即刻同步前台</span>
+          </div>
+          <div id="deviceTableContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
+      </div>
+
+      <!-- 菜单 4: 弹幕审查 -->
+      <div class="tab-pane" id="tab-danmaku">
+        <div class="section-card">
+          <div class="section-title">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <span>💬 房间弹幕管理</span>
+              <select id="roomSelect"></select>
+            </div>
+            <button class="btn btn-danger" id="btnClearRoomComments" type="button">一键清空该房弹幕</button>
+          </div>
+
+          <div class="comment-list" id="adminCommentList">
+            <div style="color: #64748b; text-align: center; padding: 40px 0;">请先输入管理密钥完成登录验证</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 菜单 5: 运营与安全 -->
+      <div class="tab-pane" id="tab-settings">
+        <div class="section-card">
+          <div class="section-title">📢 全局滚动公告维护</div>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="noticeInput" placeholder="填写在前台顶部滚动的公告（留空则不展示）..." style="flex: 1;" maxlength="80" />
+            <button class="btn btn-primary" id="btnUpdateNotice" type="button">发布公告</button>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-title">
+            <span>🛡️ 互动与安全拦截开关</span>
+            <button class="btn btn-primary" id="btnSaveConfig" type="button">保存安全策略</button>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; color: var(--text-bright);">
+              <input type="checkbox" id="chatEnabledCheck" style="accent-color: var(--accent); width: 16px; height: 16px;" />
+              开启全站弹幕互动（关闭后进入全员禁言状态）
+            </label>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            <div>
+              <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-bright);">动态违禁词拦截库</div>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="forbiddenWordInput" placeholder="新增屏蔽词..." style="flex: 1;" />
+                <button class="btn" id="btnAddForbiddenWord" type="button">添加</button>
+              </div>
+              <div class="tag-container" id="forbiddenWordList"></div>
+            </div>
+
+            <div>
+              <div style="font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-bright);">封禁 IP 黑名单</div>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="bannedIpInput" placeholder="新增封禁 IP..." style="flex: 1;" />
+                <button class="btn" id="btnAddBannedIp" type="button">封禁</button>
+              </div>
+              <div class="tag-container" id="bannedIpList"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- 弹幕审查 -->
-    <div class="section-card">
-      <div class="section-title">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <span>💬 房间弹幕管理</span>
-          <select id="roomSelect"></select>
-        </div>
-        <button class="btn btn-danger" id="btnClearRoomComments" type="button">一键清空该房弹幕</button>
-      </div>
-
-      <div class="comment-list" id="adminCommentList">
-        <div style="color: #8b949e; text-align: center; padding: 40px 0;">请先输入管理密钥完成登录验证</div>
-      </div>
-    </div>
-  </div>
+  </main>
 
   <div class="toast" id="toastBox">操作成功</div>
 
@@ -443,6 +573,26 @@
       };
     }
 
+    // ================= 菜单 Tab 切换 =================
+    const navItems = document.querySelectorAll(".nav-item");
+    const tabPanes = document.querySelectorAll(".tab-pane");
+    const currentTabTitle = document.getElementById("currentTabTitle");
+
+    navItems.forEach(item => {
+      item.addEventListener("click", () => {
+        const targetTab = item.dataset.tab;
+        navItems.forEach(n => n.classList.remove("active"));
+        tabPanes.forEach(p => p.classList.remove("active"));
+
+        item.classList.add("active");
+        document.getElementById(targetTab).classList.add("active");
+        currentTabTitle.textContent = item.textContent;
+
+        if (targetTab === "tab-users") loadUsers();
+        if (targetTab === "tab-danmaku") loadRoomComments();
+      });
+    });
+
     btnSaveKey.addEventListener("click", () => {
       const val = adminKeyInput.value.trim();
       if (!val) {
@@ -455,6 +605,7 @@
     });
 
     let currentDevices = [];
+    let allLoadedUsers = [];
     const THEME_COLORS = ["var(--accent)", "var(--blue)", "var(--warning)", "#a855f7", "#ec4899", "#06b6d4"];
 
     function formatDate(isoStr) {
@@ -467,7 +618,7 @@
       }
     }
 
-    // 1. 加载并渲染用户列表
+    // ================= 1. 用户管理 =================
     async function loadUsers() {
       const key = getAdminKey();
       if (!key) return;
@@ -476,44 +627,59 @@
         const res = await fetch(`${API_ENDPOINT}/api/admin/users`, { headers: getAuthHeaders() });
         if (res.status === 401) return;
         const json = await res.json();
-        const tbody = document.getElementById("userTableBody");
-        tbody.innerHTML = "";
-
-        const users = json.users || [];
-        if (users.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #8b949e; padding: 24px 0;">暂无注册用户</td></tr>';
-          return;
-        }
-
-        users.forEach(u => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td><span class="user-avatar-tag">${u.avatar || '🐱'}</span></td>
-            <td style="font-weight: 700; color: var(--accent);">${u.nickname || '未设置'}</td>
-            <td style="font-family: monospace;">${u.phone}</td>
-            <td style="color: #8b949e; font-size: 12px;">${formatDate(u.createdAt)}</td>
-            <td style="color: #8b949e; font-size: 12px;">${formatDate(u.lastLoginAt)}</td>
-            <td><span class="badge-live">${u.loginCount || 1} 次</span></td>
-          `;
-          tbody.appendChild(tr);
-        });
+        allLoadedUsers = json.users || [];
+        renderUserTable(allLoadedUsers);
       } catch (e) {}
     }
+
+    function renderUserTable(users) {
+      const tbody = document.getElementById("userTableBody");
+      tbody.innerHTML = "";
+
+      if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 24px 0;">暂无匹配用户档案</td></tr>';
+        return;
+      }
+
+      users.forEach(u => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><span class="user-avatar-tag">${u.avatar || '🐱'}</span></td>
+          <td style="font-weight: 700; color: var(--accent);">${u.nickname || '未设置'}</td>
+          <td style="font-family: monospace;">${u.phone}</td>
+          <td style="color: #64748b; font-size: 12px;">${formatDate(u.createdAt)}</td>
+          <td style="color: #64748b; font-size: 12px;">${formatDate(u.lastLoginAt)}</td>
+          <td><span class="badge-live">${u.loginCount || 1} 次</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("userSearchInput").addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) {
+        renderUserTable(allLoadedUsers);
+        return;
+      }
+      const filtered = allLoadedUsers.filter(u => 
+        (u.phone && u.phone.includes(q)) || 
+        (u.nickname && u.nickname.toLowerCase().includes(q))
+      );
+      renderUserTable(filtered);
+    });
 
     document.getElementById("btnRefreshUsers").addEventListener("click", () => {
       loadUsers();
       showToast("用户列表已刷新");
     });
 
-    // 2. 渲染机位监控卡片
+    // ================= 2. 数据概览 =================
     function renderRoomStats(devices, roomDurations) {
       const grid = document.getElementById("roomStatsGrid");
       grid.innerHTML = "";
 
       let totalSec = 0;
-      devices.forEach(d => {
-        totalSec += (roomDurations[d.id] || 0);
-      });
+      devices.forEach(d => { totalSec += (roomDurations[d.id] || 0); });
       if (totalSec === 0) totalSec = 1;
 
       devices.forEach((dev, idx) => {
@@ -521,7 +687,6 @@
         const color = THEME_COLORS[idx % THEME_COLORS.length];
         const card = document.createElement("div");
         card.className = "stat-card";
-        card.style.background = "#0d1117";
         card.style.borderLeft = `3px solid ${color}`;
 
         card.innerHTML = `
@@ -530,7 +695,7 @@
             <span class="badge-live">LIVE</span>
           </div>
           <div style="font-size: 24px; font-weight: 800; color: ${color};">${Math.floor(durSec / 60)} 分钟</div>
-          <div style="font-size: 12px; color: #8b949e; margin-top: 8px; display: flex; justify-content: space-between;">
+          <div style="font-size: 12px; color: #64748b; margin-top: 8px; display: flex; justify-content: space-between;">
             <span>现存弹幕：<b id="room${dev.id}Comments" style="color: var(--text-bright);">-</b> 条</span>
             <span>时长占比：<b style="color: var(--warning);">${Math.round((durSec / totalSec) * 100)}%</b></span>
           </div>
@@ -550,7 +715,6 @@
       });
     }
 
-    // 3. 加载全站统计
     async function loadStats() {
       const key = getAdminKey();
       if (!key) return;
@@ -575,30 +739,30 @@
       } catch(e) {}
     }
 
-    // 4. 机位管理可视化
+    document.getElementById("btnRefreshOverview").addEventListener("click", () => {
+      loadStats();
+      showToast("监控数据已刷新");
+    });
+
+    // ================= 3. 机位管理 =================
     function renderDeviceList() {
       const container = document.getElementById("deviceTableContainer");
       container.innerHTML = "";
 
       if (currentDevices.length === 0) {
-        container.innerHTML = '<div style="color: #8b949e; text-align: center; padding: 12px 0;">暂无机位，使用系统默认配置</div>';
+        container.innerHTML = '<div style="color: #64748b; text-align: center; padding: 12px 0;">暂无机位，使用系统默认配置</div>';
         return;
       }
 
       currentDevices.forEach((dev, idx) => {
         const row = document.createElement("div");
         row.className = "comment-row";
-        row.style.display = "flex";
-        row.style.justifyContent = "space-between";
-        row.style.alignItems = "center";
-        row.style.gap = "10px";
-        row.style.flexWrap = "wrap";
 
         row.innerHTML = `
           <div style="display: flex; gap: 10px; align-items: center; flex: 1; min-width: 280px; flex-wrap: wrap;">
             <span class="badge-live">ID: ${dev.id}</span>
             <input type="text" id="editName_${dev.id}" value="${dev.name}" style="width: 140px; padding: 4px 8px; font-weight: 700; font-size: 13px;" maxlength="20" placeholder="机位名称" />
-            <span style="color: #8b949e; font-size: 11px; font-family: monospace;">设备码: ${dev.deviceSerial} (通道: ${dev.channelNo || 1})</span>
+            <span style="color: #64748b; font-size: 11px; font-family: monospace;">设备码: ${dev.deviceSerial} (通道: ${dev.channelNo || 1})</span>
           </div>
         `;
 
@@ -712,7 +876,7 @@
       loadStats();
     });
 
-    // 5. 公告管理
+    // ================= 4. 公告与安全策略 =================
     async function loadNotice() {
       try {
         const res = await fetch(`${API_ENDPOINT}/api/notice`);
@@ -739,7 +903,6 @@
       }
     });
 
-    // 6. 安全配置管理
     let currentForbiddenWords = [];
     let currentBannedIps = [];
 
@@ -752,40 +915,22 @@
       currentForbiddenWords.forEach((word, idx) => {
         const tag = document.createElement("div");
         tag.className = "tag-item";
-        
-        const label = document.createElement("span");
-        label.textContent = word;
-        
-        const close = document.createElement("span");
-        close.className = "tag-close";
-        close.textContent = "✕";
-        close.addEventListener("click", () => {
+        tag.innerHTML = `<span>${word}</span><span class="tag-close">✕</span>`;
+        tag.querySelector(".tag-close").addEventListener("click", () => {
           currentForbiddenWords.splice(idx, 1);
           renderTags();
         });
-
-        tag.appendChild(label);
-        tag.appendChild(close);
         fwBox.appendChild(tag);
       });
 
       currentBannedIps.forEach((ip, idx) => {
         const tag = document.createElement("div");
         tag.className = "tag-item";
-
-        const label = document.createElement("span");
-        label.textContent = ip;
-
-        const close = document.createElement("span");
-        close.className = "tag-close";
-        close.textContent = "✕";
-        close.addEventListener("click", () => {
+        tag.innerHTML = `<span>${ip}</span><span class="tag-close">✕</span>`;
+        tag.querySelector(".tag-close").addEventListener("click", () => {
           currentBannedIps.splice(idx, 1);
           renderTags();
         });
-
-        tag.appendChild(label);
-        tag.appendChild(close);
         ipBox.appendChild(tag);
       });
     }
@@ -846,7 +991,7 @@
       }
     });
 
-    // 7. 弹幕审查
+    // ================= 5. 弹幕审查 =================
     const roomSelect = document.getElementById("roomSelect");
     const adminCommentList = document.getElementById("adminCommentList");
 
@@ -865,7 +1010,7 @@
         adminCommentList.innerHTML = "";
 
         if (comments.length === 0) {
-          adminCommentList.innerHTML = '<div style="color: #8b949e; text-align: center; padding: 40px 0;">该房间暂无弹幕记录</div>';
+          adminCommentList.innerHTML = '<div style="color: #64748b; text-align: center; padding: 40px 0;">该房间暂无弹幕记录</div>';
           return;
         }
 
@@ -873,37 +1018,20 @@
           const row = document.createElement("div");
           row.className = "comment-row";
 
-          const meta = document.createElement("div");
-          meta.className = "c-meta";
+          row.innerHTML = `
+            <div style="display: flex; align-items: baseline; gap: 8px; flex: 1; flex-wrap: wrap;">
+              <span style="color: var(--accent); font-weight: 700;">${c.name || '热心猫友'}:</span>
+              <span style="color: var(--text-bright); word-break: break-all;">${c.text || ''}</span>
+              <span style="color: #64748b; font-size: 11px; margin-left: auto;">${c.time || ''} ${c.ip ? `(${c.ip})` : ''}</span>
+            </div>
+            <button class="btn btn-danger" style="padding: 4px 10px; font-size: 12px; margin-left: 12px;" type="button">删除</button>
+          `;
 
-          const user = document.createElement("span");
-          user.className = "c-user";
-          user.textContent = `${c.name || '热心猫友'}:`;
-
-          const msg = document.createElement("span");
-          msg.className = "c-text";
-          msg.textContent = c.text || '';
-
-          const time = document.createElement("span");
-          time.className = "c-time";
-          time.textContent = `${c.time || ''} ${c.ip ? `(${c.ip})` : ''}`;
-
-          meta.appendChild(user);
-          meta.appendChild(msg);
-          meta.appendChild(time);
-
-          const delBtn = document.createElement("button");
-          delBtn.className = "btn btn-danger";
-          delBtn.style.padding = "4px 10px";
-          delBtn.style.fontSize = "12px";
-          delBtn.textContent = "删除";
-          delBtn.addEventListener("click", async () => {
+          row.querySelector(".btn-danger").addEventListener("click", async () => {
             if (!confirm(`确认删除此条弹幕？\n"${c.text}"`)) return;
             await deleteComment(roomId, c.id);
           });
 
-          row.appendChild(meta);
-          row.appendChild(delBtn);
           adminCommentList.appendChild(row);
         });
       } catch(e) {}
@@ -925,7 +1053,7 @@
 
     document.getElementById("btnClearRoomComments").addEventListener("click", async () => {
       const roomId = roomSelect.value;
-      if (!confirm(`⚠️ 危险操作：确认清空【${roomId}号房间】的全部弹幕吗？此操作不可恢复！`)) return;
+      if (!confirm(`⚠️ 危险操作：确认清空【${roomId}号房间】的全部弹幕吗？`)) return;
       try {
         const res = await fetch(`${API_ENDPOINT}/api/admin/comments/clear`, {
           method: "POST",
