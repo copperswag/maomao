@@ -77,6 +77,26 @@
       flex-wrap: wrap;
     }
 
+    .user-auth-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 99px;
+      color: #34d399;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .user-auth-pill:hover {
+      background: rgba(16, 185, 129, 0.22);
+      transform: translateY(-1px);
+    }
+
     .badge-checkin {
       display: inline-flex;
       align-items: center;
@@ -349,12 +369,6 @@
     .player-ctrl-btn:hover {
       background: rgba(0, 0, 0, 0.85);
       border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .player-ctrl-btn.active {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
-      border-color: rgba(16, 185, 129, 0.5);
-      color: #fff;
     }
 
     .player-ctrl-btn.btn-fortune {
@@ -1044,6 +1058,43 @@
       border-color: var(--accent-green);
       box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
     }
+
+    /* 登录拦截弹窗新样式 */
+    .auth-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+
+    .auth-input:focus {
+      border-color: var(--accent-green);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .auth-btn-sms {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 0 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      min-width: 100px;
+      transition: all 0.2s;
+    }
+
+    .auth-btn-sms:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -1057,6 +1108,9 @@
         <div class="logo-text">MeowHub <span style="font-weight: 300; opacity: 0.5;">Live</span></div>
       </div>
       <div class="header-right">
+        <div id="userAuthContainer">
+          <button class="user-auth-pill" id="btnTopAuth" type="button">🔑 手机号登录 / 注册</button>
+        </div>
         <button class="badge-checkin" id="btnOpenCheckin" type="button">📅 每日打卡 (<span id="checkinStreakCount">0</span>天)</button>
         <span class="honor-badge" id="myHonorBadge" title="点击查看本周赛季成就">🌱 路过猫奴 (0m) ⓘ</span>
         <div class="badge-live">
@@ -1157,6 +1211,30 @@
     </footer>
   </div>
 
+  <!-- 全站手机号快速登录拦截弹窗 -->
+  <div class="app-modal" id="authModal">
+    <div class="modal-card-box" style="padding: 24px; position: relative;">
+      <button id="closeAuthBtn" style="position: absolute; right: 16px; top: 16px; background: none; border: none; color: #9ca3af; font-size: 18px; cursor: pointer;" type="button">✕</button>
+      <div class="honor-modal-header" style="border: none; padding: 0 0 16px;">
+        <div style="font-size: 32px; margin-bottom: 6px;">🐾</div>
+        <div class="honor-current-title" style="font-size: 18px;">登录毛毛星球</div>
+        <div class="honor-stay-stat">输入中国大陆手机号完成验证，开启全部互动特权</div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+        <div>
+          <input type="tel" id="authPhoneInput" class="auth-input" placeholder="请输入11位大陆手机号" maxlength="11" />
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <input type="tel" id="authCodeInput" class="auth-input" placeholder="6位验证码" maxlength="6" style="flex: 1;" />
+          <button id="btnSendAuthCode" class="auth-btn-sms" type="button">获取验证码</button>
+        </div>
+        <button id="btnSubmitLogin" class="btn-modal-action primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 15px; margin-top: 6px;" type="button">立即登录 / 注册</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 头像选择弹窗 -->
   <div class="app-modal" id="avatarModal">
     <div class="modal-card-box">
       <div class="honor-modal-header">
@@ -1170,6 +1248,7 @@
     </div>
   </div>
 
+  <!-- 每日打卡弹窗 -->
   <div class="app-modal" id="checkinModal">
     <div class="modal-card-box">
       <div class="honor-modal-header" style="background: linear-gradient(180deg, rgba(245, 158, 11, 0.15), transparent);">
@@ -1215,6 +1294,7 @@
     </div>
   </div>
 
+  <!-- 拍立得弹窗 -->
   <div class="app-modal" id="polaroidModal">
     <div class="modal-card-box" style="background:#fff;">
       <img id="polaroidImg" style="width: 100%; display: block;" alt="毛毛星球拍立得" />
@@ -1226,6 +1306,7 @@
     <div style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 10px;">手机端长按图片可直接存入相册 / 发朋友圈</div>
   </div>
 
+  <!-- 猫生运势弹窗 -->
   <div class="app-modal" id="fortuneModal">
     <div class="modal-card-box" style="background:#fff;">
       <img id="fortuneImg" style="width: 100%; display: block;" alt="今日猫生运势签" />
@@ -1237,6 +1318,7 @@
     </div>
   </div>
 
+  <!-- 段位成就弹窗 -->
   <div class="app-modal" id="honorModal">
     <div class="modal-card-box">
       <div class="honor-modal-header">
@@ -1265,6 +1347,7 @@
     </div>
   </div>
 
+  <!-- 升级受封弹窗 -->
   <div class="app-modal" id="levelUpModal">
     <div class="modal-card-box levelup-card">
       <div class="levelup-icon-glow" id="levelUpIcon">🏆</div>
@@ -1286,6 +1369,191 @@
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
+    // =========================================================================
+    // 1. 用户认证状态管理器 (AuthState) & 全站操作拦截器 (requireAuth)
+    // =========================================================================
+    const AuthState = {
+      getToken: () => localStorage.getItem("meow_user_token") || "",
+      getUser: () => {
+        try { return JSON.parse(localStorage.getItem("meow_user_info") || "null"); } catch(e) { return null; }
+      },
+      isLoggedIn: () => Boolean(localStorage.getItem("meow_user_token")),
+      setLogin: (token, user) => {
+        localStorage.setItem("meow_user_token", token);
+        localStorage.setItem("meow_user_info", JSON.stringify(user));
+        if (user && user.nickname) {
+          localStorage.setItem("meow_user_nickname", user.nickname);
+          if (nameInput) nameInput.value = user.nickname;
+        }
+        updateUserHeaderUI();
+      },
+      logout: () => {
+        localStorage.removeItem("meow_user_token");
+        localStorage.removeItem("meow_user_info");
+        updateUserHeaderUI();
+        alert("已退出登录");
+      }
+    };
+
+    let pendingAction = null;
+
+    function requireAuth(actionCallback) {
+      if (AuthState.isLoggedIn()) {
+        actionCallback && actionCallback();
+      } else {
+        pendingAction = actionCallback;
+        openAuthModal();
+      }
+    }
+
+    const authModal = document.getElementById("authModal");
+    const closeAuthBtn = document.getElementById("closeAuthBtn");
+    const authPhoneInput = document.getElementById("authPhoneInput");
+    const authCodeInput = document.getElementById("authCodeInput");
+    const btnSendAuthCode = document.getElementById("btnSendAuthCode");
+    const btnSubmitLogin = document.getElementById("btnSubmitLogin");
+    const userAuthContainer = document.getElementById("userAuthContainer");
+
+    function openAuthModal() {
+      authModal.classList.add("show");
+    }
+
+    function closeAuthModal() {
+      authModal.classList.remove("show");
+      pendingAction = null;
+    }
+
+    closeAuthBtn.addEventListener("click", closeAuthModal);
+    authModal.addEventListener("click", (e) => { if (e.target === authModal) closeAuthModal(); });
+
+    function updateUserHeaderUI() {
+      if (AuthState.isLoggedIn()) {
+        const user = AuthState.getUser() || {};
+        const masked = user.phone ? user.phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2") : "已登录";
+        userAuthContainer.innerHTML = `
+          <div class="user-auth-pill" style="cursor: default;">
+            <span>👤</span>
+            <span>${masked}</span>
+            <span id="btnHeaderLogout" style="color: #ef4444; cursor: pointer; margin-left: 4px;" title="退出登录">退出</span>
+          </div>
+        `;
+        document.getElementById("btnHeaderLogout").addEventListener("click", (e) => {
+          e.stopPropagation();
+          AuthState.logout();
+        });
+      } else {
+        userAuthContainer.innerHTML = `<button class="user-auth-pill" id="btnTopAuth" type="button">🔑 手机号登录 / 注册</button>`;
+        document.getElementById("btnTopAuth").addEventListener("click", () => openAuthModal());
+      }
+    }
+
+    updateUserHeaderUI();
+
+    // 限制输入 11 位数字
+    authPhoneInput.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, "").slice(0, 11);
+    });
+
+    authCodeInput.addEventListener("input", (e) => {
+      e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6);
+    });
+
+    // 60秒倒计时发送验证码
+    let smsCountdown = 0;
+    let smsInterval = null;
+
+    btnSendAuthCode.addEventListener("click", async () => {
+      if (smsCountdown > 0) return;
+      const phone = authPhoneInput.value.trim();
+
+      if (!/^1[3-9]\d{9}$/.test(phone)) {
+        alert("请输入正确的11位中国大陆手机号！");
+        return;
+      }
+
+      btnSendAuthCode.disabled = true;
+
+      try {
+        const res = await fetch(`${API_ENDPOINT}/api/auth/send-code`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone })
+        });
+        const data = await res.json();
+
+        if (data.code === 200) {
+          if (data.testCode) {
+            authCodeInput.value = data.testCode; // 免短信测试模式自动填入
+            alert(`【测试模式】验证码已自动填充：${data.testCode}`);
+          } else {
+            alert("验证码已发送，请注意查收短信！");
+          }
+
+          smsCountdown = 60;
+          btnSendAuthCode.textContent = `${smsCountdown}s`;
+          smsInterval = setInterval(() => {
+            smsCountdown--;
+            if (smsCountdown <= 0) {
+              clearInterval(smsInterval);
+              btnSendAuthCode.textContent = "重新获取";
+              btnSendAuthCode.disabled = false;
+            } else {
+              btnSendAuthCode.textContent = `${smsCountdown}s`;
+            }
+          }, 1000);
+        } else {
+          alert(data.msg || "获取失败");
+          btnSendAuthCode.disabled = false;
+        }
+      } catch (err) {
+        alert("网络异常，验证码发送失败");
+        btnSendAuthCode.disabled = false;
+      }
+    });
+
+    // 提交登录并自动恢复被拦截的操作
+    btnSubmitLogin.addEventListener("click", async () => {
+      const phone = authPhoneInput.value.trim();
+      const code = authCodeInput.value.trim();
+
+      if (!/^1[3-9]\d{9}$/.test(phone)) {
+        alert("请输入合规的11位大陆手机号");
+        return;
+      }
+      if (!/^\d{6}$/.test(code)) {
+        alert("请输入6位验证码");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_ENDPOINT}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phone, code })
+        });
+        const data = await res.json();
+
+        if (data.code === 200) {
+          AuthState.setLogin(data.token, data.user);
+          authModal.classList.remove("show");
+
+          // 自动续接被拦截动作
+          if (typeof pendingAction === "function") {
+            const act = pendingAction;
+            pendingAction = null;
+            act();
+          }
+        } else {
+          alert(data.msg || "登录验证失败");
+        }
+      } catch (e) {
+        alert("登录请求异常，请稍后重试");
+      }
+    });
+
+    // =========================================================================
+    // 2. 页面原有核心逻辑 (直播播放、弹幕、打卡、段位等)
+    // =========================================================================
     let currentRoomId = "1";
     let currentRoomName = "苏州猫岛";
 
@@ -1326,7 +1594,6 @@
     const noticeContent = document.getElementById("noticeContent");
     const myHonorBadge = document.getElementById("myHonorBadge");
 
-    // 精准活跃播放累加器（杜绝暂停或后台被算作观看时长）
     let activePlayingSeconds = 0;
 
     function flushRoomDuration() {
@@ -1381,8 +1648,10 @@
     }
 
     btnChooseAvatar.addEventListener("click", () => {
-      renderAvatarGrid();
-      avatarModal.classList.add("show");
+      requireAuth(() => {
+        renderAvatarGrid();
+        avatarModal.classList.add("show");
+      });
     });
     closeAvatarBtn.addEventListener("click", () => avatarModal.classList.remove("show"));
     avatarModal.addEventListener("click", (e) => { if (e.target === avatarModal) avatarModal.classList.remove("show"); });
@@ -1617,8 +1886,10 @@
     }
 
     btnOpenCheckin.addEventListener("click", () => {
-      renderCheckinModal();
-      checkinModal.classList.add("show");
+      requireAuth(() => {
+        renderCheckinModal();
+        checkinModal.classList.add("show");
+      });
     });
     closeCheckinBtn.addEventListener("click", () => checkinModal.classList.remove("show"));
     checkinModal.addEventListener("click", (e) => { if (e.target === checkinModal) checkinModal.classList.remove("show"); });
@@ -1860,7 +2131,6 @@
     closeLevelUpBtn.addEventListener("click", () => levelUpModal.classList.remove("show"));
     levelUpModal.addEventListener("click", (e) => { if (e.target === levelUpModal) levelUpModal.classList.remove("show"); });
 
-    // 活跃状态真实累加计时器（非播放/隐藏标签页不增加陪伴时长）
     setInterval(() => {
       if (!document.hidden && video && !video.paused && video.readyState >= 2) {
         activePlayingSeconds++;
@@ -1928,7 +2198,11 @@
       honorModal.classList.add("show");
     }
 
-    myHonorBadge.addEventListener("click", openHonorModal);
+    myHonorBadge.addEventListener("click", () => {
+      requireAuth(() => {
+        openHonorModal();
+      });
+    });
     closeHonorBtn.addEventListener("click", () => honorModal.classList.remove("show"));
     honorModal.addEventListener("click", (e) => { if (e.target === honorModal) honorModal.classList.remove("show"); });
 
@@ -2020,8 +2294,18 @@
       fortuneModal.classList.add("show");
     }
 
-    fortuneBtn.addEventListener("click", drawFortuneCard);
-    reFortuneBtn.addEventListener("click", drawFortuneCard);
+    fortuneBtn.addEventListener("click", () => {
+      requireAuth(() => {
+        drawFortuneCard();
+      });
+    });
+
+    reFortuneBtn.addEventListener("click", () => {
+      requireAuth(() => {
+        drawFortuneCard();
+      });
+    });
+
     closeFortuneBtn.addEventListener("click", () => fortuneModal.classList.remove("show"));
     fortuneModal.addEventListener("click", (e) => { if (e.target === fortuneModal) fortuneModal.classList.remove("show"); });
 
@@ -2029,25 +2313,27 @@
     const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
 
     videoWrapper.addEventListener("dblclick", (e) => {
-      const rect = videoWrapper.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      requireAuth(() => {
+        const rect = videoWrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-      const heart = document.createElement("div");
-      heart.className = "tap-heart";
-      heart.textContent = ICONS[Math.floor(Math.random() * ICONS.length)];
-      heart.style.left = `${x}px`;
-      heart.style.top = `${y}px`;
-      videoWrapper.appendChild(heart);
-      heart.addEventListener("animationend", () => heart.remove());
+        const heart = document.createElement("div");
+        heart.className = "tap-heart";
+        heart.textContent = ICONS[Math.floor(Math.random() * ICONS.length)];
+        heart.style.left = `${x}px`;
+        heart.style.top = `${y}px`;
+        videoWrapper.appendChild(heart);
+        heart.addEventListener("animationend", () => heart.remove());
 
-      const gongde = document.createElement("div");
-      gongde.className = "gongde-pop";
-      gongde.textContent = GONGDE_TEXTS[Math.floor(Math.random() * GONGDE_TEXTS.length)];
-      gongde.style.left = `${x}px`;
-      gongde.style.top = `${y}px`;
-      videoWrapper.appendChild(gongde);
-      gongde.addEventListener("animationend", () => gongde.remove());
+        const gongde = document.createElement("div");
+        gongde.className = "gongde-pop";
+        gongde.textContent = GONGDE_TEXTS[Math.floor(Math.random() * GONGDE_TEXTS.length)];
+        gongde.style.left = `${x}px`;
+        gongde.style.top = `${y}px`;
+        videoWrapper.appendChild(gongde);
+        gongde.addEventListener("animationend", () => gongde.remove());
+      });
     });
 
     async function fetchNotice() {
@@ -2132,7 +2418,9 @@
     }
 
     btnRandomName.addEventListener("click", () => {
-      nameInput.value = generateNewNickname();
+      requireAuth(() => {
+        nameInput.value = generateNewNickname();
+      });
     });
 
     nameInput.addEventListener("change", () => {
@@ -2142,120 +2430,128 @@
 
     document.querySelectorAll(".chip-btn").forEach(btn => {
       btn.addEventListener("click", () => {
-        textInput.value = btn.textContent.trim();
-        textInput.focus();
+        requireAuth(() => {
+          textInput.value = btn.textContent.trim();
+          textInput.focus();
+        });
       });
     });
 
     audioBtn.addEventListener("click", () => {
-      video.muted = !video.muted;
-      audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
+      requireAuth(() => {
+        video.muted = !video.muted;
+        audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
+      });
     });
 
     danmakuToggleBtn.addEventListener("click", () => {
-      danmakuEnabled = !danmakuEnabled;
-      danmakuBox.style.display = danmakuEnabled ? "block" : "none";
-      danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
+      requireAuth(() => {
+        danmakuEnabled = !danmakuEnabled;
+        danmakuBox.style.display = danmakuEnabled ? "block" : "none";
+        danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
+      });
     });
 
     snapshotBtn.addEventListener("click", () => {
-      if (!video || video.readyState < 2 || video.videoWidth === 0) {
-        alert("视频流正在加载中，请稍候再抓拍~");
-        return;
-      }
+      requireAuth(() => {
+        if (!video || video.readyState < 2 || video.videoWidth === 0) {
+          alert("视频流正在加载中，请稍候再抓拍~");
+          return;
+        }
 
-      const canvas = snapshotCanvas;
-      const ctx = canvas.getContext("2d");
-      const CARD_W = 600;
-      const CARD_H = 780;
-      canvas.width = CARD_W;
-      canvas.height = CARD_H;
+        const canvas = snapshotCanvas;
+        const ctx = canvas.getContext("2d");
+        const CARD_W = 600;
+        const CARD_H = 780;
+        canvas.width = CARD_W;
+        canvas.height = CARD_H;
 
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, CARD_W, CARD_H);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-      const PHOTO_X = 30;
-      const PHOTO_Y = 30;
-      const PHOTO_W = 540;
-      const PHOTO_H = 420;
+        const PHOTO_X = 30;
+        const PHOTO_Y = 30;
+        const PHOTO_W = 540;
+        const PHOTO_H = 420;
 
-      const vW = video.videoWidth;
-      const vH = video.videoHeight;
-      const targetRatio = PHOTO_W / PHOTO_H;
-      const videoRatio = vW / vH;
-      let sX = 0, sY = 0, sW = vW, sH = vH;
+        const vW = video.videoWidth;
+        const vH = video.videoHeight;
+        const targetRatio = PHOTO_W / PHOTO_H;
+        const videoRatio = vW / vH;
+        let sX = 0, sY = 0, sW = vW, sH = vH;
 
-      if (videoRatio > targetRatio) {
-        sW = vH * targetRatio;
-        sX = (vW - sW) / 2;
-      } else {
-        sH = vW / targetRatio;
-        sY = (vH - sH) / 2;
-      }
+        if (videoRatio > targetRatio) {
+          sW = vH * targetRatio;
+          sX = (vW - sW) / 2;
+        } else {
+          sH = vW / targetRatio;
+          sY = (vH - sH) / 2;
+        }
 
-      try {
-        ctx.drawImage(video, sX, sY, sW, sH, PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
-      } catch (err) {
-        alert("画面受跨域保护，请稍后刷新重试或直接手机截屏！");
-        return;
-      }
+        try {
+          ctx.drawImage(video, sX, sY, sW, sH, PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
+        } catch (err) {
+          alert("画面受跨域保护，请稍后刷新重试或直接手机截屏！");
+          return;
+        }
 
-      ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-      ctx.beginPath();
-      ctx.roundRect(PHOTO_X + 16, PHOTO_Y + 16, 125, 28, 14);
-      ctx.fill();
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        ctx.beginPath();
+        ctx.roundRect(PHOTO_X + 16, PHOTO_Y + 16, 125, 28, 14);
+        ctx.fill();
 
-      ctx.fillStyle = "#ef4444";
-      ctx.beginPath();
-      ctx.arc(PHOTO_X + 30, PHOTO_Y + 30, 5, 0, Math.PI * 2);
-      ctx.fill();
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath();
+        ctx.arc(PHOTO_X + 30, PHOTO_Y + 30, 5, 0, Math.PI * 2);
+        ctx.fill();
 
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 12px sans-serif";
-      ctx.fillText("LIVE SNAP", PHOTO_X + 42, PHOTO_Y + 34);
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("LIVE SNAP", PHOTO_X + 42, PHOTO_Y + 34);
 
-      const userNick = nameInput.value.trim() || getOrCreateUserNickname();
-      const honor = getCurrentHonor();
-      const now = new Date();
-      const timeStr = now.getFullYear() + "." + 
-        String(now.getMonth() + 1).padStart(2, '0') + "." + 
-        String(now.getDate()).padStart(2, '0') + " " + 
-        String(now.getHours()).padStart(2, '0') + ":" + 
-        String(now.getMinutes()).padStart(2, '0') + ":" + 
-        String(now.getSeconds()).padStart(2, '0');
+        const userNick = nameInput.value.trim() || getOrCreateUserNickname();
+        const honor = getCurrentHonor();
+        const now = new Date();
+        const timeStr = now.getFullYear() + "." + 
+          String(now.getMonth() + 1).padStart(2, '0') + "." + 
+          String(now.getDate()).padStart(2, '0') + " " + 
+          String(now.getHours()).padStart(2, '0') + ":" + 
+          String(now.getMinutes()).padStart(2, '0') + ":" + 
+          String(now.getSeconds()).padStart(2, '0');
 
-      ctx.fillStyle = "#111827";
-      ctx.font = "bold 24px -apple-system, sans-serif";
-      ctx.fillText(`📍 ${currentRoomName} · 现场抓拍`, PHOTO_X + 4, PHOTO_Y + PHOTO_H + 50);
+        ctx.fillStyle = "#111827";
+        ctx.font = "bold 24px -apple-system, sans-serif";
+        ctx.fillText(`📍 ${currentRoomName} · 现场抓拍`, PHOTO_X + 4, PHOTO_Y + PHOTO_H + 50);
 
-      ctx.fillStyle = "#6b7280";
-      ctx.font = "14px monospace";
-      ctx.fillText(`📅 ${timeStr}`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 82);
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "14px monospace";
+        ctx.fillText(`📅 ${timeStr}`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 82);
 
-      ctx.fillStyle = "#059669";
-      ctx.font = "bold 15px -apple-system, sans-serif";
-      ctx.fillText(`🐾 抓拍官：${userNick} [${honor.title}]`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
+        ctx.fillStyle = "#059669";
+        ctx.font = "bold 15px -apple-system, sans-serif";
+        ctx.fillText(`🐾 抓拍官：${userNick} [${honor.title}]`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
 
-      ctx.textAlign = "right";
-      ctx.fillStyle = "#10b981";
-      ctx.font = "bold 16px -apple-system, sans-serif";
-      ctx.fillText("毛毛星球 MeowHub", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 75);
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#10b981";
+        ctx.font = "bold 16px -apple-system, sans-serif";
+        ctx.fillText("毛毛星球 MeowHub", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 75);
 
-      ctx.fillStyle = "#9ca3af";
-      ctx.font = "12px sans-serif";
-      ctx.fillText("别让你家毛孩子再成为留守儿童了", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 102);
+        ctx.fillStyle = "#9ca3af";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("别让你家毛孩子再成为留守儿童了", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 102);
 
-      ctx.textAlign = "left";
+        ctx.textAlign = "left";
 
-      try {
-        const dataUrl = canvas.toDataURL("image/png");
-        polaroidImg.src = dataUrl;
-        downloadPolaroidBtn.href = dataUrl;
-        downloadPolaroidBtn.download = `meowhub_${currentRoomName}_${Date.now()}.png`;
-        polaroidModal.classList.add("show");
-      } catch (e) {
-        alert("截屏生成失败，可能是浏览器权限限制，请直接使用手机截屏哦~");
-      }
+        try {
+          const dataUrl = canvas.toDataURL("image/png");
+          polaroidImg.src = dataUrl;
+          downloadPolaroidBtn.href = dataUrl;
+          downloadPolaroidBtn.download = `meowhub_${currentRoomName}_${Date.now()}.png`;
+          polaroidModal.classList.add("show");
+        } catch (e) {
+          alert("截屏生成失败，可能是浏览器权限限制，请直接使用手机截屏哦~");
+        }
+      });
     });
 
     closePolaroidBtn.addEventListener("click", () => polaroidModal.classList.remove("show"));
@@ -2417,61 +2713,61 @@
 
     chatForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (btnSend.disabled) return;
+      requireAuth(async () => {
+        if (btnSend.disabled) return;
 
-      const text = textInput.value.trim();
-      if (!text) return;
-      if (text.length > 60) {
-        alert("弹幕字数不能超过 60 个字符~");
-        return;
-      }
-
-      const name = nameInput.value.trim() || getOrCreateUserNickname();
-      const myAvatar = getUserAvatar();
-
-      textInput.value = "";
-      startCooldown();
-
-      const localId = "loc_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
-      const localMsg = {
-        id: localId,
-        name: name,
-        text: text,
-        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-        avatar: myAvatar,
-        isLocal: true
-      };
-      
-      // 乐观渲染
-      renderComments([localMsg], false);
-      shootDanmaku(`${name}: ${text}`, true);
-      checkEasterEgg(text);
-
-      try {
-        const res = await fetch(`${API_ENDPOINT}/api/comments`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ roomId: String(currentRoomId), name, text })
-        });
-        const json = await res.json();
-        
-        if (!res.ok || json.code !== 200) {
-          // 失败自动回滚乐观渲染
-          const el = document.getElementById(`msg_${localId}`);
-          if (el) el.remove();
-          alert(json.msg || "发送失败，请稍后再试~");
+        const text = textInput.value.trim();
+        if (!text) return;
+        if (text.length > 60) {
+          alert("弹幕字数不能超过 60 个字符~");
           return;
         }
 
-        if (json && json.data) {
-          seenCommentIds.add(json.data.id);
-          latestCommentId = json.data.id;
+        const name = nameInput.value.trim() || getOrCreateUserNickname();
+        const myAvatar = getUserAvatar();
+
+        textInput.value = "";
+        startCooldown();
+
+        const localId = "loc_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
+        const localMsg = {
+          id: localId,
+          name: name,
+          text: text,
+          time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+          avatar: myAvatar,
+          isLocal: true
+        };
+        
+        renderComments([localMsg], false);
+        shootDanmaku(`${name}: ${text}`, true);
+        checkEasterEgg(text);
+
+        try {
+          const res = await fetch(`${API_ENDPOINT}/api/comments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ roomId: String(currentRoomId), name, text })
+          });
+          const json = await res.json();
+          
+          if (!res.ok || json.code !== 200) {
+            const el = document.getElementById(`msg_${localId}`);
+            if (el) el.remove();
+            alert(json.msg || "发送失败，请稍后再试~");
+            return;
+          }
+
+          if (json && json.data) {
+            seenCommentIds.add(json.data.id);
+            latestCommentId = json.data.id;
+          }
+        } catch (err) {
+          const el = document.getElementById(`msg_${localId}`);
+          if (el) el.remove();
+          alert("网络连接异常，弹幕发送失败");
         }
-      } catch (err) {
-        const el = document.getElementById(`msg_${localId}`);
-        if (el) el.remove();
-        alert("网络连接异常，弹幕发送失败");
-      }
+      });
     });
 
     function playStream(roomIndex) {
@@ -2606,7 +2902,9 @@
           btn.appendChild(statusSpan);
 
           btn.addEventListener("click", () => {
-            playStream(idx);
+            requireAuth(() => {
+              playStream(idx);
+            });
           });
 
           roomButtonList.appendChild(btn);
