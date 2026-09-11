@@ -1445,17 +1445,50 @@
     closeProfileBtn.addEventListener("click", () => profileModal.classList.remove("show"));
     profileModal.addEventListener("click", (e) => { if (e.target === profileModal) profileModal.classList.remove("show"); });
 
-    btnSaveProfile.addEventListener("click", () => {
+    btnSaveProfile.addEventListener("click", async () => {
       const newNick = editNicknameInput.value.trim();
       if (!newNick) {
         alert("昵称不能为空！");
         return;
       }
+
       const user = AuthState.getUser() || {};
-      user.nickname = newNick;
-      AuthState.setLogin(AuthState.getToken(), user);
-      profileModal.classList.remove("show");
-      alert("昵称修改成功！");
+      const token = AuthState.getToken();
+
+      if (!user.phone || !token) {
+        alert("请先登录！");
+        return;
+      }
+
+      btnSaveProfile.disabled = true;
+      btnSaveProfile.textContent = "保存中...";
+
+      try {
+        const res = await fetch(`${API_ENDPOINT}/api/user/update-profile`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phone: user.phone,
+            token: token,
+            nickname: newNick,
+            avatar: getUserAvatar()
+          })
+        });
+        const data = await res.json();
+
+        if (data.code === 200) {
+          AuthState.setLogin(token, data.user);
+          profileModal.classList.remove("show");
+          alert("昵称修改成功，已同步云端！");
+        } else {
+          alert(data.msg || "修改失败");
+        }
+      } catch (e) {
+        alert("网络请求异常，请稍后重试");
+      } finally {
+        btnSaveProfile.disabled = false;
+        btnSaveProfile.textContent = "保存修改";
+      }
     });
 
     btnLogoutInModal.addEventListener("click", () => {
