@@ -96,7 +96,7 @@
 
     .grid-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 16px;
       margin-bottom: 24px;
     }
@@ -202,6 +202,38 @@
     .c-text { color: var(--text-bright); word-break: break-all; }
     .c-time { color: #8b949e; font-size: 11px; margin-left: auto; }
 
+    /* 用户表格样式 */
+    .user-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .user-table th {
+      padding: 10px 12px;
+      color: #8b949e;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+
+    .user-table td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      color: var(--text-bright);
+    }
+
+    .user-avatar-tag {
+      font-size: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+    }
+
     .toast {
       position: fixed;
       bottom: 24px;
@@ -237,6 +269,11 @@
     <!-- 全站核心统计概览 -->
     <div class="grid-stats">
       <div class="stat-card">
+        <div class="stat-title">总注册用户</div>
+        <div class="stat-val" id="statUsersTotal" style="color: #38bdf8;">-</div>
+        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">手机实名注册用户</div>
+      </div>
+      <div class="stat-card">
         <div class="stat-title">今日浏览量 (PV)</div>
         <div class="stat-val" id="statPvToday">-</div>
         <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">历史总 PV: <span id="statPvTotal">-</span></div>
@@ -249,16 +286,43 @@
       <div class="stat-card">
         <div class="stat-title">总互动弹幕数</div>
         <div class="stat-val" id="statCommentsTotal">-</div>
-        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">功德点击: <span id="statDblTotal">0</span></div>
+        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">功德点击已记录</div>
       </div>
       <div class="stat-card">
         <div class="stat-title">全站陪伴总时长</div>
         <div class="stat-val" id="statDurTotal">-</div>
-        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">App 下载点击: <span id="statAppTotal">0</span></div>
+        <div style="font-size: 11px; color: #8b949e; margin-top: 4px;">活跃观看总时长</div>
       </div>
     </div>
 
-    <!-- 各直播间专属数据监控看板 -->
+    <!-- 用户基础档案列表 -->
+    <div class="section-card">
+      <div class="section-title">
+        <span>👥 用户基础档案列表</span>
+        <button class="btn" id="btnRefreshUsers" type="button">🔄 刷新用户</button>
+      </div>
+      <div style="max-height: 300px; overflow-y: auto;">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>头像</th>
+              <th>昵称</th>
+              <th>手机号码</th>
+              <th>注册时间</th>
+              <th>最后登录</th>
+              <th>登录次数</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            <tr>
+              <td colspan="6" style="text-align: center; color: #8b949e; padding: 24px 0;">请先输入管理密钥登录查看</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 直播机位专属监控 -->
     <div class="section-card" style="padding: 16px 20px;">
       <div class="section-title" style="margin-bottom: 12px; font-size: 14px;">
         <span>📊 各机位专属数据监控</span>
@@ -270,14 +334,13 @@
       </div>
     </div>
 
-    <!-- 直播机位可视化管理（支持随时修改机位名称） -->
+    <!-- 直播机位可视化管理 -->
     <div class="section-card">
       <div class="section-title">
         <span>📹 直播间机位配置管理</span>
         <span style="font-size: 12px; color: #8b949e; font-weight: normal;">支持在线改名、添加与删除，即刻生效</span>
       </div>
 
-      <!-- 新增机位表单 -->
       <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
         <input type="text" id="newRoomName" placeholder="机位名称 (如: 沛霖机位)" style="flex: 1; min-width: 150px;" maxlength="20" />
         <input type="text" id="newRoomSerial" placeholder="萤石设备码 (Serial:Channel)" style="flex: 2; min-width: 260px;" />
@@ -285,7 +348,6 @@
         <button class="btn btn-primary" id="btnAddRoomDevice" type="button">➕ 添加新机位</button>
       </div>
 
-      <!-- 当前已配置机位列表 -->
       <div id="deviceTableContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
     </div>
 
@@ -333,7 +395,7 @@
       </div>
     </div>
 
-    <!-- 弹幕内容审查与管理 -->
+    <!-- 弹幕审查 -->
     <div class="section-card">
       <div class="section-title">
         <div style="display: flex; align-items: center; gap: 12px;">
@@ -395,7 +457,55 @@
     let currentDevices = [];
     const THEME_COLORS = ["var(--accent)", "var(--blue)", "var(--warning)", "#a855f7", "#ec4899", "#06b6d4"];
 
-    // 2. 渲染各机位专属数据监控卡片
+    function formatDate(isoStr) {
+      if (!isoStr) return "-";
+      try {
+        const d = new Date(isoStr);
+        return `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+      } catch (e) {
+        return "-";
+      }
+    }
+
+    // 1. 加载并渲染用户列表
+    async function loadUsers() {
+      const key = getAdminKey();
+      if (!key) return;
+
+      try {
+        const res = await fetch(`${API_ENDPOINT}/api/admin/users`, { headers: getAuthHeaders() });
+        if (res.status === 401) return;
+        const json = await res.json();
+        const tbody = document.getElementById("userTableBody");
+        tbody.innerHTML = "";
+
+        const users = json.users || [];
+        if (users.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #8b949e; padding: 24px 0;">暂无注册用户</td></tr>';
+          return;
+        }
+
+        users.forEach(u => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td><span class="user-avatar-tag">${u.avatar || '🐱'}</span></td>
+            <td style="font-weight: 700; color: var(--accent);">${u.nickname || '未设置'}</td>
+            <td style="font-family: monospace;">${u.phone}</td>
+            <td style="color: #8b949e; font-size: 12px;">${formatDate(u.createdAt)}</td>
+            <td style="color: #8b949e; font-size: 12px;">${formatDate(u.lastLoginAt)}</td>
+            <td><span class="badge-live">${u.loginCount || 1} 次</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (e) {}
+    }
+
+    document.getElementById("btnRefreshUsers").addEventListener("click", () => {
+      loadUsers();
+      showToast("用户列表已刷新");
+    });
+
+    // 2. 渲染机位监控卡片
     function renderRoomStats(devices, roomDurations) {
       const grid = document.getElementById("roomStatsGrid");
       grid.innerHTML = "";
@@ -428,10 +538,7 @@
 
         grid.appendChild(card);
 
-        // 异步查询弹幕条数
-        fetch(`${API_ENDPOINT}/api/admin/comments?room=${dev.id}`, {
-          headers: getAuthHeaders()
-        })
+        fetch(`${API_ENDPOINT}/api/admin/comments?room=${dev.id}`, { headers: getAuthHeaders() })
         .then(res => res.json())
         .then(cJson => {
           if (cJson.code === 200 && Array.isArray(cJson.comments)) {
@@ -449,13 +556,12 @@
       if (!key) return;
 
       try {
-        const res = await fetch(`${API_ENDPOINT}/api/admin/stats`, {
-          headers: getAuthHeaders()
-        });
+        const res = await fetch(`${API_ENDPOINT}/api/admin/stats`, { headers: getAuthHeaders() });
         if (res.status === 401) return;
         const data = await res.json();
         if (data && data.data) {
           const s = data.data;
+          document.getElementById("statUsersTotal").textContent = s.usersTotal || 0;
           document.getElementById("statPvToday").textContent = s.pvToday || 0;
           document.getElementById("statPvTotal").textContent = s.pvTotal || 0;
           document.getElementById("statUvToday").textContent = s.uvToday || 0;
@@ -469,7 +575,7 @@
       } catch(e) {}
     }
 
-    // 4. 机位管理可视化（支持在线改名）
+    // 4. 机位管理可视化
     function renderDeviceList() {
       const container = document.getElementById("deviceTableContainer");
       container.innerHTML = "";
@@ -500,7 +606,6 @@
         btnGroup.style.display = "flex";
         btnGroup.style.gap = "8px";
 
-        // 保存名称按钮
         const renameBtn = document.createElement("button");
         renameBtn.className = "btn btn-primary";
         renameBtn.style.padding = "4px 10px";
@@ -521,7 +626,6 @@
           showToast(`已成功修改为【${newName}】`);
         });
 
-        // 删除按钮
         const delBtn = document.createElement("button");
         delBtn.className = "btn btn-danger";
         delBtn.style.padding = "4px 10px";
@@ -840,6 +944,7 @@
     function loadAllAdminData() {
       loadConfig();
       loadStats();
+      loadUsers();
       loadNotice();
     }
 
