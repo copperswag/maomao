@@ -1512,6 +1512,7 @@
     });
 
     // 提交登录并自动恢复被拦截的操作
+    // 提交登录并自动恢复被拦截的操作
     btnSubmitLogin.addEventListener("click", async () => {
       const phone = authPhoneInput.value.trim();
       const code = authCodeInput.value.trim();
@@ -1526,11 +1527,22 @@
       }
 
       try {
+        // ================= 放在这里（携带昵称和头像） =================
+        const myNickname = nameInput.value.trim() || getOrCreateUserNickname();
+        const myAvatar = getUserAvatar();
+
         const res = await fetch(`${API_ENDPOINT}/api/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ phone, code })
+          body: JSON.stringify({ 
+            phone, 
+            code, 
+            nickname: myNickname, 
+            avatar: myAvatar 
+          })
         });
+        // ==========================================================
+
         const data = await res.json();
 
         if (data.code === 200) {
@@ -1550,7 +1562,7 @@
         alert("登录请求异常，请稍后重试");
       }
     });
-
+    
     // =========================================================================
     // 2. 页面原有核心逻辑 (直播播放、弹幕、打卡、段位等)
     // =========================================================================
