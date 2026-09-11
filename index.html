@@ -371,6 +371,12 @@
       border-color: rgba(255, 255, 255, 0.3);
     }
 
+    .player-ctrl-btn.active {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #fff;
+    }
+
     .player-ctrl-btn.btn-fortune {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
       border-color: rgba(245, 158, 11, 0.5);
@@ -589,6 +595,7 @@
       color: #fff;
     }
 
+    /* 优化后的极简纯净聊天栏 */
     .chat-input-bar {
       display: flex;
       gap: 10px;
@@ -616,12 +623,6 @@
       transform: scale(1.06);
     }
 
-    .nickname-wrapper {
-      position: relative;
-      width: 155px;
-      flex-shrink: 0;
-    }
-
     .chat-input {
       width: 100%;
       background: rgba(255, 255, 255, 0.04);
@@ -637,27 +638,6 @@
     .chat-input:focus {
       border-color: var(--accent-green);
       background: rgba(255, 255, 255, 0.07);
-    }
-
-    .input-name { padding-right: 32px; }
-
-    .btn-dice {
-      position: absolute;
-      right: 6px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      font-size: 15px;
-      cursor: pointer;
-      opacity: 0.65;
-      padding: 4px;
-      transition: all 0.2s;
-    }
-
-    .btn-dice:hover {
-      opacity: 1;
-      transform: translateY(-50%) rotate(45deg);
     }
 
     .input-text { flex: 1; }
@@ -703,9 +683,6 @@
         align-items: flex-start;
         gap: 16px;
       }
-      .chat-input-bar { flex-wrap: wrap; }
-      .nickname-wrapper { width: calc(100% - 52px); }
-      .input-text { width: 100%; }
     }
 
     .btn-main {
@@ -1059,7 +1036,7 @@
       box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
     }
 
-    /* 登录拦截弹窗新样式 */
+    /* 登录与个人设置通用样式 */
     .auth-input {
       width: 100%;
       background: rgba(255, 255, 255, 0.05);
@@ -1182,14 +1159,9 @@
         <button class="chip-btn" type="button">❤️ 来看小可爱啦</button>
       </div>
 
+      <!-- 优化后的极简纯净聊天栏 -->
       <form class="chat-input-bar" id="chatForm">
         <button type="button" class="avatar-picker-btn" id="btnChooseAvatar" title="点击更换猫咪头像">🐱</button>
-
-        <div class="nickname-wrapper">
-          <input type="text" class="chat-input input-name" id="nameInput" placeholder="昵称" maxlength="12" />
-          <button type="button" class="btn-dice" id="btnRandomName" title="随机换一个名字">🎲</button>
-        </div>
-
         <input type="text" class="chat-input input-text" id="textInput" placeholder="说点什么吧，按回车发送弹幕..." maxlength="60" required />
         <button type="submit" class="btn-send" id="btnSend">发送</button>
       </form>
@@ -1230,6 +1202,27 @@
           <button id="btnSendAuthCode" class="auth-btn-sms" type="button">获取验证码</button>
         </div>
         <button id="btnSubmitLogin" class="btn-modal-action primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 15px; margin-top: 6px;" type="button">立即登录 / 注册</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 个人设置面板（支持修改昵称） -->
+  <div class="app-modal" id="profileModal">
+    <div class="modal-card-box" style="padding: 24px; position: relative;">
+      <button id="closeProfileBtn" style="position: absolute; right: 16px; top: 16px; background: none; border: none; color: #9ca3af; font-size: 18px; cursor: pointer;" type="button">✕</button>
+      <div class="honor-modal-header" style="border: none; padding: 0 0 16px;">
+        <div style="font-size: 32px; margin-bottom: 6px;" id="profileAvatarIcon">🐱</div>
+        <div class="honor-current-title" style="font-size: 18px;">个人档案设置</div>
+        <div class="honor-stay-stat">绑定手机：<span id="profilePhoneText" style="color: #fff; font-family: monospace;">-</span></div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 8px;">
+        <div>
+          <label style="font-size: 12px; color: var(--text-sub); display: block; margin-bottom: 6px;">我的昵称 (用于弹幕与荣誉证书)</label>
+          <input type="text" id="editNicknameInput" class="auth-input" placeholder="请输入您的专属昵称" maxlength="12" />
+        </div>
+        <button id="btnSaveProfile" class="btn-modal-action primary" style="width: 100%; justify-content: center; padding: 12px; font-size: 14px;" type="button">保存修改</button>
+        <button id="btnLogoutInModal" class="btn-modal-action" style="width: 100%; justify-content: center; color: #ef4444; border-color: rgba(239, 68, 68, 0.4); margin-top: -4px;" type="button">退出登录</button>
       </div>
     </div>
   </div>
@@ -1383,7 +1376,9 @@
         localStorage.setItem("meow_user_info", JSON.stringify(user));
         if (user && user.nickname) {
           localStorage.setItem("meow_user_nickname", user.nickname);
-          if (nameInput) nameInput.value = user.nickname;
+        }
+        if (user && user.avatar) {
+          setUserAvatar(user.avatar);
         }
         updateUserHeaderUI();
       },
@@ -1394,6 +1389,17 @@
         alert("已退出登录");
       }
     };
+
+    function getUserFixedNickname() {
+      const user = AuthState.getUser();
+      if (user && user.nickname) return user.nickname;
+      let saved = localStorage.getItem("meow_user_nickname");
+      if (!saved) {
+        saved = "爱心猫友_" + Math.floor(1000 + Math.random() * 9000);
+        localStorage.setItem("meow_user_nickname", saved);
+      }
+      return saved;
+    }
 
     let pendingAction = null;
 
@@ -1414,33 +1420,61 @@
     const btnSubmitLogin = document.getElementById("btnSubmitLogin");
     const userAuthContainer = document.getElementById("userAuthContainer");
 
-    function openAuthModal() {
-      authModal.classList.add("show");
-    }
+    const profileModal = document.getElementById("profileModal");
+    const closeProfileBtn = document.getElementById("closeProfileBtn");
+    const profilePhoneText = document.getElementById("profilePhoneText");
+    const editNicknameInput = document.getElementById("editNicknameInput");
+    const btnSaveProfile = document.getElementById("btnSaveProfile");
+    const btnLogoutInModal = document.getElementById("btnLogoutInModal");
+    const profileAvatarIcon = document.getElementById("profileAvatarIcon");
 
-    function closeAuthModal() {
-      authModal.classList.remove("show");
-      pendingAction = null;
-    }
+    function openAuthModal() { authModal.classList.add("show"); }
+    function closeAuthModal() { authModal.classList.remove("show"); pendingAction = null; }
 
     closeAuthBtn.addEventListener("click", closeAuthModal);
     authModal.addEventListener("click", (e) => { if (e.target === authModal) closeAuthModal(); });
+
+    function openProfileModal() {
+      const user = AuthState.getUser() || {};
+      profilePhoneText.textContent = user.phone || "-";
+      editNicknameInput.value = user.nickname || getUserFixedNickname();
+      profileAvatarIcon.textContent = getUserAvatar();
+      profileModal.classList.add("show");
+    }
+
+    closeProfileBtn.addEventListener("click", () => profileModal.classList.remove("show"));
+    profileModal.addEventListener("click", (e) => { if (e.target === profileModal) profileModal.classList.remove("show"); });
+
+    btnSaveProfile.addEventListener("click", () => {
+      const newNick = editNicknameInput.value.trim();
+      if (!newNick) {
+        alert("昵称不能为空！");
+        return;
+      }
+      const user = AuthState.getUser() || {};
+      user.nickname = newNick;
+      AuthState.setLogin(AuthState.getToken(), user);
+      profileModal.classList.remove("show");
+      alert("昵称修改成功！");
+    });
+
+    btnLogoutInModal.addEventListener("click", () => {
+      profileModal.classList.remove("show");
+      AuthState.logout();
+    });
 
     function updateUserHeaderUI() {
       if (AuthState.isLoggedIn()) {
         const user = AuthState.getUser() || {};
         const masked = user.phone ? user.phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2") : "已登录";
+        const nick = user.nickname || getUserFixedNickname();
         userAuthContainer.innerHTML = `
-          <div class="user-auth-pill" style="cursor: default;">
+          <div class="user-auth-pill" id="btnHeaderProfile" title="点击修改个人信息">
             <span>👤</span>
-            <span>${masked}</span>
-            <span id="btnHeaderLogout" style="color: #ef4444; cursor: pointer; margin-left: 4px;" title="退出登录">退出</span>
+            <span>${masked} (${nick})</span>
           </div>
         `;
-        document.getElementById("btnHeaderLogout").addEventListener("click", (e) => {
-          e.stopPropagation();
-          AuthState.logout();
-        });
+        document.getElementById("btnHeaderProfile").addEventListener("click", openProfileModal);
       } else {
         userAuthContainer.innerHTML = `<button class="user-auth-pill" id="btnTopAuth" type="button">🔑 手机号登录 / 注册</button>`;
         document.getElementById("btnTopAuth").addEventListener("click", () => openAuthModal());
@@ -1449,7 +1483,6 @@
 
     updateUserHeaderUI();
 
-    // 限制输入 11 位数字
     authPhoneInput.addEventListener("input", (e) => {
       e.target.value = e.target.value.replace(/\D/g, "").slice(0, 11);
     });
@@ -1458,7 +1491,6 @@
       e.target.value = e.target.value.replace(/\D/g, "").slice(0, 6);
     });
 
-    // 60秒倒计时发送验证码
     let smsCountdown = 0;
     let smsInterval = null;
 
@@ -1483,7 +1515,7 @@
 
         if (data.code === 200) {
           if (data.testCode) {
-            authCodeInput.value = data.testCode; // 免短信测试模式自动填入
+            authCodeInput.value = data.testCode;
             alert(`【测试模式】验证码已自动填充：${data.testCode}`);
           } else {
             alert("验证码已发送，请注意查收短信！");
@@ -1511,8 +1543,6 @@
       }
     });
 
-    // 提交登录并自动恢复被拦截的操作
-    // 提交登录并自动恢复被拦截的操作
     btnSubmitLogin.addEventListener("click", async () => {
       const phone = authPhoneInput.value.trim();
       const code = authCodeInput.value.trim();
@@ -1527,8 +1557,7 @@
       }
 
       try {
-        // ================= 放在这里（携带昵称和头像） =================
-        const myNickname = nameInput.value.trim() || getOrCreateUserNickname();
+        const myNickname = getUserFixedNickname();
         const myAvatar = getUserAvatar();
 
         const res = await fetch(`${API_ENDPOINT}/api/auth/login`, {
@@ -1541,15 +1570,12 @@
             avatar: myAvatar 
           })
         });
-        // ==========================================================
-
         const data = await res.json();
 
         if (data.code === 200) {
           AuthState.setLogin(data.token, data.user);
           authModal.classList.remove("show");
 
-          // 自动续接被拦截动作
           if (typeof pendingAction === "function") {
             const act = pendingAction;
             pendingAction = null;
@@ -1562,7 +1588,7 @@
         alert("登录请求异常，请稍后重试");
       }
     });
-    
+
     // =========================================================================
     // 2. 页面原有核心逻辑 (直播播放、弹幕、打卡、段位等)
     // =========================================================================
@@ -1592,9 +1618,7 @@
     const danmakuBox = document.getElementById("danmakuBox");
     const chatList = document.getElementById("chatList");
     const chatForm = document.getElementById("chatForm");
-    const nameInput = document.getElementById("nameInput");
     const textInput = document.getElementById("textInput");
-    const btnRandomName = document.getElementById("btnRandomName");
     const btnSend = document.getElementById("btnSend");
     const playerEmpty = document.getElementById("playerEmpty");
     const emptyTitle = document.getElementById("emptyTitle");
@@ -1627,6 +1651,8 @@
     const AVATAR_LIST = ["🐱", "😸", "😻", "😽", "😼", "🦁", "🐯", "🦊", "🐼", "🐨", "🐶", "🐾"];
     
     function getUserAvatar() {
+      const user = AuthState.getUser();
+      if (user && user.avatar) return user.avatar;
       let av = localStorage.getItem("meow_user_avatar");
       if (!av) {
         av = AVATAR_LIST[Math.floor(Math.random() * AVATAR_LIST.length)];
@@ -1638,6 +1664,11 @@
     function setUserAvatar(av) {
       localStorage.setItem("meow_user_avatar", av);
       btnChooseAvatar.textContent = av;
+      const user = AuthState.getUser();
+      if (user) {
+        user.avatar = av;
+        localStorage.setItem("meow_user_info", JSON.stringify(user));
+      }
     }
 
     btnChooseAvatar.textContent = getUserAvatar();
@@ -2097,7 +2128,7 @@
       ctx.font = "13px sans-serif";
       ctx.fillText(`SEASON: ${currentSeasonKey} · HONORARY GUARDIAN`, 300, 205);
 
-      const userNick = nameInput.value.trim() || getOrCreateUserNickname();
+      const userNick = getUserFixedNickname();
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 28px -apple-system, sans-serif";
       ctx.fillText(`兹授予：${userNick}`, 300, 290);
@@ -2287,7 +2318,7 @@
       ctx.textAlign = "center";
       ctx.fillText(`“ ${f.desc} ”`, 270, 440);
 
-      const userNick = nameInput.value.trim() || getOrCreateUserNickname();
+      const userNick = getUserFixedNickname();
       const nowStr = new Date().toLocaleDateString('zh-CN');
       ctx.font = "14px monospace";
       ctx.fillStyle = "#9ca3af";
@@ -2411,35 +2442,6 @@
       botTimer = setTimeout(triggerBotComment, 6000);
     }
 
-    const ADJECTIVES = ["干饭的", "贪睡的", "软萌的", "机智的", "威风的", "好奇的", "粘人的", "调皮的", "高冷的", "元气的"];
-    const CAT_NAMES = ["小橘", "三花", "奶牛猫", "布偶", "狸花", "金渐层", "银渐层", "大胖橘", "无毛猫", "小黑猫"];
-
-    function generateNewNickname() {
-      const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-      const cat = CAT_NAMES[Math.floor(Math.random() * CAT_NAMES.length)];
-      const num = Math.floor(Math.random() * 900) + 100;
-      const nick = `${adj}${cat}#${num}`;
-      localStorage.setItem("meow_user_nickname", nick);
-      return nick;
-    }
-
-    function getOrCreateUserNickname() {
-      let saved = localStorage.getItem("meow_user_nickname");
-      if (!saved) saved = generateNewNickname();
-      return saved;
-    }
-
-    btnRandomName.addEventListener("click", () => {
-      requireAuth(() => {
-        nameInput.value = generateNewNickname();
-      });
-    });
-
-    nameInput.addEventListener("change", () => {
-      const val = nameInput.value.trim();
-      if (val) localStorage.setItem("meow_user_nickname", val);
-    });
-
     document.querySelectorAll(".chip-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         requireAuth(() => {
@@ -2521,7 +2523,7 @@
         ctx.font = "bold 12px sans-serif";
         ctx.fillText("LIVE SNAP", PHOTO_X + 42, PHOTO_Y + 34);
 
-        const userNick = nameInput.value.trim() || getOrCreateUserNickname();
+        const userNick = getUserFixedNickname();
         const honor = getCurrentHonor();
         const now = new Date();
         const timeStr = now.getFullYear() + "." + 
@@ -2616,7 +2618,7 @@
       const placeholder = chatList.querySelector('div[style*="text-align: center"]');
       if (placeholder) placeholder.remove();
 
-      const myCurrentName = nameInput.value.trim();
+      const myCurrentName = getUserFixedNickname();
       const isAtBottom = chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 50;
 
       comments.forEach(c => {
@@ -2735,7 +2737,7 @@
           return;
         }
 
-        const name = nameInput.value.trim() || getOrCreateUserNickname();
+        const name = getUserFixedNickname();
         const myAvatar = getUserAvatar();
 
         textInput.value = "";
@@ -2877,8 +2879,6 @@
 
     async function initPage() {
       try {
-        nameInput.value = getOrCreateUserNickname();
-
         const response = await fetch(`${API_ENDPOINT}/api/rooms`);
         const data = await response.json();
         let rawRooms = data.rooms || [];
