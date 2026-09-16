@@ -720,7 +720,7 @@
 
     footer a { color: var(--text-sub); text-decoration: none; }
 
-    /* 通用居中弹窗基类 */
+    /* 通用居中弹窗基类（z-index 提升至 2500，确保高于一切元素置顶展示） */
     .app-modal {
       position: fixed;
       inset: 0;
@@ -730,7 +730,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 1000;
+      z-index: 2500;
       padding: 20px;
       opacity: 0;
       pointer-events: none;
@@ -1085,9 +1085,7 @@
       cursor: not-allowed;
     }
 
-    /* =========================================================================
-       核心：底部抽屉选台组件样式 (Bottom Sheet Drawer)
-       ========================================================================= */
+    /* 底部抽屉选台组件样式 (Bottom Sheet Drawer, z-index 1200) */
     .drawer-modal {
       position: fixed;
       inset: 0;
@@ -1171,7 +1169,6 @@
       padding-right: 4px;
     }
 
-    /* 抽屉内机位卡片 */
     .drawer-room-item {
       display: flex;
       align-items: center;
@@ -1222,7 +1219,6 @@
       color: #090a0f;
     }
 
-    /* ================= 移动端精准响应式 ================= */
     @media (max-width: 860px) {
       .container {
         padding: 16px 12px 32px;
@@ -1236,14 +1232,12 @@
         margin-bottom: 14px;
       }
       .live-layout {
-        display: block; /* 移动端去掉左侧列，直接铺满 */
+        display: block;
         margin-bottom: 16px;
       }
-      /* 隐藏原有垂直侧边栏 */
       .room-sidebar {
         display: none !important;
       }
-      /* 展现播放条旁边的“切换机位”抽屉唤起按钮 */
       .btn-mobile-choose-room {
         display: inline-flex;
       }
@@ -3170,7 +3164,7 @@
           roomButtonList.appendChild(btn);
         });
 
-        // 2. 渲染手机端底部抽屉机位列表
+        // 2. 渲染手机端底部抽屉机位列表（点击立即收起抽屉，未登录时自动置顶弹出登录框）
         drawerRoomList.innerHTML = "";
         roomList.forEach((room, idx) => {
           const item = document.createElement("div");
@@ -3185,9 +3179,9 @@
             </span>
           `;
           item.addEventListener("click", () => {
+            roomDrawerModal.classList.remove("show"); // 先顺滑收起底部抽屉
             requireAuth(() => {
-              playStream(idx);
-              roomDrawerModal.classList.remove("show"); // 选好后自动滑下收起抽屉
+              playStream(idx); // 登录成功后直接执行切换
             });
           });
           drawerRoomList.appendChild(item);
