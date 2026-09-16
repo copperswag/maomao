@@ -179,7 +179,61 @@
     }
 
     @media (max-width: 860px) {
-      .live-layout { grid-template-columns: 1fr; }
+      .container {
+        padding: 16px 12px 32px;
+      }
+      .hero-title {
+        font-size: 20px;
+        margin-bottom: 2px;
+      }
+      .hero-desc {
+        font-size: 12px;
+        margin-bottom: 14px;
+      }
+      .live-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+      .player-container {
+        order: 1; /* 视频画面排在最上方 */
+        width: 100%;
+      }
+      .room-sidebar {
+        order: 2; /* 机位选择紧随视频下方 */
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 12px;
+      }
+      .sidebar-title {
+        display: none; /* 移动端隐藏标题文本，节省垂直空间 */
+      }
+      #roomButtonList {
+        flex-direction: row !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        gap: 8px !important;
+        padding-bottom: 2px;
+        scrollbar-width: none; /* Firefox 隐藏滚动条 */
+      }
+      #roomButtonList::-webkit-scrollbar {
+        display: none; /* Chrome/Safari 隐藏滚动条 */
+      }
+      .room-btn {
+        flex: 0 0 auto;
+        width: auto;
+        padding: 8px 14px;
+        border-radius: 99px;
+        font-size: 13px;
+        scroll-snap-align: start;
+        gap: 6px;
+        white-space: nowrap;
+      }
+      .room-btn .status-indicator {
+        font-size: 10px;
+      }
     }
 
     .room-sidebar {
