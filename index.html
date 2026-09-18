@@ -3151,10 +3151,9 @@
             },
             handleError: (err) => {
               console.warn("EZUIKit 播放提示:", err);
-              // 如果已有画面输出则不触发降级
-              if (!ezBox.querySelector("canvas") && !ezBox.querySelector("video")) {
-                fallbackHlsPlay(hlsUrl);
-              }
+              // 针对 H.265 绝不降级至 HLS，避免服务端输出非264报错图
+              emptyTitle.textContent = `${currentRoomName} 画面加载中`;
+              emptyCopy.textContent = "正在调用软解内核，请稍候...";
             }
           });
           return;
