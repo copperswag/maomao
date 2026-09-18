@@ -170,7 +170,6 @@
       margin-bottom: 24px;
     }
 
-    /* 桌面端左右排版 */
     .live-layout {
       display: grid;
       grid-template-columns: 280px 1fr;
@@ -258,12 +257,19 @@
       -webkit-user-select: none;
     }
 
-    video {
+    /* 萤石官方播放器挂载容器样式 */
+    #ezuikitPlayer {
       width: 100%;
       height: 100%;
-      object-fit: contain;
       background: #000;
-      display: block;
+    }
+
+    #ezuikitPlayer video,
+    #ezuikitPlayer canvas {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain !important;
+      display: block !important;
     }
 
     .danmaku-container {
@@ -419,7 +425,6 @@
       color: var(--text-main);
     }
 
-    /* 移动端选台触发胶囊按钮 (默认在 PC 上隐藏) */
     .btn-mobile-choose-room {
       display: none;
       align-items: center;
@@ -720,7 +725,7 @@
 
     footer a { color: var(--text-sub); text-decoration: none; }
 
-    /* 通用居中弹窗基类（z-index 提升至 2500，确保高于一切元素置顶展示） */
+    /* 通用居中弹窗基类 (置顶层级 z-index: 2500) */
     .app-modal {
       position: fixed;
       inset: 0;
@@ -1085,7 +1090,7 @@
       cursor: not-allowed;
     }
 
-    /* 底部抽屉选台组件样式 (Bottom Sheet Drawer, z-index 1200) */
+    /* 底部抽屉选台组件 (z-index: 1200) */
     .drawer-modal {
       position: fixed;
       inset: 0;
@@ -1282,10 +1287,12 @@
         <div id="roomButtonList" style="display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
 
-      <!-- 播放器区域 (手机端首屏直接展现) -->
+      <!-- 播放器区域 -->
       <div class="player-container">
         <div class="video-wrapper" id="videoWrapper">
-          <video id="mainVideo" autoplay muted playsinline crossorigin="anonymous" controlsList="nodownload"></video>
+          <!-- 萤石官方播放器挂载 DOM，全面支持 WebAssembly 解码 H.265/H.264 -->
+          <div id="ezuikitPlayer"></div>
+          
           <div class="danmaku-container" id="danmakuBox"></div>
           
           <div class="controls-overlay">
@@ -1306,7 +1313,6 @@
         <div class="player-bar">
           <div style="display: flex; align-items: center; gap: 10px;">
             <span class="current-room-name" id="currentRoomTitle">加载中...</span>
-            <!-- 手机端唤起抽屉选台的胶囊按钮 -->
             <button class="btn-mobile-choose-room" id="btnOpenRoomDrawer" type="button">
               <span>📹 选机位</span>
               <span id="mobileRoomBadge" style="opacity: 0.8; font-size: 11px;">(4台) ▾</span>
@@ -1339,7 +1345,6 @@
         <button class="chip-btn" type="button">❤️ 来看小可爱啦</button>
       </div>
 
-      <!-- 极简纯净聊天栏 -->
       <form class="chat-input-bar" id="chatForm">
         <button type="button" class="avatar-picker-btn" id="btnChooseAvatar" title="点击更换猫咪头像">🐱</button>
         <input type="text" class="chat-input input-text" id="textInput" placeholder="说点什么吧，按回车发送弹幕..." maxlength="60" required />
@@ -1378,7 +1383,7 @@
     </div>
   </div>
 
-  <!-- 全站手机号快速登录拦截弹窗 -->
+  <!-- 全站手机号快速登录拦截弹窗 (置顶层级 2500) -->
   <div class="app-modal" id="authModal">
     <div class="modal-card-box" style="padding: 24px; position: relative;">
       <button id="closeAuthBtn" style="position: absolute; right: 16px; top: 16px; background: none; border: none; color: #9ca3af; font-size: 18px; cursor: pointer;" type="button">✕</button>
@@ -1401,7 +1406,7 @@
     </div>
   </div>
 
-  <!-- 个人设置面板（支持修改昵称） -->
+  <!-- 个人设置面板 -->
   <div class="app-modal" id="profileModal">
     <div class="modal-card-box" style="padding: 24px; position: relative;">
       <button id="closeProfileBtn" style="position: absolute; right: 16px; top: 16px; background: none; border: none; color: #9ca3af; font-size: 18px; cursor: pointer;" type="button">✕</button>
@@ -1553,7 +1558,9 @@
   <canvas id="fortuneCanvas" style="display: none;"></canvas>
   <canvas id="certCanvas" style="display: none;"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
+  <!-- 引入萤石官方 WebAssembly 软解 H.265/H.264 播放器 SDK -->
+  <script src="https://open.ys7.com/sdk/js/2.0/ezuikit.js"></script>
+
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
@@ -1822,6 +1829,8 @@
     // =========================================================================
     let currentRoomId = "1";
     let currentRoomName = "苏州猫岛";
+    let ezPlayer = null;
+    let ezAccessToken = "";
 
     function trackEvent(type, extra = {}) {
       try {
@@ -1837,7 +1846,6 @@
 
     trackEvent("pv");
 
-    const video = document.getElementById("mainVideo");
     const videoWrapper = document.getElementById("videoWrapper");
     const audioBtn = document.getElementById("audioBtn");
     const danmakuToggleBtn = document.getElementById("danmakuToggleBtn");
@@ -1990,7 +1998,6 @@
     const confettiCanvas = document.getElementById("confettiCanvas");
     const danmakuFxCanvas = document.getElementById("danmakuFxCanvas");
 
-    let hls = null;
     let roomList = [];
     let danmakuEnabled = true;
     let seenCommentIds = new Set();
@@ -2423,7 +2430,7 @@
     levelUpModal.addEventListener("click", (e) => { if (e.target === levelUpModal) levelUpModal.classList.remove("show"); });
 
     setInterval(() => {
-      if (!document.hidden && video && !video.paused && video.readyState >= 2) {
+      if (!document.hidden && ezPlayer) {
         activePlayingSeconds++;
         staySeconds++;
         updateHonorUI();
@@ -2701,8 +2708,15 @@
 
     audioBtn.addEventListener("click", () => {
       requireAuth(() => {
-        video.muted = !video.muted;
-        audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
+        if (!ezPlayer) return;
+        const isMuted = audioBtn.textContent.includes("开启");
+        if (isMuted) {
+          try { ezPlayer.openSound(); } catch(e) {}
+          audioBtn.innerHTML = '🔊 静音';
+        } else {
+          try { ezPlayer.closeSound(); } catch(e) {}
+          audioBtn.innerHTML = '🔇 开启声音';
+        }
       });
     });
 
@@ -2714,9 +2728,14 @@
       });
     });
 
+    // 拍立得快照生成
     snapshotBtn.addEventListener("click", () => {
       requireAuth(() => {
-        if (!video || video.readyState < 2 || video.videoWidth === 0) {
+        const videoElement = document.querySelector("#ezuikitPlayer video");
+        const canvasElement = document.querySelector("#ezuikitPlayer canvas");
+        const sourceElement = videoElement || canvasElement;
+
+        if (!sourceElement) {
           alert("视频流正在加载中，请稍候再抓拍~");
           return;
         }
@@ -2736,8 +2755,8 @@
         const PHOTO_W = 540;
         const PHOTO_H = 420;
 
-        const vW = video.videoWidth;
-        const vH = video.videoHeight;
+        const vW = sourceElement.videoWidth || sourceElement.width || 1280;
+        const vH = sourceElement.videoHeight || sourceElement.height || 720;
         const targetRatio = PHOTO_W / PHOTO_H;
         const videoRatio = vW / vH;
         let sX = 0, sY = 0, sW = vW, sH = vH;
@@ -2751,7 +2770,7 @@
         }
 
         try {
-          ctx.drawImage(video, sX, sY, sW, sH, PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
+          ctx.drawImage(sourceElement, sX, sY, sW, sH, PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
         } catch (err) {
           alert("画面受跨域保护，请稍后刷新重试或直接手机截屏！");
           return;
@@ -2818,14 +2837,6 @@
 
     closePolaroidBtn.addEventListener("click", () => polaroidModal.classList.remove("show"));
     polaroidModal.addEventListener("click", (e) => { if (e.target === polaroidModal) polaroidModal.classList.remove("show"); });
-
-    video.addEventListener("timeupdate", () => {
-      if (video.currentTime > 0) playerEmpty.style.display = "none";
-    });
-
-    video.addEventListener("playing", () => {
-      playerEmpty.style.display = "none";
-    });
 
     function shootDanmaku(text, isMe = false) {
       if (!danmakuEnabled) return;
@@ -3032,6 +3043,7 @@
       });
     });
 
+    // 播放核心函数：使用萤石官方 WASM 播放器加载流
     function playStream(roomIndex) {
       flushRoomDuration();
 
@@ -3048,7 +3060,7 @@
         btn.classList.toggle("active", idx === roomIndex);
       });
 
-      const allDrawerItems = drawerRoomList.querySelectorAll(".drawer-room-item");
+      const allDrawerItems = drawerRoomList ? drawerRoomList.querySelectorAll(".drawer-room-item") : [];
       allDrawerItems.forEach((item, idx) => {
         item.classList.toggle("active", idx === roomIndex);
       });
@@ -3069,65 +3081,45 @@
 
       playerEmpty.style.display = "grid";
       emptyTitle.textContent = `正在连接 ${currentRoomName}...`;
-      emptyCopy.textContent = "正在调取云端视频...";
+      emptyCopy.textContent = "启动智能解码内核中 (自适应 H.264/H.265)...";
 
-      if (hls) {
-        hls.stopLoad();
-        hls.detachMedia();
-        hls.destroy();
-        hls = null;
+      // 1. 停止销毁旧实例并清空容器
+      if (ezPlayer) {
+        try {
+          ezPlayer.stop();
+          ezPlayer.destroy();
+        } catch(e) {}
+        ezPlayer = null;
       }
 
-      video.pause();
-      video.src = "";
-      video.load();
+      const playerBox = document.getElementById("ezuikitPlayer");
+      playerBox.innerHTML = "";
 
-      if (!room.hlsUrl) {
-        emptyTitle.textContent = `${currentRoomName} 待机中`;
-        emptyCopy.textContent = "暂无活跃推流，请切换其他直播间";
-        return;
-      }
+      const ezUrl = room.ezopenUrl || `ezopen://open.ys7.com/${room.deviceSerial}/${room.channelNo || 1}.live`;
 
-      if (window.Hls && window.Hls.isSupported()) {
-        hls = new window.Hls({
-          enableWorker: true,
-          lowLatencyMode: true,
-          backBufferLength: 0,
-          maxBufferLength: 3,
-          maxMaxBufferLength: 6,
-          liveSyncDurationCount: 1,
-          liveMaxLatencyDurationCount: 2.5,
-          maxLiveSyncPlaybackRate: 1.15,
-          liveDurationInfinity: true,
-          manifestLoadingTimeOut: 10000,
-          fragLoadingTimeOut: 15000
-        });
-
-        hls.loadSource(room.hlsUrl);
-        hls.attachMedia(video);
-
-        hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
-          video.muted = true;
-          video.play().catch(() => {});
-        });
-
-        hls.on(window.Hls.Events.ERROR, (_event, data) => {
-          if (data && data.fatal) {
-            switch (data.type) {
-              case window.Hls.ErrorTypes.NETWORK_ERROR:
-                hls.startLoad();
-                break;
-              case window.Hls.ErrorTypes.MEDIA_ERROR:
-                hls.recoverMediaError();
-                break;
-              default:
-                break;
-            }
+      try {
+        // 2. 初始化自适应播放器
+        ezPlayer = new EZUIKit.EZUIPlayer({
+          id: "ezuikitPlayer",
+          autoplay: true,
+          url: ezUrl,
+          accessToken: ezAccessToken,
+          decoderPath: "https://open.ys7.com/sdk/js/2.0",
+          width: playerBox.clientWidth || 800,
+          height: playerBox.clientHeight || 450,
+          splitBasis: 1,
+          audio: 0,
+          handleSuccess: () => {
+            playerEmpty.style.display = "none";
+          },
+          handleError: (err) => {
+            console.error("播放异常:", err);
+            emptyTitle.textContent = `${currentRoomName} 连接中`;
+            emptyCopy.textContent = "正在调流重试，请稍候...";
           }
         });
-      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = room.hlsUrl;
-        video.play().catch(() => {});
+      } catch (err) {
+        console.error("SDK 挂载异常:", err);
       }
     }
 
@@ -3143,6 +3135,7 @@
           return;
         }
 
+        ezAccessToken = data.accessToken || "";
         roomList = rawRooms;
 
         document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
@@ -3164,7 +3157,7 @@
           roomButtonList.appendChild(btn);
         });
 
-        // 2. 渲染手机端底部抽屉机位列表（点击立即收起抽屉，未登录时自动置顶弹出登录框）
+        // 2. 渲染手机端底部抽屉机位列表 (点击先收起抽屉，未登录时自动置顶弹出登录框)
         drawerRoomList.innerHTML = "";
         roomList.forEach((room, idx) => {
           const item = document.createElement("div");
@@ -3207,16 +3200,6 @@
           pollTimer = setInterval(() => {
             if (document.visibilityState === "visible") fetchComments(false);
           }, 8000);
-        }
-
-        if (hls && hls.liveSyncPosition) {
-          const latency = hls.liveSyncPosition - video.currentTime;
-          if (latency > 2) {
-            video.currentTime = hls.liveSyncPosition;
-          }
-          video.play().catch(() => {});
-        } else if (video.paused) {
-          video.play().catch(() => {});
         }
       }
     });
