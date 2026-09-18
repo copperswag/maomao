@@ -257,7 +257,6 @@
       -webkit-user-select: none;
     }
 
-    /* 萤石官方播放器挂载容器样式 */
     #ezuikitPlayer {
       width: 100%;
       height: 100%;
@@ -265,7 +264,8 @@
     }
 
     #ezuikitPlayer video,
-    #ezuikitPlayer canvas {
+    #ezuikitPlayer canvas,
+    #mainVideo {
       width: 100% !important;
       height: 100% !important;
       object-fit: contain !important;
@@ -725,7 +725,7 @@
 
     footer a { color: var(--text-sub); text-decoration: none; }
 
-    /* 通用居中弹窗基类 (置顶层级 z-index: 2500) */
+    /* 通用居中弹窗基类 (置顶层级 2500) */
     .app-modal {
       position: fixed;
       inset: 0;
@@ -1290,8 +1290,9 @@
       <!-- 播放器区域 -->
       <div class="player-container">
         <div class="video-wrapper" id="videoWrapper">
-          <!-- 萤石官方播放器挂载 DOM，全面支持 WebAssembly 解码 H.265/H.264 -->
+          <!-- 双轨播放器容器：既支持萤石官方 WASM 软解，又支持原生 HTML5/HLS 双向切换 -->
           <div id="ezuikitPlayer"></div>
+          <video id="mainVideo" autoplay muted playsinline crossorigin="anonymous" controlsList="nodownload" style="display:none;"></video>
           
           <div class="danmaku-container" id="danmakuBox"></div>
           
@@ -1305,7 +1306,7 @@
           <div class="card-empty" id="playerEmpty">
             <div>
               <div class="empty-title" id="emptyTitle">正在连线设备...</div>
-              <p class="empty-copy" id="emptyCopy">唤醒视频流中，请稍候...</p>
+              <p class="empty-copy" id="emptyCopy">调取自适应码流中，请稍候...</p>
             </div>
           </div>
         </div>
@@ -1558,15 +1559,14 @@
   <canvas id="fortuneCanvas" style="display: none;"></canvas>
   <canvas id="certCanvas" style="display: none;"></canvas>
 
-  <!-- 引入萤石官方 WebAssembly 软解 H.265/H.264 播放器 SDK -->
+  <!-- 播放核心依赖：同时引入 HLS.js 与 萤石官方 WebAssembly 软解 SDK 实现双轨兜底 -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script src="https://open.ys7.com/sdk/js/2.0/ezuikit.js"></script>
 
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
-    // =========================================================================
-    // 1. 用户认证状态管理器 (AuthState) & 全站操作拦截器 (requireAuth)
-    // =========================================================================
+    // 1. 用户认证状态管理器
     const AuthState = {
       getToken: () => localStorage.getItem("meow_user_token") || "",
       getUser: () => {
@@ -1604,7 +1604,6 @@
     }
 
     let pendingAction = null;
-
     function requireAuth(actionCallback) {
       if (AuthState.isLoggedIn()) {
         actionCallback && actionCallback();
@@ -1824,13 +1823,12 @@
       }
     });
 
-    // =========================================================================
     // 2. 页面原有核心逻辑 (直播播放、弹幕、打卡、段位等)
-    // =========================================================================
     let currentRoomId = "1";
     let currentRoomName = "苏州猫岛";
     let ezPlayer = null;
     let ezAccessToken = "";
+    let hls = null;
 
     function trackEvent(type, extra = {}) {
       try {
@@ -1846,6 +1844,7 @@
 
     trackEvent("pv");
 
+    const video = document.getElementById("mainVideo");
     const videoWrapper = document.getElementById("videoWrapper");
     const audioBtn = document.getElementById("audioBtn");
     const danmakuToggleBtn = document.getElementById("danmakuToggleBtn");
@@ -1866,7 +1865,6 @@
     const noticeContent = document.getElementById("noticeContent");
     const myHonorBadge = document.getElementById("myHonorBadge");
 
-    // 抽屉选台相关 DOM
     const btnOpenRoomDrawer = document.getElementById("btnOpenRoomDrawer");
     const roomDrawerModal = document.getElementById("roomDrawerModal");
     const closeDrawerBtn = document.getElementById("closeDrawerBtn");
@@ -2430,7 +2428,9 @@
     levelUpModal.addEventListener("click", (e) => { if (e.target === levelUpModal) levelUpModal.classList.remove("show"); });
 
     setInterval(() => {
-      if (!document.hidden && ezPlayer) {
+      const isVideoPlaying = (video && !video.paused && video.readyState >= 2);
+      const isEzPlaying = (ezPlayer !== null);
+      if (!document.hidden && (isVideoPlaying || isEzPlaying)) {
         activePlayingSeconds++;
         staySeconds++;
         updateHonorUI();
@@ -2708,14 +2708,18 @@
 
     audioBtn.addEventListener("click", () => {
       requireAuth(() => {
-        if (!ezPlayer) return;
-        const isMuted = audioBtn.textContent.includes("开启");
-        if (isMuted) {
-          try { ezPlayer.openSound(); } catch(e) {}
-          audioBtn.innerHTML = '🔊 静音';
-        } else {
-          try { ezPlayer.closeSound(); } catch(e) {}
-          audioBtn.innerHTML = '🔇 开启声音';
+        if (ezPlayer) {
+          const isMuted = audioBtn.textContent.includes("开启");
+          if (isMuted) {
+            try { ezPlayer.openSound(); } catch(e) {}
+            audioBtn.innerHTML = '🔊 静音';
+          } else {
+            try { ezPlayer.closeSound(); } catch(e) {}
+            audioBtn.innerHTML = '🔇 开启声音';
+          }
+        } else if (video) {
+          video.muted = !video.muted;
+          audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
         }
       });
     });
@@ -2728,14 +2732,13 @@
       });
     });
 
-    // 拍立得快照生成
     snapshotBtn.addEventListener("click", () => {
       requireAuth(() => {
-        const videoElement = document.querySelector("#ezuikitPlayer video");
-        const canvasElement = document.querySelector("#ezuikitPlayer canvas");
-        const sourceElement = videoElement || canvasElement;
+        const vidEl = document.querySelector("#ezuikitPlayer video") || video;
+        const cvsEl = document.querySelector("#ezuikitPlayer canvas");
+        const sourceElement = vidEl || cvsEl;
 
-        if (!sourceElement) {
+        if (!sourceElement || (vidEl && vidEl.readyState < 2 && vidEl.videoWidth === 0)) {
           alert("视频流正在加载中，请稍候再抓拍~");
           return;
         }
@@ -2837,6 +2840,14 @@
 
     closePolaroidBtn.addEventListener("click", () => polaroidModal.classList.remove("show"));
     polaroidModal.addEventListener("click", (e) => { if (e.target === polaroidModal) polaroidModal.classList.remove("show"); });
+
+    video.addEventListener("timeupdate", () => {
+      if (video.currentTime > 0) playerEmpty.style.display = "none";
+    });
+
+    video.addEventListener("playing", () => {
+      playerEmpty.style.display = "none";
+    });
 
     function shootDanmaku(text, isMe = false) {
       if (!danmakuEnabled) return;
@@ -3043,7 +3054,7 @@
       });
     });
 
-    // 播放核心函数：使用萤石官方 WASM 播放器加载流
+    // 双轨播放核心调度：优先使用萤石官方 WASM SDK 软解 H.265，失败时自动平滑回退到轻量 HLS
     function playStream(roomIndex) {
       flushRoomDuration();
 
@@ -3054,7 +3065,6 @@
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
 
-      // 同步更新侧边栏与底部抽屉的高亮状态
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
         btn.classList.toggle("active", idx === roomIndex);
@@ -3083,7 +3093,7 @@
       emptyTitle.textContent = `正在连接 ${currentRoomName}...`;
       emptyCopy.textContent = "启动智能解码内核中 (自适应 H.264/H.265)...";
 
-      // 1. 停止销毁旧实例并清空容器
+      // 1. 彻底销毁上一个可能运行的 SDK 或 HLS 实例
       if (ezPlayer) {
         try {
           ezPlayer.stop();
@@ -3092,34 +3102,108 @@
         ezPlayer = null;
       }
 
-      const playerBox = document.getElementById("ezuikitPlayer");
-      playerBox.innerHTML = "";
+      if (hls) {
+        hls.stopLoad();
+        hls.detachMedia();
+        hls.destroy();
+        hls = null;
+      }
 
-      const ezUrl = room.ezopenUrl || `ezopen://open.ys7.com/${room.deviceSerial}/${room.channelNo || 1}.live`;
+      video.pause();
+      video.src = "";
+      video.load();
 
-      try {
-        // 2. 初始化自适应播放器
-        ezPlayer = new EZUIKit.EZUIPlayer({
-          id: "ezuikitPlayer",
-          autoplay: true,
-          url: ezUrl,
-          accessToken: ezAccessToken,
-          decoderPath: "https://open.ys7.com/sdk/js/2.0",
-          width: playerBox.clientWidth || 800,
-          height: playerBox.clientHeight || 450,
-          splitBasis: 1,
-          audio: 0,
-          handleSuccess: () => {
-            playerEmpty.style.display = "none";
-          },
-          handleError: (err) => {
-            console.error("播放异常:", err);
-            emptyTitle.textContent = `${currentRoomName} 连接中`;
-            emptyCopy.textContent = "正在调流重试，请稍候...";
+      const ezBox = document.getElementById("ezuikitPlayer");
+      ezBox.innerHTML = "";
+
+      const ezUrl = room.ezopenUrl || (room.deviceSerial ? `ezopen://open.ys7.com/${room.deviceSerial}/${room.channelNo || 1}.live` : "");
+      const hlsUrl = room.hlsUrl || room.url || "";
+
+      // 2. 如果具备 ezopen 协议与有效 Token，优先启动萤石官方自适应 SDK
+      if (window.EZUIKit && ezUrl && ezAccessToken) {
+        try {
+          ezBox.style.display = "block";
+          video.style.display = "none";
+
+          ezPlayer = new EZUIKit.EZUIPlayer({
+            id: "ezuikitPlayer",
+            autoplay: true,
+            url: ezUrl,
+            accessToken: ezAccessToken,
+            decoderPath: "https://open.ys7.com/sdk/js/2.0",
+            width: ezBox.clientWidth || 800,
+            height: ezBox.clientHeight || 450,
+            splitBasis: 1,
+            audio: 0,
+            handleSuccess: () => {
+              playerEmpty.style.display = "none";
+            },
+            handleError: (err) => {
+              console.warn("EZUIKit 启动异常，自动降级切换 HLS 模式", err);
+              fallbackHlsPlay(hlsUrl);
+            }
+          });
+          return;
+        } catch(e) {
+          console.warn("EZUIPlayer 构造失败，切换回 HLS 模式");
+        }
+      }
+
+      // 3. 兜底策略：使用原生 HLS.js 播放
+      fallbackHlsPlay(hlsUrl);
+    }
+
+    function fallbackHlsPlay(hlsUrl) {
+      const ezBox = document.getElementById("ezuikitPlayer");
+      ezBox.style.display = "none";
+      video.style.display = "block";
+
+      if (!hlsUrl) {
+        emptyTitle.textContent = `${currentRoomName} 待机中`;
+        emptyCopy.textContent = "暂无可用视频流，请切换其他机位";
+        return;
+      }
+
+      if (window.Hls && window.Hls.isSupported()) {
+        hls = new window.Hls({
+          enableWorker: true,
+          lowLatencyMode: true,
+          backBufferLength: 0,
+          maxBufferLength: 3,
+          maxMaxBufferLength: 6,
+          liveSyncDurationCount: 1,
+          liveMaxLatencyDurationCount: 2.5,
+          maxLiveSyncPlaybackRate: 1.15,
+          liveDurationInfinity: true,
+          manifestLoadingTimeOut: 10000,
+          fragLoadingTimeOut: 15000
+        });
+
+        hls.loadSource(hlsUrl);
+        hls.attachMedia(video);
+
+        hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
+          video.muted = true;
+          video.play().catch(() => {});
+        });
+
+        hls.on(window.Hls.Events.ERROR, (_event, data) => {
+          if (data && data.fatal) {
+            switch (data.type) {
+              case window.Hls.ErrorTypes.NETWORK_ERROR:
+                hls.startLoad();
+                break;
+              case window.Hls.ErrorTypes.MEDIA_ERROR:
+                hls.recoverMediaError();
+                break;
+              default:
+                break;
+            }
           }
         });
-      } catch (err) {
-        console.error("SDK 挂载异常:", err);
+      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = hlsUrl;
+        video.play().catch(() => {});
       }
     }
 
@@ -3157,7 +3241,7 @@
           roomButtonList.appendChild(btn);
         });
 
-        // 2. 渲染手机端底部抽屉机位列表 (点击先收起抽屉，未登录时自动置顶弹出登录框)
+        // 2. 渲染手机端底部抽屉机位列表
         drawerRoomList.innerHTML = "";
         roomList.forEach((room, idx) => {
           const item = document.createElement("div");
@@ -3172,9 +3256,9 @@
             </span>
           `;
           item.addEventListener("click", () => {
-            roomDrawerModal.classList.remove("show"); // 先顺滑收起底部抽屉
+            roomDrawerModal.classList.remove("show");
             requireAuth(() => {
-              playStream(idx); // 登录成功后直接执行切换
+              playStream(idx);
             });
           });
           drawerRoomList.appendChild(item);
@@ -3200,6 +3284,16 @@
           pollTimer = setInterval(() => {
             if (document.visibilityState === "visible") fetchComments(false);
           }, 8000);
+        }
+
+        if (hls && hls.liveSyncPosition) {
+          const latency = hls.liveSyncPosition - video.currentTime;
+          if (latency > 2) {
+            video.currentTime = hls.liveSyncPosition;
+          }
+          video.play().catch(() => {});
+        } else if (video.paused && !ezPlayer) {
+          video.play().catch(() => {});
         }
       }
     });
