@@ -3116,10 +3116,13 @@
       const ezBox = document.getElementById("ezuikitPlayer");
       ezBox.innerHTML = "";
 
-      const ezUrl = room.ezopenUrl || (room.deviceSerial ? `ezopen://open.ys7.com/${room.deviceSerial}/${room.channelNo || 1}.live` : "");
+      // 兼容级联冒号序列号，并标准化 ezopen 协议
+      const devSerial = (room.deviceSerial || "").trim();
+      const chNo = room.channelNo || 1;
+      const ezUrl = room.ezopenUrl || (devSerial ? `ezopen://open.ys7.com/${devSerial}/${chNo}.live` : "");
       const hlsUrl = room.hlsUrl || room.url || "";
 
-      // 2. 如果具备 ezopen 协议与有效 Token，优先启动萤石官方自适应 SDK
+      // 2. 具备 Token 时强制使用 EZUIKit 走 WebAssembly 软解 (解决 H.265/非H264 限制)
       if (window.EZUIKit && ezUrl && ezAccessToken) {
         try {
           ezBox.style.display = "block";
@@ -3139,13 +3142,16 @@
               playerEmpty.style.display = "none";
             },
             handleError: (err) => {
-              console.warn("EZUIKit 启动异常，自动降级切换 HLS 模式", err);
-              fallbackHlsPlay(hlsUrl);
+              console.warn("EZUIKit 播放提示:", err);
+              // 如果已有画面输出则不触发降级
+              if (!ezBox.querySelector("canvas") && !ezBox.querySelector("video")) {
+                fallbackHlsPlay(hlsUrl);
+              }
             }
           });
           return;
         } catch(e) {
-          console.warn("EZUIPlayer 构造失败，切换回 HLS 模式");
+          console.warn("EZUIPlayer 初始化异常:", e);
         }
       }
 
