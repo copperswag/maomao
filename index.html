@@ -3091,7 +3091,6 @@
 
       playerEmpty.style.display = "grid";
       emptyTitle.textContent = `正在连接 ${currentRoomName}...`;
-      emptyCopy.textContent = "启动智能解码内核中 (自适应 H.264/H.265)...";
 
       // 1. 彻底销毁上一个可能运行的 SDK 或 HLS 实例
       if (ezPlayer) {
@@ -3117,11 +3116,20 @@
       ezBox.innerHTML = "";
 
       // 兼容级联冒号序列号，并标准化 ezopen 协议
-      const devSerial = (room.deviceSerial || "").trim();
-      const chNo = room.channelNo || 1;
-      const ezUrl = room.ezopenUrl || (devSerial ? `ezopen://open.ys7.com/${devSerial}/${chNo}.live` : "");
+      // 兼容普通设备与国标级联冒号设备 (国标设备冒号后为通道ID)
+      const rawSerial = (room.deviceSerial || "").trim();
+      let ezUrl = room.ezopenUrl || "";
       const hlsUrl = room.hlsUrl || room.url || "";
 
+      if (!ezUrl && rawSerial) {
+        if (rawSerial.includes(":")) {
+          const [parentSerial, gbChannel] = rawSerial.split(":");
+          ezUrl = `ezopen://open.ys7.com/${parentSerial}/${gbChannel}.live`;
+        } else {
+          ezUrl = `ezopen://open.ys7.com/${rawSerial}/${room.channelNo || 1}.live`;
+        }
+      }
+      
       // 2. 具备 Token 时强制使用 EZUIKit 走 WebAssembly 软解 (解决 H.265/非H264 限制)
       if (window.EZUIKit && ezUrl && ezAccessToken) {
         try {
