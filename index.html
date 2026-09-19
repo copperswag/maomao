@@ -1297,6 +1297,7 @@
           <div class="danmaku-container" id="danmakuBox"></div>
           
           <div class="controls-overlay">
+            <button class="player-ctrl-btn" id="btnFeedPet" style="background: linear-gradient(135deg, #10b981, #059669); font-weight: 700;" type="button">🍗 立即投喂</button>
             <button class="player-ctrl-btn btn-fortune" id="fortuneBtn" type="button">🥠 猫生运势</button>
             <button class="player-ctrl-btn" id="snapshotBtn" type="button">📷 拍立得</button>
             <button class="player-ctrl-btn" id="danmakuToggleBtn" type="button">💬 弹幕: 开</button>
@@ -3310,7 +3311,41 @@
         }
       }
     });
+// 绑定远程投喂
+    const btnFeedPet = document.getElementById("btnFeedPet");
+    if (btnFeedPet) {
+      btnFeedPet.addEventListener("click", () => {
+        requireAuth(async () => {
+          if (!confirm(`确认要为【${currentRoomName}】的毛孩子加餐出粮吗？`)) return;
 
+          btnFeedPet.disabled = true;
+          btnFeedPet.textContent = "出粮中...";
+
+          try {
+            const res = await fetch(`${API_ENDPOINT}/api/feeder/feed`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ roomId: currentRoomId, seconds: 2 })
+            });
+            const json = await res.json();
+
+            if (json.code === 200) {
+              alert(json.msg || "出粮指令已发出！");
+              triggerDanmakuEasterEgg("food");
+              const nick = getUserFixedNickname();
+              shootDanmaku(`🎉 感谢猫友【${nick}】为现场毛孩子投喂了猫粮！`, true);
+            } else {
+              alert(json.msg || "投喂失败");
+            }
+          } catch (e) {
+            alert("网络异常，投喂指令发送失败");
+          } finally {
+            btnFeedPet.disabled = false;
+            btnFeedPet.textContent = "🍗 立即投喂";
+          }
+        });
+      });
+    }
     initPage();
   </script>
 </body>
