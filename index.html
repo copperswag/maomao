@@ -87,7 +87,6 @@
       flex-wrap: wrap;
     }
 
-    /* Clerk 挂载容器与登录按钮 */
     #auth-box {
       display: inline-flex;
       align-items: center;
@@ -742,7 +741,6 @@
 
     footer a { color: var(--text-sub); text-decoration: none; }
 
-    /* 通用居中弹窗基类 (置顶层级 2500) */
     .app-modal {
       position: fixed;
       inset: 0;
@@ -760,19 +758,6 @@
     }
 
     .app-modal.show { opacity: 1; pointer-events: auto; }
-
-    /* Clerk 官方组件宿主卡片 */
-    .clerk-modal-container {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.82);
-      backdrop-filter: blur(12px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 99999;
-      padding: 16px;
-    }
 
     .modal-card-box {
       max-width: 440px;
@@ -1084,7 +1069,6 @@
       box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
     }
 
-    /* 底部抽屉选台组件 (z-index: 1200) */
     .drawer-modal {
       position: fixed;
       inset: 0;
@@ -1278,16 +1262,13 @@
     <p class="hero-desc">别让你家毛孩子再成为留守儿童了</p>
 
     <div class="live-layout">
-      <!-- 桌面端侧边栏 (移动端自动隐藏) -->
       <div class="room-sidebar">
         <div class="sidebar-title">切换直播间</div>
         <div id="roomButtonList" style="display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
 
-      <!-- 播放器区域 -->
       <div class="player-container">
         <div class="video-wrapper" id="videoWrapper">
-          <!-- 双轨播放器容器：既支持萤石官方 WASM 软解，又支持原生 HTML5/HLS 双向切换 -->
           <div id="ezuikitPlayer"></div>
           <video id="mainVideo" autoplay muted playsinline crossorigin="anonymous" controlsList="nodownload" style="display:none;"></video>
           
@@ -1367,7 +1348,7 @@
     </footer>
   </div>
 
-  <!-- 底部向上滑动抽屉选台组件 (Bottom Sheet Drawer) -->
+  <!-- 底部向上滑动抽屉选台组件 -->
   <div class="drawer-modal" id="roomDrawerModal">
     <div class="drawer-panel">
       <div class="drawer-handle-bar"></div>
@@ -1380,11 +1361,6 @@
       </div>
       <div class="drawer-room-list" id="drawerRoomList"></div>
     </div>
-  </div>
-
-  <!-- Clerk 登录居中挂载弹窗 -->
-  <div class="clerk-modal-container" id="clerkModalBox">
-    <div id="clerkSignInTarget"></div>
   </div>
 
   <!-- 头像选择弹窗 -->
@@ -1518,7 +1494,6 @@
   <canvas id="fortuneCanvas" style="display: none;"></canvas>
   <canvas id="certCanvas" style="display: none;"></canvas>
 
-  <!-- 播放核心依赖：同时引入 HLS.js 与 萤石官方 WebAssembly 软解 SDK 实现双轨兜底 -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script src="https://open.ys7.com/sdk/js/2.0/ezuikit.js"></script>
 
@@ -1529,10 +1504,10 @@
     const ClerkAuth = {
       instance: null,
       isReady: false,
-      isLoggedIn: () => Boolean(ClerkAuth.instance && ClerkAuth.instance.user),
+      isLoggedIn: () => Boolean(window.Clerk && window.Clerk.user),
       getUser: () => {
-        if (!ClerkAuth.instance || !ClerkAuth.instance.user) return null;
-        const u = ClerkAuth.instance.user;
+        if (!window.Clerk || !window.Clerk.user) return null;
+        const u = window.Clerk.user;
         const primaryEmail = u.primaryEmailAddress ? u.primaryEmailAddress.emailAddress : "";
         const fallbackName = primaryEmail ? primaryEmail.split("@")[0] : "爱心猫友";
         return {
@@ -1556,6 +1531,13 @@
     }
 
     let pendingAction = null;
+    function openClerkSignInModal() {
+      if (window.Clerk) {
+        // 调用 Clerk 官方原生居中模态弹窗
+        window.Clerk.openSignIn();
+      }
+    }
+
     function requireAuth(actionCallback) {
       if (ClerkAuth.isLoggedIn()) {
         actionCallback && actionCallback();
@@ -1565,30 +1547,13 @@
       }
     }
 
-    const clerkModalBox = document.getElementById("clerkModalBox");
-    const clerkSignInTarget = document.getElementById("clerkSignInTarget");
     const btnClerkSignIn = document.getElementById("btnClerkSignIn");
     const clerkUserAvatarSlot = document.getElementById("clerk-user-avatar-slot");
 
-    function openClerkSignInModal() {
-      if (!ClerkAuth.instance) return;
-      clerkModalBox.style.display = "flex";
-      ClerkAuth.instance.mountSignIn(clerkSignInTarget);
+    if (btnClerkSignIn) {
+      btnClerkSignIn.addEventListener("click", openClerkSignInModal);
     }
 
-    function closeClerkSignInModal() {
-      clerkModalBox.style.display = "none";
-    }
-
-    clerkModalBox.addEventListener("click", (e) => {
-      if (e.target === clerkModalBox) {
-        closeClerkSignInModal();
-      }
-    });
-
-    btnClerkSignIn.addEventListener("click", openClerkSignInModal);
-
-    // 同步 Clerk 登录态并写入 Worker KV 归档
     async function syncClerkUserToBackend(user) {
       if (!user) return;
       try {
@@ -1600,7 +1565,7 @@
       } catch (e) {}
     }
 
-    // 初始化 Clerk SDK
+    // 初始化 Clerk SDK 并挂载状态监听
     window.addEventListener("load", async () => {
       try {
         if (!window.Clerk) return;
@@ -1608,30 +1573,12 @@
         await window.Clerk.load();
         ClerkAuth.isReady = true;
 
-        if (window.Clerk.user) {
-          // 已登录状态
-          btnClerkSignIn.style.display = "none";
-          window.Clerk.mountUserButton(clerkUserAvatarSlot);
-
-          const u = ClerkAuth.getUser();
-          syncClerkUserToBackend(u);
-          if (pendingAction) {
-            const act = pendingAction;
-            pendingAction = null;
-            act();
-          }
-        } else {
-          // 未登录状态
-          btnClerkSignIn.style.display = "inline-flex";
-          clerkUserAvatarSlot.innerHTML = "";
-        }
-
-        // 监听 Clerk 登录登出状态变化
-        window.Clerk.addListener((emission) => {
-          if (emission.user) {
+        function refreshAuthUI() {
+          if (window.Clerk.user) {
             btnClerkSignIn.style.display = "none";
+            clerkUserAvatarSlot.innerHTML = "";
             window.Clerk.mountUserButton(clerkUserAvatarSlot);
-            closeClerkSignInModal();
+
             const u = ClerkAuth.getUser();
             syncClerkUserToBackend(u);
             if (pendingAction) {
@@ -1643,13 +1590,19 @@
             btnClerkSignIn.style.display = "inline-flex";
             clerkUserAvatarSlot.innerHTML = "";
           }
+        }
+
+        refreshAuthUI();
+
+        window.Clerk.addListener((emission) => {
+          refreshAuthUI();
         });
       } catch (err) {
-        console.warn("Clerk 初始化失败:", err);
+        console.warn("Clerk 初始化异常:", err);
       }
     });
 
-    // 2. 核心功能逻辑 (直播流、打卡、段位、弹幕)
+    // 2. 页面核心功能 (直播流、打卡、成就、弹幕)
     let currentRoomId = "1";
     let currentRoomName = "苏州猫岛";
     let ezPlayer = null;
@@ -2873,7 +2826,7 @@
       });
     });
 
-    // 双轨播放调度
+    // 播放调度：支持所有人自由选台
     function playStream(roomIndex) {
       flushRoomDuration();
 
@@ -3052,6 +3005,7 @@
         mobileRoomBadge.textContent = `(${roomList.length}台) ▾`;
         drawerTotalCount.textContent = `(共${roomList.length}个机位)`;
 
+        // 1. 桌面端左侧边栏 (移除拦截，允许游客自由换台)
         roomButtonList.innerHTML = "";
         roomList.forEach((room, idx) => {
           const btn = document.createElement("button");
@@ -3061,11 +3015,12 @@
             <span class="status-indicator"><span class="pulse-dot"></span> LIVE</span>
           `;
           btn.addEventListener("click", () => {
-            requireAuth(() => playStream(idx));
+            playStream(idx);
           });
           roomButtonList.appendChild(btn);
         });
 
+        // 2. 手机端抽屉机位列表 (移除拦截，允许游客自由换台)
         drawerRoomList.innerHTML = "";
         roomList.forEach((room, idx) => {
           const item = document.createElement("div");
@@ -3081,9 +3036,7 @@
           `;
           item.addEventListener("click", () => {
             roomDrawerModal.classList.remove("show");
-            requireAuth(() => {
-              playStream(idx);
-            });
+            playStream(idx);
           });
           drawerRoomList.appendChild(item);
         });
