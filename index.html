@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>毛毛星球 MeowHub | 智能养宠</title>
   
-  <!-- 官方 Clerk SDK -->
+  <!-- 引入带完整 UI 组件的官方 Clerk JS SDK -->
   <script
     async
     crossorigin="anonymous"
     data-clerk-publishable-key="pk_test_dW5pcXVlLXdlcmV3b2xmLTkzOS5jbGVyay5hY2NvdW50cy5kZXYk"
-    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+    src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.js"
     type="text/javascript"
   ></script>
 
@@ -1531,10 +1531,30 @@
     }
 
     let pendingAction = null;
-    function openClerkSignInModal() {
-      if (window.Clerk) {
-        // 调用 Clerk 官方原生居中模态弹窗
+    async function openClerkSignInModal() {
+      // 1. 若 Clerk 实例暂未就绪，轮询等待最多 3 秒
+      if (!window.Clerk) {
+        console.warn("Clerk 仍在加载中，请稍候...");
+        for (let i = 0; i < 30; i++) {
+          await new Promise(r => setTimeout(r, 100));
+          if (window.Clerk) break;
+        }
+      }
+
+      if (!window.Clerk) {
+        alert("认证服务加载超时，请检查网络连接后刷新页面！");
+        return;
+      }
+
+      // 2. 确保完成 load 后调用官方居中模态组件
+      try {
+        if (!window.Clerk.loaded) {
+          await window.Clerk.load();
+        }
         window.Clerk.openSignIn();
+      } catch (err) {
+        console.error("呼起登录失败:", err);
+        alert("登录窗口呼起失败: " + err.message);
       }
     }
 
@@ -1565,7 +1585,7 @@
       } catch (e) {}
     }
 
-    // 初始化 Clerk SDK 并挂载状态监听
+    // 初始化加载 Clerk SDK 并双向监听状态变化
     window.addEventListener("load", async () => {
       try {
         if (!window.Clerk) return;
@@ -1594,7 +1614,7 @@
 
         refreshAuthUI();
 
-        window.Clerk.addListener((emission) => {
+        window.Clerk.addListener(() => {
           refreshAuthUI();
         });
       } catch (err) {
@@ -1602,7 +1622,7 @@
       }
     });
 
-    // 2. 页面核心功能 (直播流、打卡、成就、弹幕)
+    // 2. 页面核心逻辑 (播放器、打卡、段位、弹幕)
     let currentRoomId = "1";
     let currentRoomName = "苏州猫岛";
     let ezPlayer = null;
@@ -2826,7 +2846,6 @@
       });
     });
 
-    // 播放调度：支持所有人自由选台
     function playStream(roomIndex) {
       flushRoomDuration();
 
@@ -3005,7 +3024,6 @@
         mobileRoomBadge.textContent = `(${roomList.length}台) ▾`;
         drawerTotalCount.textContent = `(共${roomList.length}个机位)`;
 
-        // 1. 桌面端左侧边栏 (移除拦截，允许游客自由换台)
         roomButtonList.innerHTML = "";
         roomList.forEach((room, idx) => {
           const btn = document.createElement("button");
@@ -3020,7 +3038,6 @@
           roomButtonList.appendChild(btn);
         });
 
-        // 2. 手机端抽屉机位列表 (移除拦截，允许游客自由换台)
         drawerRoomList.innerHTML = "";
         roomList.forEach((room, idx) => {
           const item = document.createElement("div");
