@@ -3110,23 +3110,19 @@
 
     // 远程投喂：附带当前机位所绑定的硬件 IMEI 传递给 Worker
    const btnFeedPet = document.getElementById("btnFeedPet");
+    let cooldownTimers = {}; // 存储每个房间的倒计时器
+
     if (btnFeedPet) {
       btnFeedPet.addEventListener("click", () => {
         requireAuth(async () => {
           if (!confirm(`确认要为【${currentRoomName}】的毛孩子加餐出粮吗？`)) return;
 
+          const activeImei = (currentRoom && currentRoom.imei) ? currentRoom.imei.trim() : "";
+          const u = ClerkAuth.getUser(); // 提取登录态用户
+          const userId = u ? u.id : "";
+
           btnFeedPet.disabled = true;
           btnFeedPet.textContent = "出粮中...";
-
-          // 多层兜底提取当前房间的有效 IMEI，绝不取空
-          let sendImei = activeDeviceImei;
-          if (!sendImei || sendImei.length < 10) {
-            const found = roomList.find(r => String(r.id) === String(currentRoomId) || r.name === currentRoomName);
-            if (found && found.imei) {
-              sendImei = String(found.imei).trim();
-              activeDeviceImei = sendImei; // 回写保活
-            }
-          }
 
           try {
             const res = await fetch(`${API_ENDPOINT}/api/feeder/feed`, {
@@ -3134,7 +3130,8 @@
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ 
                 roomId: currentRoomId, 
-                imei: sendImei, // 始终保证传递有效的设备号
+                imei: activeImei,
+                userId: userId, // 传递当前用户标识做安全校验
                 seconds: 2 
               })
             });
@@ -3145,17 +3142,44 @@
               triggerDanmakuEasterEgg("food");
               const nick = getUserFixedNickname();
               shootDanmaku(`🎉 感谢猫友【${nick}】为现场毛孩子投喂了猫粮！`, true);
+
+              // 启动该机位专属的冷却时间倒计时
+              const cdTime = json.cooldownSec || (currentRoom?.cooldownSec) || 30;
+              startBtnCooldown(cdTime);
+            } else if (json.code === 429 && json.remainingCooldown) {
+              alert(json.msg);
+              startBtnCooldown(json.remainingCooldown);
             } else {
               alert(json.msg || "投喂失败");
+              btnFeedPet.disabled = false;
+              btnFeedPet.textContent = "🍗 立即投喂";
             }
           } catch (e) {
             alert("网络异常，投喂指令发送失败");
-          } finally {
             btnFeedPet.disabled = false;
             btnFeedPet.textContent = "🍗 立即投喂";
           }
         });
       });
+    }
+
+    function startBtnCooldown(seconds) {
+      let remain = seconds;
+      btnFeedPet.disabled = true;
+      btnFeedPet.textContent = `冷却中 (${remain}s)`;
+
+      if (cooldownTimers[currentRoomId]) clearInterval(cooldownTimers[currentRoomId]);
+
+      cooldownTimers[currentRoomId] = setInterval(() => {
+        remain--;
+        if (remain <= 0) {
+          clearInterval(cooldownTimers[currentRoomId]);
+          btnFeedPet.disabled = false;
+          btnFeedPet.textContent = "🍗 立即投喂";
+        } else {
+          btnFeedPet.textContent = `冷却中 (${remain}s)`;
+        }
+      }, 1000);
     }
 
     initPage();
