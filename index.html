@@ -2854,15 +2854,19 @@
       });
     });
 
+    let currentRoom = null; // 在全局变量区声明（或者直接挂在当前文件顶部）
+
     function playStream(roomIndex) {
       flushRoomDuration();
 
       const room = roomList[roomIndex];
       if (!room) return;
 
+      currentRoom = room; // 核心：直接锁定当前选中的机位完整数据对象
       currentRoomId = String(room.id || "1");
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
+      // ... 下方其余代码保持不变
 
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
@@ -3101,7 +3105,7 @@
     });
 
     // 远程投喂：附带当前机位所绑定的硬件 IMEI 传递给 Worker
-    const btnFeedPet = document.getElementById("btnFeedPet");
+   const btnFeedPet = document.getElementById("btnFeedPet");
     if (btnFeedPet) {
       btnFeedPet.addEventListener("click", () => {
         requireAuth(async () => {
@@ -3110,7 +3114,8 @@
           btnFeedPet.disabled = true;
           btnFeedPet.textContent = "出粮中...";
 
-          const curRoomObj = roomList.find(r => String(r.id) === String(currentRoomId)) || {};
+          // 直接使用当前正在播放的机位对象，绝不错位
+          const activeImei = (currentRoom && currentRoom.imei) ? currentRoom.imei : "";
 
           try {
             const res = await fetch(`${API_ENDPOINT}/api/feeder/feed`, {
@@ -3118,14 +3123,14 @@
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ 
                 roomId: currentRoomId, 
-                imei: curRoomObj.imei || "",
+                imei: activeImei, // 精确投递当前画面对应机位的 IMEI
                 seconds: 2 
               })
             });
             const json = await res.json();
 
             if (json.code === 200) {
-              alert("投喂成功！"); // 此处已修改为干净的提示文案
+              alert("投喂成功！");
               triggerDanmakuEasterEgg("food");
               const nick = getUserFixedNickname();
               shootDanmaku(`🎉 感谢猫友【${nick}】为现场毛孩子投喂了猫粮！`, true);
