@@ -465,8 +465,9 @@
         </div>
       </div>
 
-      <!-- 菜单 3: 机位管理 (支持查看与修改投喂继电器 IMEI) -->
-      <div class="section-card">
+      <!-- 菜单 3: 机位管理 -->
+      <div class="tab-pane" id="tab-rooms">
+        <div class="section-card">
           <div class="section-title">➕ 接入新直播机位与投喂设备</div>
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <input type="text" id="newRoomName" placeholder="机位名称 (如: 苏州猫岛)" style="flex: 1; min-width: 130px;" maxlength="20" />
@@ -768,7 +769,7 @@
       showToast("监控数据已刷新");
     });
 
-    // ================= 3. 机位管理 (支持查看与修改投喂 IMEI) =================
+    // ================= 3. 机位管理 =================
     function renderDeviceList() {
       const container = document.getElementById("deviceTableContainer");
       container.innerHTML = "";
@@ -819,7 +820,7 @@
           }
           currentDevices[idx].name = inputName;
           currentDevices[idx].imei = inputImei;
-          currentDevices[idx].cooldownSec = Math.max(5, isNaN(inputCd) ? 30 : inputCd); // 写入独立 CD
+          currentDevices[idx].cooldownSec = Math.max(5, isNaN(inputCd) ? 30 : inputCd);
           await saveDevicesConfig();
           renderDeviceList();
           updateRoomSelectOptions();
@@ -841,46 +842,6 @@
           updateRoomSelectOptions();
           loadStats();
         });
-
-        btnGroup.appendChild(saveBtn);
-        btnGroup.appendChild(delBtn);
-        row.appendChild(btnGroup);
-        container.appendChild(row);
-      });
-    }
-
-    document.getElementById("btnAddRoomDevice").addEventListener("click", async () => {
-      const name = document.getElementById("newRoomName").value.trim();
-      const serial = document.getElementById("newRoomSerial").value.trim();
-      const channel = parseInt(document.getElementById("newRoomChannel").value || "1", 10);
-      const imei = document.getElementById("newRoomImei").value.trim();
-      const cd = parseInt(document.getElementById("newRoomCooldown").value || "30", 10);
-
-      if (!name || !serial) {
-        alert("请填写机位名称和萤石视频设备码！");
-        return;
-      }
-
-      const newId = String(currentDevices.length + 1);
-      currentDevices.push({
-        id: newId,
-        name: name,
-        deviceSerial: serial,
-        channelNo: channel,
-        imei: imei,
-        cooldownSec: Math.max(5, isNaN(cd) ? 30 : cd)
-      });
-
-      document.getElementById("newRoomName").value = "";
-      document.getElementById("newRoomSerial").value = "";
-      document.getElementById("newRoomImei").value = "";
-      document.getElementById("newRoomCooldown").value = "30";
-
-      await saveDevicesConfig();
-      renderDeviceList();
-      updateRoomSelectOptions();
-      loadStats();
-    });
 
         btnGroup.appendChild(saveBtn);
         btnGroup.appendChild(delBtn);
@@ -931,6 +892,7 @@
       const serial = document.getElementById("newRoomSerial").value.trim();
       const channel = parseInt(document.getElementById("newRoomChannel").value || "1", 10);
       const imei = document.getElementById("newRoomImei").value.trim();
+      const cd = parseInt(document.getElementById("newRoomCooldown").value || "30", 10);
 
       if (!name || !serial) {
         alert("请填写机位名称和萤石视频设备码！");
@@ -943,12 +905,14 @@
         name: name,
         deviceSerial: serial,
         channelNo: channel,
-        imei: imei
+        imei: imei,
+        cooldownSec: Math.max(5, isNaN(cd) ? 30 : cd)
       });
 
       document.getElementById("newRoomName").value = "";
       document.getElementById("newRoomSerial").value = "";
       document.getElementById("newRoomImei").value = "";
+      document.getElementById("newRoomCooldown").value = "30";
 
       await saveDevicesConfig();
       renderDeviceList();
