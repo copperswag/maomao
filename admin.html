@@ -434,7 +434,7 @@
         </div>
       </div>
 
-      <!-- 菜单 2: 用户管理 (支持展示 Clerk 邮箱/头像/认证方式) -->
+      <!-- 菜单 2: 用户管理 -->
       <div class="tab-pane" id="tab-users">
         <div class="section-card">
           <div class="section-title">
@@ -465,24 +465,25 @@
         </div>
       </div>
 
-      <!-- 菜单 3: 机位管理 -->
+      <!-- 菜单 3: 机位管理 (已加回 投喂继电器硬件 IMEI) -->
       <div class="tab-pane" id="tab-rooms">
         <div class="section-card">
-          <div class="section-title">➕ 接入新直播机位</div>
+          <div class="section-title">➕ 接入新直播机位与投喂设备</div>
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <input type="text" id="newRoomName" placeholder="机位名称 (如: 苏州猫岛)" style="flex: 1; min-width: 140px;" maxlength="20" />
-            <input type="text" id="newRoomSerial" placeholder="萤石设备码 (Serial:Channel)" style="flex: 2; min-width: 260px;" />
-            <input type="number" id="newRoomChannel" placeholder="通道号" value="1" style="width: 80px;" min="1" max="16" />
+            <input type="text" id="newRoomName" placeholder="机位名称 (如: 苏州猫岛)" style="flex: 1; min-width: 130px;" maxlength="20" />
+            <input type="text" id="newRoomSerial" placeholder="萤石视频码 (Serial:Channel)" style="flex: 2; min-width: 220px;" />
+            <input type="number" id="newRoomChannel" placeholder="通道号" value="1" style="width: 70px;" min="1" max="16" />
+            <input type="text" id="newRoomImei" placeholder="投喂继电器IMEI (如: 868152085837599)" style="flex: 2; min-width: 220px;" maxlength="20" />
             <button class="btn btn-primary" id="btnAddRoomDevice" type="button">确认添加</button>
           </div>
         </div>
 
         <div class="section-card">
           <div class="section-title">
-            <span>📹 在线机位调度列表</span>
-            <span style="font-size: 12px; color: #64748b; font-weight: normal;">改名/增删即刻同步前台</span>
+            <span>📹 在线机位与投喂绑定列表</span>
+            <span style="font-size: 12px; color: #64748b; font-weight: normal;">实时同步前台选台与远程加餐</span>
           </div>
-          <div id="deviceTableContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          <div id="deviceTableContainer" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
       </div>
 
@@ -627,7 +628,7 @@
       }
     }
 
-    // ================= 1. 用户管理 (升级兼容展示 Clerk/Google 头像与邮箱) =================
+    // ================= 1. 用户管理 =================
     async function loadUsers() {
       const key = getAdminKey();
       if (!key) return;
@@ -653,7 +654,6 @@
       users.forEach(u => {
         const tr = document.createElement("tr");
 
-        // 头像展示：若是图片链接则渲染 img 标签，否则渲染 emoji
         let avatarEl = "";
         if (u.avatar && u.avatar.startsWith("http")) {
           avatarEl = `<img src="${u.avatar}" class="user-avatar-tag" alt="avatar" />`;
@@ -661,7 +661,6 @@
           avatarEl = `<div class="user-avatar-tag">${u.avatar || '🐱'}</div>`;
         }
 
-        // 账号标识展示（邮箱或手机号）
         const accountStr = u.email || u.phone || u.clerkId || "未知";
         const provider = u.provider || (u.email ? (u.email.endsWith("@gmail.com") ? "Google" : "Email") : "手机号");
 
@@ -769,7 +768,7 @@
       showToast("监控数据已刷新");
     });
 
-    // ================= 3. 机位管理 =================
+    // ================= 3. 机位管理 (支持查看与修改投喂 IMEI) =================
     function renderDeviceList() {
       const container = document.getElementById("deviceTableContainer");
       container.innerHTML = "";
@@ -782,12 +781,18 @@
       currentDevices.forEach((dev, idx) => {
         const row = document.createElement("div");
         row.className = "comment-row";
+        row.style.flexWrap = "wrap";
+        row.style.gap = "10px";
 
         row.innerHTML = `
-          <div style="display: flex; gap: 10px; align-items: center; flex: 1; min-width: 280px; flex-wrap: wrap;">
+          <div style="display: flex; gap: 10px; align-items: center; flex: 1; min-width: 320px; flex-wrap: wrap;">
             <span class="badge-live">ID: ${dev.id}</span>
-            <input type="text" id="editName_${dev.id}" value="${dev.name}" style="width: 140px; padding: 4px 8px; font-weight: 700; font-size: 13px;" maxlength="20" placeholder="机位名称" />
-            <span style="color: #64748b; font-size: 11px; font-family: monospace;">设备码: ${dev.deviceSerial} (通道: ${dev.channelNo || 1})</span>
+            <input type="text" id="editName_${dev.id}" value="${dev.name}" style="width: 130px; padding: 4px 8px; font-weight: 700; font-size: 13px;" maxlength="20" placeholder="机位名称" />
+            <span style="color: #64748b; font-size: 11px; font-family: monospace;">视频: ${dev.deviceSerial}</span>
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span style="font-size: 12px; color: var(--warning); font-weight: 600;">🍗投喂IMEI:</span>
+              <input type="text" id="editImei_${dev.id}" value="${dev.imei || ''}" style="width: 160px; padding: 4px 8px; font-family: monospace; font-size: 12px;" placeholder="无绑定" maxlength="20" />
+            </div>
           </div>
         `;
 
@@ -795,24 +800,25 @@
         btnGroup.style.display = "flex";
         btnGroup.style.gap = "8px";
 
-        const renameBtn = document.createElement("button");
-        renameBtn.className = "btn btn-primary";
-        renameBtn.style.padding = "4px 10px";
-        renameBtn.style.fontSize = "12px";
-        renameBtn.textContent = "保存名称";
-        renameBtn.addEventListener("click", async () => {
-          const inputEl = document.getElementById(`editName_${dev.id}`);
-          const newName = inputEl ? inputEl.value.trim() : "";
-          if (!newName) {
+        const saveBtn = document.createElement("button");
+        saveBtn.className = "btn btn-primary";
+        saveBtn.style.padding = "4px 10px";
+        saveBtn.style.fontSize = "12px";
+        saveBtn.textContent = "保存配置";
+        saveBtn.addEventListener("click", async () => {
+          const inputName = document.getElementById(`editName_${dev.id}`).value.trim();
+          const inputImei = document.getElementById(`editImei_${dev.id}`).value.trim();
+          if (!inputName) {
             alert("机位名称不能为空！");
             return;
           }
-          currentDevices[idx].name = newName;
+          currentDevices[idx].name = inputName;
+          currentDevices[idx].imei = inputImei;
           await saveDevicesConfig();
           renderDeviceList();
           updateRoomSelectOptions();
           loadStats();
-          showToast(`已成功修改为【${newName}】`);
+          showToast(`【${inputName}】配置已保存`);
         });
 
         const delBtn = document.createElement("button");
@@ -830,7 +836,7 @@
           loadStats();
         });
 
-        btnGroup.appendChild(renameBtn);
+        btnGroup.appendChild(saveBtn);
         btnGroup.appendChild(delBtn);
         row.appendChild(btnGroup);
         container.appendChild(row);
@@ -865,7 +871,7 @@
         });
         const json = await res.json();
         if (json.code === 200) {
-          showToast("机位配置已更新，前台已同步！");
+          showToast("机位与投喂配置已更新！");
         } else {
           alert(json.msg || "保存失败");
         }
@@ -878,9 +884,10 @@
       const name = document.getElementById("newRoomName").value.trim();
       const serial = document.getElementById("newRoomSerial").value.trim();
       const channel = parseInt(document.getElementById("newRoomChannel").value || "1", 10);
+      const imei = document.getElementById("newRoomImei").value.trim();
 
       if (!name || !serial) {
-        alert("请填写机位名称和设备序列号！");
+        alert("请填写机位名称和萤石视频设备码！");
         return;
       }
 
@@ -889,11 +896,13 @@
         id: newId,
         name: name,
         deviceSerial: serial,
-        channelNo: channel
+        channelNo: channel,
+        imei: imei
       });
 
       document.getElementById("newRoomName").value = "";
       document.getElementById("newRoomSerial").value = "";
+      document.getElementById("newRoomImei").value = "";
 
       await saveDevicesConfig();
       renderDeviceList();
