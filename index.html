@@ -391,7 +391,7 @@
     }
 
     .player-ctrl-btn:disabled {
-      opacity: 0.6;
+      opacity: 0.65;
       cursor: not-allowed;
       filter: grayscale(0.5);
     }
@@ -1506,10 +1506,10 @@
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
-    // 声明全局机位状态变量，杜绝 ReferenceError
+    // 强声明全局当前机位与冷却状态变量（杜绝 ReferenceError）
     let currentRoom = null;
     let activeDeviceImei = "";
-    let cooldownTimers = {};
+    let activeCooldownInterval = null;
 
     // 1. Clerk 全局认证管理中心
     const ClerkAuth = {
@@ -2862,18 +2862,67 @@
       });
     });
 
+    // 核心：全网共享倒计时控制器（防止刷新跳过）
+    const btnFeedPet = document.getElementById("btnFeedPet");
+
+    function startBtnCooldown(seconds) {
+      if (activeCooldownInterval) clearInterval(activeCooldownInterval);
+      
+      let remain = parseInt(seconds, 10);
+      if (remain <= 0) {
+        btnFeedPet.disabled = false;
+        btnFeedPet.textContent = "🍗 立即投喂";
+        return;
+      }
+
+      btnFeedPet.disabled = true;
+      btnFeedPet.textContent = `全网冷却中 (${remain}s)`;
+
+      activeCooldownInterval = setInterval(() => {
+        remain--;
+        if (remain <= 0) {
+          clearInterval(activeCooldownInterval);
+          activeCooldownInterval = null;
+          btnFeedPet.disabled = false;
+          btnFeedPet.textContent = "🍗 立即投喂";
+        } else {
+          btnFeedPet.textContent = `全网冷却中 (${remain}s)`;
+        }
+      }, 1000);
+    }
+
+    async function syncRoomCooldownStatus(roomId, imei) {
+      try {
+        const queryImei = imei || activeDeviceImei || "";
+        const res = await fetch(`${API_ENDPOINT}/api/feeder/status?room=${encodeURIComponent(roomId)}&imei=${encodeURIComponent(queryImei)}`);
+        const json = await res.json();
+        if (json && json.code === 200) {
+          if (json.inCooldown && json.remainingSec > 0) {
+            startBtnCooldown(json.remainingSec);
+          } else {
+            if (activeCooldownInterval) clearInterval(activeCooldownInterval);
+            btnFeedPet.disabled = false;
+            btnFeedPet.textContent = "🍗 立即投喂";
+          }
+        }
+      } catch (e) {}
+    }
+
     function playStream(roomIndex) {
       flushRoomDuration();
 
       const room = roomList[roomIndex];
       if (!room) return;
 
-      // 强行锁定当前房间对象与设备硬件码
+      // 锁定当前全局机位变量（彻底防错位）
       currentRoom = room;
       currentRoomId = String(room.id || (roomIndex + 1));
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
       activeDeviceImei = String(room.imei || "").trim();
+
+      // 核心：每次选台或刷新初始化，立即向后端拉取全网剩余冷却时间
+      syncRoomCooldownStatus(currentRoomId, activeDeviceImei);
 
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
@@ -3111,34 +3160,12 @@
       }
     });
 
-    // 远程投喂核心逻辑（增加机位独立CD倒计时与安全鉴权参数）
-    const btnFeedPet = document.getElementById("btnFeedPet");
-
-    function startBtnCooldown(seconds) {
-      let remain = seconds;
-      btnFeedPet.disabled = true;
-      btnFeedPet.textContent = `冷却中 (${remain}s)`;
-
-      if (cooldownTimers[currentRoomId]) clearInterval(cooldownTimers[currentRoomId]);
-
-      cooldownTimers[currentRoomId] = setInterval(() => {
-        remain--;
-        if (remain <= 0) {
-          clearInterval(cooldownTimers[currentRoomId]);
-          btnFeedPet.disabled = false;
-          btnFeedPet.textContent = "🍗 立即投喂";
-        } else {
-          btnFeedPet.textContent = `冷却中 (${remain}s)`;
-        }
-      }, 1000);
-    }
-
+    // 远程投喂：全网联动与全局 CD 倒计时
     if (btnFeedPet) {
       btnFeedPet.addEventListener("click", () => {
         requireAuth(async () => {
           if (!confirm(`确认要为【${currentRoomName}】的毛孩子加餐出粮吗？`)) return;
 
-          // 安全提取当前房间对象，多层容错
           const activeRoom = currentRoom || roomList.find(r => String(r.id) === String(currentRoomId)) || {};
           let sendImei = activeDeviceImei;
           if (!sendImei || sendImei.length < 10) {
@@ -3171,11 +3198,14 @@
               const nick = getUserFixedNickname();
               shootDanmaku(`🎉 感谢猫友【${nick}】为现场毛孩子投喂了猫粮！`, true);
 
+              // 启动本地全网倒计时
               const cdTime = json.cooldownSec || activeRoom.cooldownSec || 30;
               startBtnCooldown(cdTime);
-            } else if (json.code === 429 && json.remainingCooldown) {
+            } else if (json.code === 429) {
+              // 全网共享拦截：提示他人还在吃，并同步剩余秒数倒计时
               alert(json.msg);
-              startBtnCooldown(json.remainingCooldown);
+              const remain = json.remainingCooldown || 15;
+              startBtnCooldown(remain);
             } else {
               alert(json.msg || "投喂失败");
               btnFeedPet.disabled = false;
