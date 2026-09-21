@@ -3125,7 +3125,7 @@
             const json = await res.json();
 
             if (json.code === 200) {
-              alert(json.msg || "出粮指令已发出！");
+              alert("投喂成功！"); // 此处已修改为干净的提示文案
               triggerDanmakuEasterEgg("food");
               const nick = getUserFixedNickname();
               shootDanmaku(`🎉 感谢猫友【${nick}】为现场毛孩子投喂了猫粮！`, true);
