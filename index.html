@@ -2854,7 +2854,8 @@
       });
     });
 
-    let currentRoom = null; // 在全局变量区声明（或者直接挂在当前文件顶部）
+    // 强制声明全局当前激活机位数据
+    let activeDeviceImei = "";
 
     function playStream(roomIndex) {
       flushRoomDuration();
@@ -2862,11 +2863,12 @@
       const room = roomList[roomIndex];
       if (!room) return;
 
-      currentRoom = room; // 核心：直接锁定当前选中的机位完整数据对象
-      currentRoomId = String(room.id || "1");
+      currentRoomId = String(room.id || (roomIndex + 1));
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
-      // ... 下方其余代码保持不变
+
+      // 核心：强行锁定当前机位的真实 IMEI，并存入独立变量
+      activeDeviceImei = String(room.imei || "").trim();
 
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
       allButtons.forEach((btn, idx) => {
@@ -2884,6 +2886,8 @@
       
       fetchComments(true);
       startAtmosphereBot();
+
+      // ... 下方原有的视频流与 EZUIKit/HLS 播放逻辑保持不变 ...
 
       if (pollTimer) clearInterval(pollTimer);
       pollTimer = setInterval(() => {
@@ -3114,8 +3118,15 @@
           btnFeedPet.disabled = true;
           btnFeedPet.textContent = "出粮中...";
 
-          // 直接使用当前正在播放的机位对象，绝不错位
-          const activeImei = (currentRoom && currentRoom.imei) ? currentRoom.imei : "";
+          // 多层兜底提取当前房间的有效 IMEI，绝不取空
+          let sendImei = activeDeviceImei;
+          if (!sendImei || sendImei.length < 10) {
+            const found = roomList.find(r => String(r.id) === String(currentRoomId) || r.name === currentRoomName);
+            if (found && found.imei) {
+              sendImei = String(found.imei).trim();
+              activeDeviceImei = sendImei; // 回写保活
+            }
+          }
 
           try {
             const res = await fetch(`${API_ENDPOINT}/api/feeder/feed`, {
@@ -3123,7 +3134,7 @@
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ 
                 roomId: currentRoomId, 
-                imei: activeImei, // 精确投递当前画面对应机位的 IMEI
+                imei: sendImei, // 始终保证传递有效的设备号
                 seconds: 2 
               })
             });
