@@ -385,9 +385,15 @@
       transition: all 0.2s;
     }
 
-    .player-ctrl-btn:hover {
+    .player-ctrl-btn:hover:not(:disabled) {
       background: rgba(0, 0, 0, 0.85);
       border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .player-ctrl-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      filter: grayscale(0.5);
     }
 
     .player-ctrl-btn.active {
@@ -1500,6 +1506,11 @@
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
+    // 声明全局机位状态变量，杜绝 ReferenceError
+    let currentRoom = null;
+    let activeDeviceImei = "";
+    let cooldownTimers = {};
+
     // 1. Clerk 全局认证管理中心
     const ClerkAuth = {
       isLoggedIn: () => Boolean(window.Clerk && window.Clerk.user),
@@ -1530,7 +1541,6 @@
 
     let pendingAction = null;
 
-    // 呼起登录模态框（强制成功后停留在当前直播页面，消除 404）
     async function openClerkSignInModal() {
       let waitCount = 0;
       while (!window.Clerk && waitCount < 50) {
@@ -1584,7 +1594,7 @@
       } catch (e) {}
     }
 
-    // 初始化加载 Clerk SDK 并双向监听状态变化 (防抖安全挂载，彻底避免 removeChild 异常)
+    // 初始化加载 Clerk SDK 并安全挂载 UserButton（避免 removeChild 错误）
     window.addEventListener("load", async () => {
       let retryCount = 0;
       while (!window.Clerk && retryCount < 60) {
@@ -1603,8 +1613,6 @@
         function refreshAuthUI() {
           if (window.Clerk.user) {
             if (btnClerkSignIn) btnClerkSignIn.style.display = "none";
-            
-            // 安全挂载：若尚未挂载，才挂载 UserButton；避免暴力清空导致内部虚拟 DOM 抛出 removeChild 错误
             if (clerkUserAvatarSlot && !clerkUserAvatarSlot.hasChildNodes()) {
               window.Clerk.mountUserButton(clerkUserAvatarSlot);
             }
@@ -2854,20 +2862,17 @@
       });
     });
 
-    // 强制声明全局当前激活机位数据
-    let activeDeviceImei = "";
-
     function playStream(roomIndex) {
       flushRoomDuration();
 
       const room = roomList[roomIndex];
       if (!room) return;
 
+      // 强行锁定当前房间对象与设备硬件码
+      currentRoom = room;
       currentRoomId = String(room.id || (roomIndex + 1));
       currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
       currentRoomTitle.textContent = currentRoomName;
-
-      // 核心：强行锁定当前机位的真实 IMEI，并存入独立变量
       activeDeviceImei = String(room.imei || "").trim();
 
       const allButtons = roomButtonList.querySelectorAll(".room-btn");
@@ -2886,8 +2891,6 @@
       
       fetchComments(true);
       startAtmosphereBot();
-
-      // ... 下方原有的视频流与 EZUIKit/HLS 播放逻辑保持不变 ...
 
       if (pollTimer) clearInterval(pollTimer);
       pollTimer = setInterval(() => {
@@ -3108,60 +3111,8 @@
       }
     });
 
-    // 远程投喂：附带当前机位所绑定的硬件 IMEI 传递给 Worker
-   const btnFeedPet = document.getElementById("btnFeedPet");
-    let cooldownTimers = {}; // 存储每个房间的倒计时器
-
-    if (btnFeedPet) {
-      btnFeedPet.addEventListener("click", () => {
-        requireAuth(async () => {
-          if (!confirm(`确认要为【${currentRoomName}】的毛孩子加餐出粮吗？`)) return;
-
-          const activeImei = (currentRoom && currentRoom.imei) ? currentRoom.imei.trim() : "";
-          const u = ClerkAuth.getUser(); // 提取登录态用户
-          const userId = u ? u.id : "";
-
-          btnFeedPet.disabled = true;
-          btnFeedPet.textContent = "出粮中...";
-
-          try {
-            const res = await fetch(`${API_ENDPOINT}/api/feeder/feed`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ 
-                roomId: currentRoomId, 
-                imei: activeImei,
-                userId: userId, // 传递当前用户标识做安全校验
-                seconds: 2 
-              })
-            });
-            const json = await res.json();
-
-            if (json.code === 200) {
-              alert("投喂成功！");
-              triggerDanmakuEasterEgg("food");
-              const nick = getUserFixedNickname();
-              shootDanmaku(`🎉 感谢猫友【${nick}】为现场毛孩子投喂了猫粮！`, true);
-
-              // 启动该机位专属的冷却时间倒计时
-              const cdTime = json.cooldownSec || (currentRoom?.cooldownSec) || 30;
-              startBtnCooldown(cdTime);
-            } else if (json.code === 429 && json.remainingCooldown) {
-              alert(json.msg);
-              startBtnCooldown(json.remainingCooldown);
-            } else {
-              alert(json.msg || "投喂失败");
-              btnFeedPet.disabled = false;
-              btnFeedPet.textContent = "🍗 立即投喂";
-            }
-          } catch (e) {
-            alert("网络异常，投喂指令发送失败");
-            btnFeedPet.disabled = false;
-            btnFeedPet.textContent = "🍗 立即投喂";
-          }
-        });
-      });
-    }
+    // 远程投喂核心逻辑（增加机位独立CD倒计时与安全鉴权参数）
+    const btnFeedPet = document.getElementById("btnFeedPet");
 
     function startBtnCooldown(seconds) {
       let remain = seconds;
@@ -3180,6 +3131,63 @@
           btnFeedPet.textContent = `冷却中 (${remain}s)`;
         }
       }, 1000);
+    }
+
+    if (btnFeedPet) {
+      btnFeedPet.addEventListener("click", () => {
+        requireAuth(async () => {
+          if (!confirm(`确认要为【${currentRoomName}】的毛孩子加餐出粮吗？`)) return;
+
+          // 安全提取当前房间对象，多层容错
+          const activeRoom = currentRoom || roomList.find(r => String(r.id) === String(currentRoomId)) || {};
+          let sendImei = activeDeviceImei;
+          if (!sendImei || sendImei.length < 10) {
+            sendImei = String(activeRoom.imei || "").trim();
+            activeDeviceImei = sendImei;
+          }
+
+          const u = ClerkAuth.getUser();
+          const userId = u ? u.id : "";
+
+          btnFeedPet.disabled = true;
+          btnFeedPet.textContent = "出粮中...";
+
+          try {
+            const res = await fetch(`${API_ENDPOINT}/api/feeder/feed`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ 
+                roomId: currentRoomId, 
+                imei: sendImei,
+                userId: userId,
+                seconds: 2 
+              })
+            });
+            const json = await res.json();
+
+            if (json.code === 200) {
+              alert("投喂成功！");
+              triggerDanmakuEasterEgg("food");
+              const nick = getUserFixedNickname();
+              shootDanmaku(`🎉 感谢猫友【${nick}】为现场毛孩子投喂了猫粮！`, true);
+
+              const cdTime = json.cooldownSec || activeRoom.cooldownSec || 30;
+              startBtnCooldown(cdTime);
+            } else if (json.code === 429 && json.remainingCooldown) {
+              alert(json.msg);
+              startBtnCooldown(json.remainingCooldown);
+            } else {
+              alert(json.msg || "投喂失败");
+              btnFeedPet.disabled = false;
+              btnFeedPet.textContent = "🍗 立即投喂";
+            }
+          } catch (e) {
+            alert("网络异常，投喂指令发送失败");
+            btnFeedPet.disabled = false;
+            btnFeedPet.textContent = "🍗 立即投喂";
+          }
+        });
+      });
     }
 
     initPage();
