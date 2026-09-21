@@ -466,14 +466,14 @@
       </div>
 
       <!-- 菜单 3: 机位管理 (支持查看与修改投喂继电器 IMEI) -->
-      <div class="tab-pane" id="tab-rooms">
-        <div class="section-card">
+      <div class="section-card">
           <div class="section-title">➕ 接入新直播机位与投喂设备</div>
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <input type="text" id="newRoomName" placeholder="机位名称 (如: 苏州猫岛)" style="flex: 1; min-width: 130px;" maxlength="20" />
-            <input type="text" id="newRoomSerial" placeholder="萤石视频码 (Serial:Channel)" style="flex: 2; min-width: 220px;" />
+            <input type="text" id="newRoomSerial" placeholder="萤石视频码 (Serial:Channel)" style="flex: 2; min-width: 200px;" />
             <input type="number" id="newRoomChannel" placeholder="通道号" value="1" style="width: 70px;" min="1" max="16" />
-            <input type="text" id="newRoomImei" placeholder="投喂继电器IMEI (如: 868152085837599)" style="flex: 2; min-width: 220px;" maxlength="20" />
+            <input type="text" id="newRoomImei" placeholder="继电器IMEI (如: 868152085837599)" style="flex: 2; min-width: 200px;" maxlength="20" />
+            <input type="number" id="newRoomCooldown" placeholder="投喂CD(秒)" value="30" style="width: 100px;" min="5" max="86400" />
             <button class="btn btn-primary" id="btnAddRoomDevice" type="button">确认添加</button>
           </div>
         </div>
@@ -787,11 +787,15 @@
         row.innerHTML = `
           <div style="display: flex; gap: 10px; align-items: center; flex: 1; min-width: 320px; flex-wrap: wrap;">
             <span class="badge-live">ID: ${dev.id}</span>
-            <input type="text" id="editName_${dev.id}" value="${dev.name}" style="width: 130px; padding: 4px 8px; font-weight: 700; font-size: 13px;" maxlength="20" placeholder="机位名称" />
+            <input type="text" id="editName_${dev.id}" value="${dev.name}" style="width: 120px; padding: 4px 8px; font-weight: 700; font-size: 13px;" maxlength="20" placeholder="机位名称" />
             <span style="color: #64748b; font-size: 11px; font-family: monospace;">视频: ${dev.deviceSerial}</span>
             <div style="display: flex; align-items: center; gap: 4px;">
-              <span style="font-size: 12px; color: var(--warning); font-weight: 600;">🍗投喂IMEI:</span>
-              <input type="text" id="editImei_${dev.id}" value="${dev.imei || ''}" style="width: 160px; padding: 4px 8px; font-family: monospace; font-size: 12px;" placeholder="无绑定" maxlength="20" />
+              <span style="font-size: 12px; color: var(--warning); font-weight: 600;">🍗IMEI:</span>
+              <input type="text" id="editImei_${dev.id}" value="${dev.imei || ''}" style="width: 140px; padding: 4px 8px; font-family: monospace; font-size: 12px;" placeholder="无绑定" maxlength="20" />
+            </div>
+            <div style="display: flex; align-items: center; gap: 4px;">
+              <span style="font-size: 12px; color: var(--blue); font-weight: 600;">⏱️CD(秒):</span>
+              <input type="number" id="editCd_${dev.id}" value="${dev.cooldownSec || 30}" style="width: 75px; padding: 4px 8px; font-size: 12px;" min="5" max="86400" />
             </div>
           </div>
         `;
@@ -808,12 +812,14 @@
         saveBtn.addEventListener("click", async () => {
           const inputName = document.getElementById(`editName_${dev.id}`).value.trim();
           const inputImei = document.getElementById(`editImei_${dev.id}`).value.trim();
+          const inputCd = parseInt(document.getElementById(`editCd_${dev.id}`).value || "30", 10);
           if (!inputName) {
             alert("机位名称不能为空！");
             return;
           }
           currentDevices[idx].name = inputName;
           currentDevices[idx].imei = inputImei;
+          currentDevices[idx].cooldownSec = Math.max(5, isNaN(inputCd) ? 30 : inputCd); // 写入独立 CD
           await saveDevicesConfig();
           renderDeviceList();
           updateRoomSelectOptions();
@@ -835,6 +841,46 @@
           updateRoomSelectOptions();
           loadStats();
         });
+
+        btnGroup.appendChild(saveBtn);
+        btnGroup.appendChild(delBtn);
+        row.appendChild(btnGroup);
+        container.appendChild(row);
+      });
+    }
+
+    document.getElementById("btnAddRoomDevice").addEventListener("click", async () => {
+      const name = document.getElementById("newRoomName").value.trim();
+      const serial = document.getElementById("newRoomSerial").value.trim();
+      const channel = parseInt(document.getElementById("newRoomChannel").value || "1", 10);
+      const imei = document.getElementById("newRoomImei").value.trim();
+      const cd = parseInt(document.getElementById("newRoomCooldown").value || "30", 10);
+
+      if (!name || !serial) {
+        alert("请填写机位名称和萤石视频设备码！");
+        return;
+      }
+
+      const newId = String(currentDevices.length + 1);
+      currentDevices.push({
+        id: newId,
+        name: name,
+        deviceSerial: serial,
+        channelNo: channel,
+        imei: imei,
+        cooldownSec: Math.max(5, isNaN(cd) ? 30 : cd)
+      });
+
+      document.getElementById("newRoomName").value = "";
+      document.getElementById("newRoomSerial").value = "";
+      document.getElementById("newRoomImei").value = "";
+      document.getElementById("newRoomCooldown").value = "30";
+
+      await saveDevicesConfig();
+      renderDeviceList();
+      updateRoomSelectOptions();
+      loadStats();
+    });
 
         btnGroup.appendChild(saveBtn);
         btnGroup.appendChild(delBtn);
