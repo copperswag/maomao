@@ -1584,7 +1584,7 @@
       } catch (e) {}
     }
 
-    // 初始化加载 Clerk SDK 并双向监听状态变化 (使用 async 修复语法错误)
+    // 初始化加载 Clerk SDK 并双向监听状态变化 (防抖安全挂载，彻底避免 removeChild 异常)
     window.addEventListener("load", async () => {
       let retryCount = 0;
       while (!window.Clerk && retryCount < 60) {
@@ -1603,8 +1603,9 @@
         function refreshAuthUI() {
           if (window.Clerk.user) {
             if (btnClerkSignIn) btnClerkSignIn.style.display = "none";
-            if (clerkUserAvatarSlot) {
-              clerkUserAvatarSlot.innerHTML = "";
+            
+            // 安全挂载：若尚未挂载，才挂载 UserButton；避免暴力清空导致内部虚拟 DOM 抛出 removeChild 错误
+            if (clerkUserAvatarSlot && !clerkUserAvatarSlot.hasChildNodes()) {
               window.Clerk.mountUserButton(clerkUserAvatarSlot);
             }
 
@@ -3099,6 +3100,7 @@
       }
     });
 
+    // 远程投喂：附带当前机位所绑定的硬件 IMEI 传递给 Worker
     const btnFeedPet = document.getElementById("btnFeedPet");
     if (btnFeedPet) {
       btnFeedPet.addEventListener("click", () => {
@@ -3108,11 +3110,17 @@
           btnFeedPet.disabled = true;
           btnFeedPet.textContent = "出粮中...";
 
+          const curRoomObj = roomList.find(r => String(r.id) === String(currentRoomId)) || {};
+
           try {
             const res = await fetch(`${API_ENDPOINT}/api/feeder/feed`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ roomId: currentRoomId, seconds: 2 })
+              body: JSON.stringify({ 
+                roomId: currentRoomId, 
+                imei: curRoomObj.imei || "",
+                seconds: 2 
+              })
             });
             const json = await res.json();
 
