@@ -1529,18 +1529,17 @@
     }
 
     let pendingAction = null;
-    async function openClerkSignInModal() {
-      let waitCount = 0;
-      while (!window.Clerk && waitCount < 50) {
-        await new Promise(r => setTimeout(r, 100));
-        waitCount++;
-      }
-
-      if (!window.Clerk) {
+    // 呼起登录模态框（强制成功后停留在当前直播页面）
+    function openClerkSignInModal() {
+      if (window.Clerk && window.Clerk.loaded) {
+        window.Clerk.openSignIn({
+          afterSignInUrl: window.location.href,
+          afterSignUpUrl: window.location.href
+        });
+      } else {
         alert("认证服务正在连接，请稍等刷新重试！");
-        return;
       }
-
+    }
       try {
         if (!window.Clerk.loaded) {
           await window.Clerk.load();
