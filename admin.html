@@ -31,7 +31,6 @@
       display: flex;
     }
 
-    /* 侧边导航栏 */
     aside {
       width: 230px;
       min-width: 230px;
@@ -98,7 +97,6 @@
       color: #64748b;
     }
 
-    /* 主内容区 */
     main {
       flex: 1;
       min-width: 0;
@@ -108,7 +106,6 @@
       overflow-y: auto;
     }
 
-    /* 顶部导航条 */
     .top-header {
       background: rgba(15, 23, 42, 0.7);
       backdrop-filter: blur(12px);
@@ -142,7 +139,6 @@
       width: 100%;
     }
 
-    /* Tab 页面切换容器 */
     .tab-pane {
       display: none;
       animation: fadeIn 0.2s ease;
@@ -154,7 +150,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 表单与输入通用组件 */
     input, textarea, select {
       background: #090d16;
       border: 1px solid var(--border);
@@ -191,7 +186,6 @@
     .btn-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; border-color: rgba(239, 68, 68, 0.4); }
     .btn-danger:hover { background: rgba(239, 68, 68, 0.3); }
 
-    /* 数据卡片 */
     .grid-stats {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
@@ -251,7 +245,19 @@
       font-weight: 700;
     }
 
-    /* 表格 */
+    .badge-provider {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+    }
+
     .data-table {
       width: 100%;
       border-collapse: collapse;
@@ -271,17 +277,19 @@
       padding: 13px 14px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       color: var(--text-bright);
+      vertical-align: middle;
     }
 
     .user-avatar-tag {
-      font-size: 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-      background: rgba(255, 255, 255, 0.06);
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
+      object-fit: cover;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 18px;
     }
 
     .tag-container {
@@ -333,7 +341,7 @@
       bottom: 24px;
       right: 24px;
       background: #10b981;
-      color: #090d16;
+      color: #090a0f;
       padding: 10px 18px;
       border-radius: 8px;
       font-size: 13px;
@@ -389,9 +397,9 @@
       <div class="tab-pane active" id="tab-overview">
         <div class="grid-stats">
           <div class="stat-card">
-            <div class="stat-title">总注册用户</div>
+            <div class="stat-title">总登录/注册用户</div>
             <div class="stat-val" id="statUsersTotal" style="color: var(--blue);">-</div>
-            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">手机实名注册用户</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Clerk 授权与历史用户</div>
           </div>
           <div class="stat-card">
             <div class="stat-title">今日浏览量 (PV)</div>
@@ -426,13 +434,13 @@
         </div>
       </div>
 
-      <!-- 菜单 2: 用户管理 -->
+      <!-- 菜单 2: 用户管理 (支持展示 Clerk 邮箱/头像/认证方式) -->
       <div class="tab-pane" id="tab-users">
         <div class="section-card">
           <div class="section-title">
             <div style="display: flex; gap: 10px; align-items: center;">
-              <span>👥 注册用户档案库</span>
-              <input type="text" id="userSearchInput" placeholder="搜索手机号或昵称..." style="width: 200px; padding: 6px 10px;" />
+              <span>👥 登录用户档案库</span>
+              <input type="text" id="userSearchInput" placeholder="搜索邮箱、昵称或账号..." style="width: 230px; padding: 6px 10px;" />
             </div>
             <button class="btn btn-primary" id="btnRefreshUsers" type="button">🔄 刷新用户</button>
           </div>
@@ -441,15 +449,16 @@
               <thead>
                 <tr>
                   <th>头像</th>
-                  <th>用户昵称</th>
-                  <th>手机号码</th>
+                  <th>昵称</th>
+                  <th>登录账号 / 邮箱</th>
+                  <th>认证来源</th>
                   <th>注册时间</th>
-                  <th>最后登录</th>
+                  <th>最后活跃</th>
                   <th>登录频次</th>
                 </tr>
               </thead>
               <tbody id="userTableBody">
-                <tr><td colspan="6" style="text-align: center; color: #64748b; padding: 30px 0;">请先输入管理密钥登录查看</td></tr>
+                <tr><td colspan="7" style="text-align: center; color: #64748b; padding: 30px 0;">请先输入管理密钥登录查看</td></tr>
               </tbody>
             </table>
           </div>
@@ -618,7 +627,7 @@
       }
     }
 
-    // ================= 1. 用户管理 =================
+    // ================= 1. 用户管理 (升级兼容展示 Clerk/Google 头像与邮箱) =================
     async function loadUsers() {
       const key = getAdminKey();
       if (!key) return;
@@ -637,16 +646,30 @@
       tbody.innerHTML = "";
 
       if (users.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #64748b; padding: 24px 0;">暂无匹配用户档案</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #64748b; padding: 24px 0;">暂无匹配用户档案</td></tr>';
         return;
       }
 
       users.forEach(u => {
         const tr = document.createElement("tr");
+
+        // 头像展示：若是图片链接则渲染 img 标签，否则渲染 emoji
+        let avatarEl = "";
+        if (u.avatar && u.avatar.startsWith("http")) {
+          avatarEl = `<img src="${u.avatar}" class="user-avatar-tag" alt="avatar" />`;
+        } else {
+          avatarEl = `<div class="user-avatar-tag">${u.avatar || '🐱'}</div>`;
+        }
+
+        // 账号标识展示（邮箱或手机号）
+        const accountStr = u.email || u.phone || u.clerkId || "未知";
+        const provider = u.provider || (u.email ? (u.email.endsWith("@gmail.com") ? "Google" : "Email") : "手机号");
+
         tr.innerHTML = `
-          <td><span class="user-avatar-tag">${u.avatar || '🐱'}</span></td>
+          <td>${avatarEl}</td>
           <td style="font-weight: 700; color: var(--accent);">${u.nickname || '未设置'}</td>
-          <td style="font-family: monospace;">${u.phone}</td>
+          <td style="font-family: monospace; color: var(--text-bright);">${accountStr}</td>
+          <td><span class="badge-provider">${provider}</span></td>
           <td style="color: #64748b; font-size: 12px;">${formatDate(u.createdAt)}</td>
           <td style="color: #64748b; font-size: 12px;">${formatDate(u.lastLoginAt)}</td>
           <td><span class="badge-live">${u.loginCount || 1} 次</span></td>
@@ -662,8 +685,10 @@
         return;
       }
       const filtered = allLoadedUsers.filter(u => 
+        (u.email && u.email.toLowerCase().includes(q)) || 
         (u.phone && u.phone.includes(q)) || 
-        (u.nickname && u.nickname.toLowerCase().includes(q))
+        (u.nickname && u.nickname.toLowerCase().includes(q)) ||
+        (u.clerkId && u.clerkId.toLowerCase().includes(q))
       );
       renderUserTable(filtered);
     });
