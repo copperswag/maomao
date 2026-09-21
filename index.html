@@ -1529,22 +1529,28 @@
     }
 
     let pendingAction = null;
-    // 呼起登录模态框（强制成功后停留在当前直播页面）
-    function openClerkSignInModal() {
-      if (window.Clerk && window.Clerk.loaded) {
-        window.Clerk.openSignIn({
-          afterSignInUrl: window.location.href,
-          afterSignUpUrl: window.location.href
-        });
-      } else {
-        alert("认证服务正在连接，请稍等刷新重试！");
+
+    // 呼起登录模态框（强制成功后停留在当前直播页面，消除 404）
+    async function openClerkSignInModal() {
+      let waitCount = 0;
+      while (!window.Clerk && waitCount < 50) {
+        await new Promise(r => setTimeout(r, 100));
+        waitCount++;
       }
-    }
+
+      if (!window.Clerk) {
+        alert("认证服务正在连接，请稍等刷新重试！");
+        return;
+      }
+
       try {
         if (!window.Clerk.loaded) {
           await window.Clerk.load();
         }
-        window.Clerk.openSignIn();
+        window.Clerk.openSignIn({
+          afterSignInUrl: window.location.href,
+          afterSignUpUrl: window.location.href
+        });
       } catch (err) {
         console.error("呼起登录失败:", err);
         alert("登录窗口呼起失败: " + err.message);
@@ -1560,7 +1566,6 @@
       }
     }
 
-    // 统一定义 DOM 引用（仅声明一次）
     const btnClerkSignIn = document.getElementById("btnClerkSignIn");
     const clerkUserAvatarSlot = document.getElementById("clerk-user-avatar-slot");
 
@@ -1579,7 +1584,7 @@
       } catch (e) {}
     }
 
-    // 初始化加载 Clerk SDK 并双向监听状态变化
+    // 初始化加载 Clerk SDK 并双向监听状态变化 (使用 async 修复语法错误)
     window.addEventListener("load", async () => {
       let retryCount = 0;
       while (!window.Clerk && retryCount < 60) {
@@ -2045,7 +2050,7 @@
       { level: 5, minSec: 900, title: "🏡 资深云爸妈", icon: "🏡", desc: "本周累计陪伴满 15 分钟", class: "tier-5" },
       { level: 6, minSec: 1500, title: "🩺 喵星健康官", icon: "🩺", desc: "本周累计陪伴满 25 分钟", class: "tier-6" },
       { level: 7, minSec: 2400, title: "🛡️ 巡逻队长", icon: "🛡️", desc: "本周累计陪伴满 40 分钟", class: "tier-7" },
-      { level: 8, minSec: 3600, title: "⭐ 护喵大使", icon: "⭐", desc: "本周累计陪伴满 6 分钟", class: "tier-8" },
+      { level: 8, minSec: 3600, title: "⭐ 护喵大使", icon: "⭐", desc: "本周累计陪伴满 60 分钟", class: "tier-8" },
       { level: 9, minSec: 5400, title: "🏰 星球领主", icon: "🏰", desc: "本周累计陪伴满 90 分钟", class: "tier-9" },
       { level: 10, minSec: 7200, title: "👑 猫岛守护神", icon: "👑", desc: "本周累计陪伴满 120 分钟", class: "tier-10" }
     ];
@@ -2080,7 +2085,7 @@
       confettiCanvas.height = window.innerHeight;
     }
     window.addEventListener("resize", resizeConfetti);
-    resizeConfetti();
+    resizeFxCanvas && resizeConfetti();
 
     function fireConfetti() {
       confettiParticles = [];
