@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>毛毛星球 MeowHub | 智能养宠</title>
   
-  <!-- 官方带有预制 UI 模态框的标准版 SDK -->
+  <!-- Clerk 官方 SDK -->
   <script
     async
     crossorigin="anonymous"
@@ -83,6 +83,7 @@
       letter-spacing: -0.5px;
     }
 
+    /* 顶部导航 Tab */
     .nav-tabs-bar {
       display: flex;
       gap: 6px;
@@ -319,10 +320,6 @@
     .danmaku-item.is-me {
       color: #34d399; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.55);
       border-radius: 99px; padding: 3px 12px; font-weight: 700; box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
-    }
-    .danmaku-item.tier-gold {
-      color: #fbbf24; background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
-      border: 1px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
     }
 
     @keyframes danmaku-move {
@@ -564,7 +561,7 @@
     }
     @keyframes pop-in { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
 
-    /* 段位成就弹窗横向整齐排版 */
+    /* 段位弹窗横向整齐排版 */
     .honor-modal-header {
       padding: 24px 20px 16px; background: linear-gradient(180deg, rgba(16, 185, 129, 0.12), transparent);
       text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -814,6 +811,7 @@
       .tarot-action-bar { flex-direction: column; gap: 8px; }
     }
 
+    /* 通用弹窗组件 */
     .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
     .btn-modal-action {
       background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff;
@@ -1320,8 +1318,9 @@
   <canvas id="tarotCanvas" style="display: none;"></canvas>
   <canvas id="certCanvas" style="display: none;"></canvas>
 
+  <!-- 核心修复：引入稳定可用的 Hls.js，并将 EZUIKit 替换为兼容性最佳地址 -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
-  <script src="https://open.ys7.com/sdk/js/2.0/ezuikit.js"></script>
+  <script src="https://open.ys7.com/sdk/js/1.4/ezuikit.js"></script>
 
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
@@ -1995,7 +1994,8 @@
         }
       }
       
-      if (window.EZUIKit && ezUrl && ezAccessToken && ezBox) {
+      // 核心修复：防御性调用 window.EZUIKit，绝不在未定义时抛出 Uncaught 崩溃
+      if (typeof window.EZUIKit !== "undefined" && ezUrl && ezAccessToken && ezBox) {
         try {
           ezBox.style.display = "block";
           if (video) video.style.display = "none";
@@ -2005,7 +2005,7 @@
             autoplay: true,
             url: ezUrl,
             accessToken: ezAccessToken,
-            decoderPath: "https://open.ys7.com/sdk/js/2.0",
+            decoderPath: "https://open.ys7.com/sdk/js/1.4",
             width: ezBox.clientWidth || 800,
             height: ezBox.clientHeight || 450,
             splitBasis: 1,
@@ -2014,8 +2014,7 @@
               if (playerEmpty) playerEmpty.style.display = "none"; 
             },
             handleError: () => {
-              if (emptyTitle) emptyTitle.textContent = `${currentRoomName} 画面加载中`;
-              if (emptyCopy) emptyCopy.textContent = "正在调用软解内核，请稍候...";
+              fallbackHlsPlay(hlsUrl);
             }
           });
           return;
@@ -2024,6 +2023,7 @@
         }
       }
 
+      // 降级为 Hls.js 模式
       fallbackHlsPlay(hlsUrl);
     }
 
@@ -2044,11 +2044,19 @@
         hls.attachMedia(video);
         hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
           video.muted = true;
-          video.play().catch(() => {});
+          video.play().then(() => {
+            if (playerEmpty) playerEmpty.style.display = "none";
+          }).catch(() => {});
+        });
+        hls.on(window.Hls.Events.ERROR, () => {
+          if (emptyTitle) emptyTitle.textContent = `${currentRoomName} 画面重试中`;
+          if (emptyCopy) emptyCopy.textContent = "正在调取自适应流，请稍候...";
         });
       } else if (video && video.canPlayType("application/vnd.apple.mpegurl")) {
         video.src = hlsUrl;
-        video.play().catch(() => {});
+        video.play().then(() => {
+          if (playerEmpty) playerEmpty.style.display = "none";
+        }).catch(() => {});
       }
     }
 
@@ -2080,6 +2088,118 @@
         danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
       });
     });
+
+    snapshotBtn?.addEventListener("click", () => {
+      requireAuth(() => {
+        const vidEl = document.querySelector("#ezuikitPlayer video") || video;
+        const cvsEl = document.querySelector("#ezuikitPlayer canvas");
+        const sourceElement = vidEl || cvsEl;
+
+        if (!sourceElement || (vidEl && vidEl.readyState < 2 && vidEl.videoWidth === 0)) {
+          alert("视频流正在加载中，请稍候再抓拍~");
+          return;
+        }
+
+        const canvas = snapshotCanvas;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        const CARD_W = 600;
+        const CARD_H = 780;
+        canvas.width = CARD_W;
+        canvas.height = CARD_H;
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, CARD_W, CARD_H);
+
+        const PHOTO_X = 30;
+        const PHOTO_Y = 30;
+        const PHOTO_W = 540;
+        const PHOTO_H = 420;
+
+        const vW = sourceElement.videoWidth || sourceElement.width || 1280;
+        const vH = sourceElement.videoHeight || sourceElement.height || 720;
+        const targetRatio = PHOTO_W / PHOTO_H;
+        const videoRatio = vW / vH;
+        let sX = 0, sY = 0, sW = vW, sH = vH;
+
+        if (videoRatio > targetRatio) {
+          sW = vH * targetRatio;
+          sX = (vW - sW) / 2;
+        } else {
+          sH = vW / targetRatio;
+          sY = (vH - sH) / 2;
+        }
+
+        try {
+          ctx.drawImage(sourceElement, sX, sY, sW, sH, PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
+        } catch (err) {
+          alert("画面受跨域保护，请稍后刷新重试或直接手机截屏！");
+          return;
+        }
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        ctx.beginPath();
+        ctx.roundRect(PHOTO_X + 16, PHOTO_Y + 16, 125, 28, 14);
+        ctx.fill();
+
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath();
+        ctx.arc(PHOTO_X + 30, PHOTO_Y + 30, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("LIVE SNAP", PHOTO_X + 42, PHOTO_Y + 34);
+
+        const userNick = getUserFixedNickname();
+        const honor = getCurrentHonor();
+        const now = new Date();
+        const timeStr = now.getFullYear() + "." + 
+          String(now.getMonth() + 1).padStart(2, '0') + "." + 
+          String(now.getDate()).padStart(2, '0') + " " + 
+          String(now.getHours()).padStart(2, '0') + ":" + 
+          String(now.getMinutes()).padStart(2, '0') + ":" + 
+          String(now.getSeconds()).padStart(2, '0');
+
+        ctx.fillStyle = "#111827";
+        ctx.font = "bold 24px -apple-system, sans-serif";
+        ctx.fillText(`📍 ${currentRoomName} · 现场抓拍`, PHOTO_X + 4, PHOTO_Y + PHOTO_H + 50);
+
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "14px monospace";
+        ctx.fillText(`📅 ${timeStr}`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 82);
+
+        ctx.fillStyle = "#059669";
+        ctx.font = "bold 15px -apple-system, sans-serif";
+        ctx.fillText(`🐾 抓拍官：${userNick} [${honor.title}]`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
+
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#10b981";
+        ctx.font = "bold 16px -apple-system, sans-serif";
+        ctx.fillText("毛毛星球 MeowHub", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 75);
+
+        ctx.fillStyle = "#9ca3af";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("别让你家毛孩子再成为留守儿童了", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 102);
+
+        ctx.textAlign = "left";
+
+        try {
+          const dataUrl = canvas.toDataURL("image/png");
+          if (polaroidImg) polaroidImg.src = dataUrl;
+          if (downloadPolaroidBtn) {
+            downloadPolaroidBtn.href = dataUrl;
+            downloadPolaroidBtn.download = `meowhub_${currentRoomName}_${Date.now()}.png`;
+          }
+          polaroidModal?.classList.add("show");
+        } catch (e) {
+          alert("截屏生成失败，请直接使用手机截屏~");
+        }
+      });
+    });
+
+    closePolaroidBtn?.addEventListener("click", () => polaroidModal?.classList.remove("show"));
+    polaroidModal?.addEventListener("click", (e) => { if (e.target === polaroidModal) polaroidModal?.classList.remove("show"); });
 
     function shootDanmaku(text, isMe = false) {
       if (!danmakuEnabled || !danmakuBox) return;
@@ -2274,6 +2394,7 @@
           drawerRoomList?.appendChild(item);
         });
 
+        // 默认播放第一路
         playStream(0);
       } catch (err) {
         if (emptyTitle) emptyTitle.textContent = "服务连接异常";
