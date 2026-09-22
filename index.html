@@ -1474,6 +1474,15 @@
     let activeDeviceImei = "";
     let activeCooldownInterval = null;
 
+    // 保留 GitHub Pages 仓库目录或 HTML 文件名，排除认证查询参数和临时 hash。
+    const AUTH_RETURN_URL = window.location.origin + window.location.pathname;
+    const CLERK_LOAD_OPTIONS = {
+      signInForceRedirectUrl: AUTH_RETURN_URL,
+      signUpForceRedirectUrl: AUTH_RETURN_URL,
+      afterSignOutUrl: AUTH_RETURN_URL,
+      afterMultiSessionSingleSignOutUrl: AUTH_RETURN_URL
+    };
+
     // 1. Clerk 全局认证管理中心
     const ClerkAuth = {
       isLoggedIn: () => Boolean(window.Clerk && window.Clerk.user),
@@ -1518,11 +1527,11 @@
 
       try {
         if (!window.Clerk.loaded) {
-          await window.Clerk.load();
+          await window.Clerk.load(CLERK_LOAD_OPTIONS);
         }
         window.Clerk.openSignIn({
-          afterSignInUrl: window.location.href,
-          afterSignUpUrl: window.location.href
+          forceRedirectUrl: AUTH_RETURN_URL,
+          signUpForceRedirectUrl: AUTH_RETURN_URL
         });
       } catch (err) {
         console.error("呼起登录失败:", err);
@@ -1571,7 +1580,7 @@
       }
 
       try {
-        await window.Clerk.load();
+        await window.Clerk.load(CLERK_LOAD_OPTIONS);
 
         function refreshAuthUI() {
           if (window.Clerk.user) {
