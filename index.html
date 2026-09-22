@@ -3413,9 +3413,38 @@
 
     initPage();
     // ==========================================
-// 独立挂载：小猫算命系统
+// ==========================================
+// 强力直连挂载：小猫算命系统
 // ==========================================
 (function() {
+  // 自动搜寻页面上所有带有 "算命" 或 id 包含 bazi 的按钮
+  const allBtns = document.querySelectorAll("button");
+  let btnOpen = document.getElementById("btnOpenBazi");
+  
+  if (!btnOpen) {
+    // 如果没找到 id，自动遍历找到文字是“小猫算命”的按钮并绑定
+    allBtns.forEach(b => {
+      if (b.textContent.includes("算命")) btnOpen = b;
+    });
+  }
+
+  const modal = document.getElementById("baziModal");
+  const btnClose = document.getElementById("btnCloseBaziModal");
+  const btnCalc = document.getElementById("btnDoBaziCalc");
+  const btnRand = document.getElementById("btnDoBaziRandom");
+  const btnSave = document.getElementById("btnSaveBaziCanvas");
+  const resBox = document.getElementById("baziResultBox");
+
+  // 点击按钮直接呼起弹窗
+  btnOpen?.addEventListener("click", (e) => {
+    e.preventDefault();
+    modal?.classList.add("show");
+  });
+
+  btnClose?.addEventListener("click", () => modal?.classList.remove("show"));
+  modal?.addEventListener("click", (e) => { if (e.target === modal) modal?.classList.remove("show"); });
+
+  // 算命核心逻辑
   const BAZI_DATA_BASE = [
     {
       title: "【易经 · 潜喵在渊格】",
@@ -3437,50 +3466,10 @@
       source: "《诗经·周南·关雎》",
       text: "天生带水木清华之秀气，眼神如秋水含情。身段曼妙，轻盈若柳。虽身在猫窝，心系大河之鱼。每受抚摩必以踩奶咕噜相报，桃花两脚兽缘奇旺。",
       noble: "温柔梳毛人", avoid: "粗暴拽尾巴"
-    },
-    {
-      title: "【诗经 · 呦呦鹿鸣食神格】",
-      quote: "“呦呦鹿鸣，食野之猫草。我有两脚兽，加餐吹笙。”",
-      source: "《诗经·小雅·鹿鸣》",
-      text: "天赐食禄，声若穿云裂石。凡见食盆渐空，必鸣鸣示警。叫声悠扬穿堂过室，两脚兽闻之无不飞奔侍奉，一生衣食无虞，福慧双修。",
-      noble: "慷慨解囊打赏人", avoid: "空空如也之饭盆"
-    },
-    {
-      title: "【论语 · 吾日三省猫德格】",
-      quote: "“为人守舍而不蹭乎？见飞虫而不扑乎？罐头食之尽乎？”",
-      source: "《论语·学而》：“吾日三省吾身。”",
-      text: "儒家猫德模范，规矩森严，举止端方。日间巡视领地，夜间按时暖被。不哈气，不拆家，恪守君子猫道，深得全家敬重爱戴。",
-      noble: "作息规律两脚兽", avoid: "熊孩子强抱"
-    },
-    {
-      title: "【尚书 · 曲直霸气狸花格】",
-      quote: "“爪利牙尖，木气冲天。攀缘纵跃，街巷称尊。”",
-      source: "《尚书·洪范》：“木曰曲直，作酸。”",
-      text: "得东方青木纯正之气，骨健筋坚，爪若铁钩。目光如电，威风凛凛。凡领地之内鼠蚁遁形，遇事敢上硬刚，实乃百兽退避之草莽霸主。",
-      noble: "高处猫爬架", avoid: "戴耻辱圈"
     }
   ];
 
-  const btnOpen = document.getElementById("btnOpenBazi");
-  const modal = document.getElementById("baziModal");
-  const btnClose = document.getElementById("btnCloseBaziModal");
-  const btnCalc = document.getElementById("btnDoBaziCalc");
-  const btnRand = document.getElementById("btnDoBaziRandom");
-  const btnSave = document.getElementById("btnSaveBaziCanvas");
-  const resBox = document.getElementById("baziResultBox");
-
   let currentBaziInfo = null;
-
-  btnOpen?.addEventListener("click", () => {
-    if (typeof requireAuth === "function") {
-      requireAuth(() => modal?.classList.add("show"));
-    } else {
-      modal?.classList.add("show");
-    }
-  });
-
-  btnClose?.addEventListener("click", () => modal?.classList.remove("show"));
-  modal?.addEventListener("click", (e) => { if (e.target === modal) modal?.classList.remove("show"); });
 
   function executeBazi(nameInput, color, season) {
     const finalName = nameInput.trim() || (typeof currentRoomName !== "undefined" ? currentRoomName : "咪咪");
@@ -3494,19 +3483,19 @@
     document.getElementById("outBaziCatInfo").textContent = `${finalName} (${color} · 岁在${season})`;
     document.getElementById("outBaziTitle").textContent = item.title;
     document.getElementById("outBaziQuote").textContent = item.quote;
-    document.getElementById("outBaziText").innerHTML = `<b>【典籍渊源】</b>${item.source}<br>${item.text}`;
+    document.getElementById("outBaziText").innerHTML = `<b>【经史本旨】</b>${item.source}<br>${item.text}`;
     document.getElementById("outBaziNoble").textContent = item.noble;
     document.getElementById("outBaziAvoid").textContent = item.avoid;
 
-    resBox.style.display = "block";
-    btnSave.style.display = "inline-flex";
+    if (resBox) resBox.style.display = "block";
+    if (btnSave) btnSave.style.display = "inline-flex";
     if (typeof fireConfetti === "function") fireConfetti();
   }
 
   btnCalc?.addEventListener("click", () => {
-    const name = document.getElementById("baziCatName").value;
-    const color = document.getElementById("baziCatColor").value;
-    const season = document.getElementById("baziSeason").value;
+    const name = document.getElementById("baziCatName")?.value || "";
+    const color = document.getElementById("baziCatColor")?.value || "纯橘";
+    const season = document.getElementById("baziSeason")?.value || "孟春";
     executeBazi(name, color, season);
   });
 
@@ -3515,10 +3504,13 @@
     const seasons = ["孟春", "仲夏", "金秋", "隆冬"];
     const rc = colors[Math.floor(Math.random() * colors.length)];
     const rs = seasons[Math.floor(Math.random() * seasons.length)];
-    document.getElementById("baziCatColor").value = rc;
-    document.getElementById("baziSeason").value = rs;
+    const cEl = document.getElementById("baziCatColor");
+    const sEl = document.getElementById("baziSeason");
+    if (cEl) cEl.value = rc;
+    if (sEl) sEl.value = rs;
     executeBazi("", rc, rs);
   });
+})();
 
   btnSave?.addEventListener("click", () => {
     if (!currentBaziInfo) return;
