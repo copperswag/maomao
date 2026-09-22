@@ -24,20 +24,23 @@
       --accent-green: #10b981;
       --accent-green-hover: #059669;
       --gold: #f59e0b;
+      --purple: #a855f7;
       --radius: 16px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
+    html, body {
+      width: 100%;
+      min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
-      min-height: 100vh;
       background-image: 
         radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12), transparent 40%),
         radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.08), transparent 30%);
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     .container {
@@ -204,7 +207,7 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
     /* 视图切换容器 */
-    .view-container { display: none; }
+    .view-container { display: none; width: 100%; }
     .view-container.active { display: block; animation: fadeIn 0.3s ease; }
 
     .hero-title {
@@ -359,13 +362,14 @@
     }
     .player-ctrl-btn:hover:not(:disabled) { background: rgba(0, 0, 0, 0.85); border-color: rgba(255, 255, 255, 0.3); }
     .player-ctrl-btn:disabled { opacity: 0.65; cursor: not-allowed; filter: grayscale(0.5); }
-    .player-ctrl-btn.active {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
-      border-color: rgba(16, 185, 129, 0.5); color: #fff;
-    }
-    .player-ctrl-btn.btn-fortune {
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
-      border-color: rgba(245, 158, 11, 0.5); font-weight: 600;
+    
+    /* 塔罗专属紫粉神秘学渐变按钮 */
+    .player-ctrl-btn.btn-tarot {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.85), rgba(126, 34, 206, 0.9));
+      border-color: rgba(168, 85, 247, 0.6);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 0 14px rgba(168, 85, 247, 0.35);
     }
 
     .card-empty {
@@ -396,23 +400,6 @@
       padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     .chat-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-
-    .honor-badge {
-      display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 99px;
-      font-size: 12px; font-weight: 700; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15);
-      color: var(--text-sub); cursor: pointer; transition: all 0.2s ease; user-select: none;
-    }
-    .honor-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-    .honor-badge.tier-1 { color: #93c5fd; border-color: rgba(147, 197, 253, 0.4); background: rgba(147, 197, 253, 0.12); }
-    .honor-badge.tier-2 { color: #6ee7b7; border-color: rgba(110, 231, 183, 0.4); background: rgba(110, 231, 183, 0.12); }
-    .honor-badge.tier-3 { color: #34d399; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.12); }
-    .honor-badge.tier-4 { color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.12); }
-    .honor-badge.tier-5 { color: #818cf8; border-color: rgba(129, 140, 248, 0.4); background: rgba(129, 140, 248, 0.12); }
-    .honor-badge.tier-6 { color: #c084fc; border-color: rgba(192, 132, 252, 0.4); background: rgba(192, 132, 252, 0.12); }
-    .honor-badge.tier-7 { color: #f472b6; border-color: rgba(244, 114, 182, 0.4); background: rgba(244, 114, 182, 0.12); }
-    .honor-badge.tier-8 { color: #fb923c; border-color: rgba(251, 146, 60, 0.4); background: rgba(251, 146, 60, 0.12); }
-    .honor-badge.tier-9 { color: #facc15; border-color: rgba(250, 204, 21, 0.5); background: rgba(250, 204, 21, 0.18); box-shadow: 0 0 10px rgba(250, 204, 21, 0.25); }
-    .honor-badge.tier-10 { color: #fbbf24; border-color: rgba(251, 191, 36, 0.6); background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3)); box-shadow: 0 0 14px rgba(245, 158, 11, 0.4); }
 
     .chat-messages {
       height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 6px;
@@ -565,38 +552,43 @@
       max-height: 200px; padding: 14px 20px 18px; border-top-color: rgba(255, 255, 255, 0.04);
     }
 
-    .footer-box {
-      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius);
-      padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(12px);
-      margin-top: 24px; margin-bottom: 16px;
-    }
-
-    footer { margin-top: 32px; text-align: center; font-size: 12px; color: var(--text-sub); }
-    footer a { color: var(--text-sub); text-decoration: none; }
-
-    /* 原有弹窗体系保持完全一致 */
+    /* ================= 核心修复：弹窗体系（默认完全隐藏与防穿透） ================= */
     .app-modal {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2500;
-      padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2500;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
     }
-    .app-modal.show { opacity: 1; pointer-events: auto; }
+
+    .app-modal.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
     .modal-card-box {
-      max-width: 440px; width: 92vw; background: #161b22; border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); overflow: hidden;
+      max-width: 440px;
+      width: 92vw;
+      background: #161b22;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
       animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    @keyframes pop-in { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); } }
-    .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
-    .btn-modal-action {
-      background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff;
-      padding: 10px 20px; border-radius: 99px; font-size: 14px; font-weight: 600; cursor: pointer;
-      backdrop-filter: blur(8px); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
-    }
-    .btn-modal-action:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-1px); }
-    .btn-modal-action.primary { background: #10b981; border-color: #10b981; color: #090a0f; }
-    .btn-modal-action.fortune-color { background: #f59e0b; border-color: #f59e0b; color: #090a0f; }
+    @keyframes pop-in { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
 
+    /* 段位弹窗横向整齐排版 */
     .honor-modal-header {
       padding: 24px 20px 16px; background: linear-gradient(180deg, rgba(16, 185, 129, 0.12), transparent);
       text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -610,10 +602,23 @@
       margin: 10px 20px 0; padding: 10px 14px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25);
       border-radius: 10px; display: flex; align-items: center; justify-content: space-between; font-size: 12px;
     }
-    .honor-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; }
+    .honor-list {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
     .honor-item {
-      display: flex; align-items: center; justify-content: space-between; padding: 12px 14px;
-      background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      transition: all 0.2s;
     }
     .honor-item.unlocked { background: rgba(16, 185, 129, 0.06); border-color: rgba(16, 185, 129, 0.25); }
     .honor-item-left { display: flex; align-items: center; gap: 10px; }
@@ -622,6 +627,227 @@
     .honor-item-req { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
     .honor-item-status { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: rgba(255, 255, 255, 0.06); color: var(--text-sub); }
     .honor-item.unlocked .honor-item-status { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+
+    /* ================= 小猫塔罗牌专属 3D 动效与自适应 ================= */
+    .tarot-modal-box {
+      max-width: 520px;
+      width: 94vw;
+      background: radial-gradient(circle at 50% 10%, #1e1b4b, #090a0f 85%);
+      border: 1px solid rgba(168, 85, 247, 0.45);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.25);
+      padding: 24px 20px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .tarot-header-subtitle { font-size: 11px; font-weight: 800; color: #c084fc; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+    .tarot-header-title { font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .tarot-header-tip { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; }
+
+    .tarot-cards-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      min-height: 220px;
+      margin-bottom: 16px;
+      perspective: 1000px;
+    }
+
+    .tarot-card {
+      width: 100px;
+      height: 160px;
+      border-radius: 12px;
+      cursor: pointer;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, box-shadow 0.3s;
+      user-select: none;
+      -webkit-user-select: none;
+      animation: card-float 3s ease-in-out infinite alternate;
+    }
+
+    .tarot-card:nth-child(2) { animation-delay: 0.5s; }
+    .tarot-card:nth-child(3) { animation-delay: 1s; }
+
+    @keyframes card-float {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-8px); }
+    }
+
+    .tarot-card:hover {
+      box-shadow: 0 10px 25px rgba(168, 85, 247, 0.45);
+    }
+
+    .tarot-card-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tarot-card-back {
+      background: linear-gradient(135deg, #1e1b4b, #0f172a);
+      border: 2px solid #a855f7;
+      box-shadow: inset 0 0 14px rgba(168, 85, 247, 0.3);
+    }
+
+    .tarot-card-back::before {
+      content: '🐾';
+      font-size: 34px;
+      filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8));
+    }
+
+    .tarot-card-back-pattern {
+      font-size: 10px;
+      color: #c084fc;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-top: 6px;
+    }
+
+    .tarot-card-front {
+      background: linear-gradient(180deg, #18181b, #090a0f);
+      border: 2px solid #fbbf24;
+      transform: rotateY(180deg);
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.35);
+      padding: 10px;
+    }
+
+    .tarot-card-front.is-reversed {
+      transform: rotateY(180deg) rotate(180deg);
+    }
+
+    .tarot-front-symbol { font-size: 40px; margin-bottom: 6px; }
+    .tarot-front-name { font-size: 12px; font-weight: 800; color: #fbbf24; }
+
+    .tarot-card.flipped {
+      animation: none;
+      transform: scale(1.15) rotateY(180deg) !important;
+      cursor: default;
+    }
+
+    .tarot-card.flipped.is-reversed {
+      transform: scale(1.15) rotateY(180deg) rotate(180deg) !important;
+    }
+
+    .tarot-card.fade-out {
+      opacity: 0.15;
+      transform: scale(0.85);
+      pointer-events: none;
+    }
+
+    .tarot-result-panel {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 4px;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .tarot-result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .tarot-result-badge.upright {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      color: #34d399;
+    }
+
+    .tarot-result-badge.reversed {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      color: #f87171;
+    }
+
+    .tarot-wisdom-quote { font-size: 14px; line-height: 1.6; color: #fff; font-weight: 600; margin-bottom: 10px; }
+    .tarot-lucky-row {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      font-size: 12px;
+      color: var(--text-sub);
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .tarot-action-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      width: 100%;
+    }
+
+    .btn-tarot-action {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
+      text-align: center;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .btn-tarot-action.primary {
+      background: linear-gradient(135deg, #a855f7, #7e22ce);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+    }
+
+    .btn-tarot-action.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    @media (max-width: 480px) {
+      .tarot-modal-box { padding: 18px 14px 22px; }
+      .tarot-cards-area { gap: 8px; min-height: 180px; }
+      .tarot-card { width: 84px; height: 136px; }
+      .tarot-card-back::before { font-size: 26px; }
+      .tarot-front-symbol { font-size: 30px; }
+      .tarot-action-bar { flex-direction: column; gap: 8px; }
+    }
+
+    /* 其他辅助弹窗组件 */
+    .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+    .btn-modal-action {
+      background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff;
+      padding: 10px 20px; border-radius: 99px; font-size: 14px; font-weight: 600; cursor: pointer;
+      backdrop-filter: blur(8px); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .btn-modal-action:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-1px); }
+    .btn-modal-action.primary { background: #10b981; border-color: #10b981; color: #090a0f; }
+    .btn-modal-action.fortune-color { background: #f59e0b; border-color: #f59e0b; color: #090a0f; }
 
     #confettiCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 2000; }
     .levelup-card { text-align: center; padding: 30px 24px; background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.18), #161b22 75%); }
@@ -657,6 +883,14 @@
     }
     .avatar-option-btn:hover { background: rgba(16, 185, 129, 0.15); border-color: var(--accent-green); transform: scale(1.1); }
     .avatar-option-btn.selected { background: rgba(16, 185, 129, 0.25); border-color: var(--accent-green); box-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
+
+    .footer-box {
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius);
+      padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(12px);
+      margin-top: 24px; margin-bottom: 16px;
+    }
+    footer { margin-top: 32px; text-align: center; font-size: 12px; color: var(--text-sub); }
+    footer a { color: var(--text-sub); text-decoration: none; }
 
     .drawer-modal {
       position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); z-index: 1200;
@@ -749,7 +983,7 @@
             
             <div class="controls-overlay">
               <button class="player-ctrl-btn" id="btnFeedPet" style="background: linear-gradient(135deg, #10b981, #059669); font-weight: 700;" type="button">🍗 立即投喂</button>
-              <button class="player-ctrl-btn btn-fortune" id="fortuneBtn" type="button">🥠 猫生运势</button>
+              <button class="player-ctrl-btn btn-tarot" id="btnOpenTarot" type="button">🔮 喵星塔罗</button>
               <button class="player-ctrl-btn" id="snapshotBtn" type="button">📷 拍立得</button>
               <button class="player-ctrl-btn" id="danmakuToggleBtn" type="button">💬 弹幕: 开</button>
               <button class="player-ctrl-btn" id="audioBtn" type="button">🔇 开启声音</button>
@@ -794,7 +1028,6 @@
           <button class="chip-btn" type="button">🐟 赛博云喂猫</button>
           <button class="chip-btn" type="button">🎉 恭喜撒花</button>
           <button class="chip-btn" type="button">🐱 咪咪好乖</button>
-          <button class="chip-btn" type="button">👀 正在暗中观察</button>
           <button class="chip-btn" type="button">❤️ 来看小可爱啦</button>
         </div>
 
@@ -882,7 +1115,7 @@
           </div>
         </div>
 
-        <!-- 常见问题解答 FAQ (手风琴) -->
+        <!-- 常见问题解答 FAQ (手风琴折叠) -->
         <div class="about-card">
           <h2 class="faq-title">🐾 常见问题解答 (FAQ)</h2>
           <div class="faq-accordion">
@@ -946,6 +1179,153 @@
     </footer>
   </div>
 
+  <!-- ================= 弹窗集合：小猫塔罗牌专属交互弹窗 ================= -->
+  <div class="app-modal" id="tarotModal">
+    <div class="tarot-modal-box">
+      <div class="tarot-header-subtitle">MEOW TAROT DIVINATION</div>
+      <div class="tarot-header-title">🔮 喵星塔罗启示录</div>
+      <div class="tarot-header-tip" id="tarotHeaderTip">在心中默念你今天关心的问题，轻触选定一张牌</div>
+
+      <!-- 3张卡牌容器 -->
+      <div class="tarot-cards-area" id="tarotCardsArea">
+        <div class="tarot-card" data-idx="0">
+          <div class="tarot-card-face tarot-card-back">
+            <span class="tarot-card-back-pattern">MEOW</span>
+          </div>
+          <div class="tarot-card-face tarot-card-front" id="cardFront0">
+            <div class="tarot-front-symbol" id="symbol0">🐾</div>
+            <div class="tarot-front-name" id="name0">塔罗牌</div>
+          </div>
+        </div>
+
+        <div class="tarot-card" data-idx="1">
+          <div class="tarot-card-face tarot-card-back">
+            <span class="tarot-card-back-pattern">MEOW</span>
+          </div>
+          <div class="tarot-card-face tarot-card-front" id="cardFront1">
+            <div class="tarot-front-symbol" id="symbol1">🐾</div>
+            <div class="tarot-front-name" id="name1">塔罗牌</div>
+          </div>
+        </div>
+
+        <div class="tarot-card" data-idx="2">
+          <div class="tarot-card-face tarot-card-back">
+            <span class="tarot-card-back-pattern">MEOW</span>
+          </div>
+          <div class="tarot-card-face tarot-card-front" id="cardFront2">
+            <div class="tarot-front-symbol" id="symbol2">🐾</div>
+            <div class="tarot-front-name" id="name2">塔罗牌</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 解读面板 -->
+      <div class="tarot-result-panel" id="tarotResultPanel">
+        <div class="tarot-result-badge upright" id="tarotResultBadge">正位 · 盛放</div>
+        <div class="tarot-wisdom-quote" id="tarotWisdomQuote">“好奇心不会害死猫，勇敢伸出爪子吧！”</div>
+        <div class="tarot-lucky-row">
+          <span>🐟 幸运干粮：<b id="tarotLuckyFood" style="color: #60a5fa;">金枪鱼罐头</b></span>
+          <span>✨ 宜忌指引：<b id="tarotLuckyAction" style="color: #fbbf24;">宜晒太阳</b></span>
+        </div>
+      </div>
+
+      <div class="tarot-action-bar">
+        <button class="btn-tarot-action primary" id="btnSaveTarotPoster" type="button">📥 保存塔罗海报</button>
+        <button class="btn-tarot-action secondary" id="btnResetTarot" type="button">🎲 诚心重抽</button>
+        <button class="btn-tarot-action secondary" id="btnCloseTarot" type="button" style="flex: 0.6;">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 原有打卡弹窗 -->
+  <div class="app-modal" id="checkinModal">
+    <div class="modal-card-box">
+      <div class="honor-modal-header" style="background: linear-gradient(180deg, rgba(245, 158, 11, 0.15), transparent);">
+        <div style="font-size: 11px; color: #fbbf24; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">DAILY MEOW CHECK-IN</div>
+        <div class="honor-current-title">🐾 每日吸猫打卡册</div>
+        <div class="honor-stay-stat">已连续打卡 <span id="modalStreakDays" style="color: #fbbf24; font-weight: 800; font-size: 16px;">0</span> 天 · 累计吸猫 <span id="modalTotalDays" style="color: #fff; font-weight: 700;">0</span> 天</div>
+      </div>
+      <div style="padding: 12px 20px 4px; font-size: 12px; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center;">
+        <span>🐾 4周猫爪印章收集馆</span>
+        <span style="color: #fbbf24; font-weight: 700;" id="stampProgressText">0 / 4 印章</span>
+      </div>
+      <div class="stamp-grid">
+        <div class="stamp-card" id="stampCard1"><div class="stamp-icon">🐾</div><div class="stamp-text">第1周印章</div></div>
+        <div class="stamp-card" id="stampCard2"><div class="stamp-icon">🐾</div><div class="stamp-text">第2周印章</div></div>
+        <div class="stamp-card" id="stampCard3"><div class="stamp-icon">🐾</div><div class="stamp-text">第3周印章</div></div>
+        <div class="stamp-card" id="stampCard4"><div class="stamp-icon">👑</div><div class="stamp-text">元老印章</div></div>
+      </div>
+      <div style="padding: 10px 20px 4px; font-size: 12px; color: var(--text-sub);"><span>📅 本周打卡轨迹</span></div>
+      <div class="calendar-days-grid" id="weekCalendarGrid"></div>
+      <div style="padding: 0 20px 20px; text-align: center;">
+        <button id="btnDoCheckin" class="btn-modal-action fortune-color" style="width: 100%; justify-content: center; font-size: 15px;" type="button">✨ 立即打卡盖章</button>
+        <button id="closeCheckinBtn" class="btn-modal-action" style="width: 100%; justify-content: center; margin-top: 8px;" type="button">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 原有拍立得弹窗 -->
+  <div class="app-modal" id="polaroidModal">
+    <div class="modal-card-box" style="background:#fff;">
+      <img id="polaroidImg" style="width: 100%; display: block;" alt="毛毛星球拍立得" />
+    </div>
+    <div class="modal-actions">
+      <a id="downloadPolaroidBtn" class="btn-modal-action primary" download="meowhub_snap.png">📥 保存海报</a>
+      <button id="closePolaroidBtn" class="btn-modal-action" type="button">✕ 关闭</button>
+    </div>
+    <div style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 10px;">手机端长按图片可直接存入相册 / 发社交网络</div>
+  </div>
+
+  <!-- 原有段位成就弹窗 -->
+  <div class="app-modal" id="honorModal">
+    <div class="modal-card-box">
+      <div class="honor-modal-header">
+        <div style="font-size: 11px; color: #f59e0b; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;" id="modalSeasonLabel">本周赛季冲级中</div>
+        <div class="honor-current-title" id="modalHonorTitle">🌱 路过猫奴</div>
+        <div class="honor-stay-stat">本周陪伴时长：<span id="modalStayTimeText" style="color: #34d399; font-weight: 700;">0分钟</span></div>
+        <div class="honor-progress-wrapper">
+          <div class="honor-progress-bar"><div class="honor-progress-fill" id="modalProgressFill" style="width: 0%;"></div></div>
+          <div style="font-size: 11px; color: var(--text-sub);" id="modalNextTierTip">距下一称号还需 1 分钟</div>
+        </div>
+      </div>
+      <div class="crown-stamp-box">
+        <span style="color: #fbbf24; font-weight: 700;">👑 历史猫岛守护神印记：</span>
+        <span id="modalCrownCount" style="color: #fff; font-weight: 800;">0 枚</span>
+      </div>
+      <div class="honor-list" id="honorListContainer"></div>
+      <div style="padding: 0 20px 20px; text-align: center;">
+        <button id="closeHonorBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">我知道啦</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 原有受封证书弹窗 -->
+  <div class="app-modal" id="levelUpModal">
+    <div class="modal-card-box levelup-card">
+      <div class="levelup-icon-glow" id="levelUpIcon">🏆</div>
+      <div class="levelup-title" id="levelUpTitle">受封：初级铲屎官！</div>
+      <div class="levelup-desc" id="levelUpDesc">感谢你在毛毛星球的真诚陪伴，荣誉特权已点亮！</div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button id="btnGenerateCert" class="btn-modal-action fortune-color" style="width: 100%; justify-content: center;" type="button">📜 生成并保存受封证书</button>
+        <button id="closeLevelUpBtn" class="btn-modal-action" style="width: 100%; justify-content: center;" type="button">收下荣誉</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 原有头像选择弹窗 -->
+  <div class="app-modal" id="avatarModal">
+    <div class="modal-card-box">
+      <div class="honor-modal-header">
+        <div class="honor-current-title">🐾 选择你的猫咪头像</div>
+        <div class="honor-stay-stat">挑选一个专属头像，在弹幕互动中展现个性吧</div>
+      </div>
+      <div class="avatar-grid" id="avatarGrid"></div>
+      <div style="padding: 0 20px 20px; text-align: center;">
+        <button id="closeAvatarBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">确定</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 手机端抽屉选台组件 -->
   <div class="drawer-modal" id="roomDrawerModal">
     <div class="drawer-panel">
@@ -961,135 +1341,8 @@
     </div>
   </div>
 
-  <!-- 头像选择弹窗 -->
-  <div class="app-modal" id="avatarModal">
-    <div class="modal-card-box">
-      <div class="honor-modal-header">
-        <div class="honor-current-title">🐾 选择你的猫咪头像</div>
-        <div class="honor-stay-stat">挑选一个专属头像，在弹幕互动中展现个性吧</div>
-      </div>
-      <div class="avatar-grid" id="avatarGrid"></div>
-      <div style="padding: 0 20px 20px; text-align: center;">
-        <button id="closeAvatarBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">确定</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 每日打卡弹窗 -->
-  <div class="app-modal" id="checkinModal">
-    <div class="modal-card-box">
-      <div class="honor-modal-header" style="background: linear-gradient(180deg, rgba(245, 158, 11, 0.15), transparent);">
-        <div style="font-size: 11px; color: #fbbf24; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">DAILY MEOW CHECK-IN</div>
-        <div class="honor-current-title">🐾 每日吸猫打卡册</div>
-        <div class="honor-stay-stat">已连续打卡 <span id="modalStreakDays" style="color: #fbbf24; font-weight: 800; font-size: 16px;">0</span> 天 · 累计吸猫 <span id="modalTotalDays" style="color: #fff; font-weight: 700;">0</span> 天</div>
-      </div>
-
-      <div style="padding: 12px 20px 4px; font-size: 12px; color: var(--text-sub); display: flex; justify-content: space-between; align-items: center;">
-        <span>🐾 4周猫爪印章收集馆</span>
-        <span style="color: #fbbf24; font-weight: 700;" id="stampProgressText">0 / 4 印章</span>
-      </div>
-
-      <div class="stamp-grid">
-        <div class="stamp-card" id="stampCard1">
-          <div class="stamp-icon">🐾</div>
-          <div class="stamp-text">第1周印章</div>
-        </div>
-        <div class="stamp-card" id="stampCard2">
-          <div class="stamp-icon">🐾</div>
-          <div class="stamp-text">第2周印章</div>
-        </div>
-        <div class="stamp-card" id="stampCard3">
-          <div class="stamp-icon">🐾</div>
-          <div class="stamp-text">第3周印章</div>
-        </div>
-        <div class="stamp-card" id="stampCard4">
-          <div class="stamp-icon">👑</div>
-          <div class="stamp-text">元老印章</div>
-        </div>
-      </div>
-
-      <div style="padding: 10px 20px 4px; font-size: 12px; color: var(--text-sub);">
-        <span>📅 本周打卡轨迹</span>
-      </div>
-
-      <div class="calendar-days-grid" id="weekCalendarGrid"></div>
-
-      <div style="padding: 0 20px 20px; text-align: center;">
-        <button id="btnDoCheckin" class="btn-modal-action fortune-color" style="width: 100%; justify-content: center; font-size: 15px;" type="button">✨ 立即打卡盖章</button>
-        <button id="closeCheckinBtn" class="btn-modal-action" style="width: 100%; justify-content: center; margin-top: 8px;" type="button">关闭</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 拍立得弹窗 -->
-  <div class="app-modal" id="polaroidModal">
-    <div class="modal-card-box" style="background:#fff;">
-      <img id="polaroidImg" style="width: 100%; display: block;" alt="毛毛星球拍立得" />
-    </div>
-    <div class="modal-actions">
-      <a id="downloadPolaroidBtn" class="btn-modal-action primary" download="meowhub_snap.png">📥 保存海报</a>
-      <button id="closePolaroidBtn" class="btn-modal-action" type="button">✕ 关闭</button>
-    </div>
-    <div style="color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 10px;">手机端长按图片可直接存入相册 / 发社交网络</div>
-  </div>
-
-  <!-- 猫生运势弹窗 -->
-  <div class="app-modal" id="fortuneModal">
-    <div class="modal-card-box" style="background:#fff;">
-      <img id="fortuneImg" style="width: 100%; display: block;" alt="今日猫生运势签" />
-    </div>
-    <div class="modal-actions">
-      <a id="downloadFortuneBtn" class="btn-modal-action fortune-color" download="meow_fortune.png">📥 保存运势卡</a>
-      <button id="reFortuneBtn" class="btn-modal-action" type="button">🎲 重抽</button>
-      <button id="closeFortuneBtn" class="btn-modal-action" type="button">✕ 关闭</button>
-    </div>
-  </div>
-
-  <!-- 段位成就弹窗 -->
-  <div class="app-modal" id="honorModal">
-    <div class="modal-card-box">
-      <div class="honor-modal-header">
-        <div style="font-size: 11px; color: #f59e0b; font-weight: 700; text-transform: uppercase; margin-bottom: 4px;" id="modalSeasonLabel">本周赛季冲级中</div>
-        <div class="honor-current-title" id="modalHonorTitle">🌱 路过猫奴</div>
-        <div class="honor-stay-stat">本周陪伴时长：<span id="modalStayTimeText" style="color: #34d399; font-weight: 700;">0分钟</span></div>
-        <div class="honor-progress-wrapper">
-          <div class="honor-progress-bar">
-            <div class="honor-progress-fill" id="modalProgressFill" style="width: 0%;"></div>
-          </div>
-          <div style="font-size: 11px; color: var(--text-sub);" id="modalNextTierTip">距下一称号还需 1 分钟</div>
-        </div>
-      </div>
-
-      <div class="crown-stamp-box">
-        <span style="color: #fbbf24; font-weight: 700;">👑 历史猫岛守护神印记：</span>
-        <span id="modalCrownCount" style="color: #fff; font-weight: 800;">0 枚</span>
-      </div>
-
-      <div class="honor-list" id="honorListContainer"></div>
-
-      <div style="padding: 0 20px 20px; text-align: center;">
-        <p style="font-size: 11px; color: var(--text-sub); margin-bottom: 14px;">段位每周一 00:00 开启新赛季冲级，最高段位将沉淀为永久星标印记 🐾</p>
-        <button id="closeHonorBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">我知道啦</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 升级受封弹窗 -->
-  <div class="app-modal" id="levelUpModal">
-    <div class="modal-card-box levelup-card">
-      <div class="levelup-icon-glow" id="levelUpIcon">🏆</div>
-      <div class="levelup-title" id="levelUpTitle">受封：初级铲屎官！</div>
-      <div class="levelup-desc" id="levelUpDesc">感谢你在毛毛星球的真诚陪伴，荣誉特权已点亮！</div>
-      
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <button id="btnGenerateCert" class="btn-modal-action fortune-color" style="width: 100%; justify-content: center;" type="button">📜 生成并保存受封证书</button>
-        <button id="closeLevelUpBtn" class="btn-modal-action" style="width: 100%; justify-content: center;" type="button">收下荣誉</button>
-      </div>
-    </div>
-  </div>
-
   <canvas id="snapshotCanvas" style="display: none;"></canvas>
-  <canvas id="fortuneCanvas" style="display: none;"></canvas>
+  <canvas id="tarotCanvas" style="display: none;"></canvas>
   <canvas id="certCanvas" style="display: none;"></canvas>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
@@ -1098,12 +1351,11 @@
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
-    // 强声明全局当前机位与冷却状态变量（杜绝 ReferenceError）
     let currentRoom = null;
     let activeDeviceImei = "";
     let activeCooldownInterval = null;
 
-    // 1. Clerk 全局认证管理中心
+    // Clerk 身份中心
     const ClerkAuth = {
       isLoggedIn: () => Boolean(window.Clerk && window.Clerk.user),
       getUser: () => {
@@ -1139,24 +1391,14 @@
         await new Promise(r => setTimeout(r, 100));
         waitCount++;
       }
-
-      if (!window.Clerk) {
-        alert("认证服务正在连接，请稍等刷新重试！");
-        return;
-      }
-
+      if (!window.Clerk) return;
       try {
-        if (!window.Clerk.loaded) {
-          await window.Clerk.load();
-        }
+        if (!window.Clerk.loaded) await window.Clerk.load();
         window.Clerk.openSignIn({
           afterSignInUrl: window.location.href,
           afterSignUpUrl: window.location.href
         });
-      } catch (err) {
-        console.error("呼起登录失败:", err);
-        alert("登录窗口呼起失败: " + err.message);
-      }
+      } catch (err) {}
     }
 
     function requireAuth(actionCallback) {
@@ -1170,10 +1412,7 @@
 
     const btnClerkSignIn = document.getElementById("btnClerkSignIn");
     const clerkUserAvatarSlot = document.getElementById("clerk-user-avatar-slot");
-
-    if (btnClerkSignIn) {
-      btnClerkSignIn.addEventListener("click", openClerkSignInModal);
-    }
+    if (btnClerkSignIn) btnClerkSignIn.addEventListener("click", openClerkSignInModal);
 
     async function syncClerkUserToBackend(user) {
       if (!user) return;
@@ -1186,33 +1425,25 @@
       } catch (e) {}
     }
 
-    // 初始化加载 Clerk SDK 并安全挂载 UserButton（避免 removeChild 错误）
     window.addEventListener("load", async () => {
       let retryCount = 0;
       while (!window.Clerk && retryCount < 60) {
         await new Promise(r => setTimeout(r, 100));
         retryCount++;
       }
-
-      if (!window.Clerk) {
-        console.warn("Clerk 脚本还在后台加载...");
-        return;
-      }
+      if (!window.Clerk) return;
 
       try {
         await window.Clerk.load();
-
         function refreshAuthUI() {
           if (window.Clerk.user) {
             if (btnClerkSignIn) btnClerkSignIn.style.display = "none";
             if (clerkUserAvatarSlot && !clerkUserAvatarSlot.hasChildNodes()) {
               window.Clerk.mountUserButton(clerkUserAvatarSlot);
             }
-
             const u = ClerkAuth.getUser();
             syncClerkUserToBackend(u);
             updateMyRankStickyBar();
-
             if (pendingAction) {
               const act = pendingAction;
               pendingAction = null;
@@ -1224,13 +1455,9 @@
             updateMyRankStickyBar();
           }
         }
-
         refreshAuthUI();
         window.Clerk.addListener(refreshAuthUI);
-        console.log("✓ Clerk 认证系统加载完成");
-      } catch (err) {
-        console.warn("Clerk 加载异常:", err);
-      }
+      } catch (err) {}
     });
 
     // =========================================================================
@@ -1245,26 +1472,226 @@
     const viewAbout = document.getElementById("viewAbout");
 
     function switchView(targetTab, targetView) {
-      [tabNavLive, tabNavRankings, tabNavAbout].forEach(tab => tab.classList.remove("active"));
-      [viewLive, viewRankings, viewAbout].forEach(v => v.classList.remove("active"));
+      [tabNavLive, tabNavRankings, tabNavAbout].forEach(tab => tab?.classList.remove("active"));
+      [viewLive, viewRankings, viewAbout].forEach(v => v?.classList.remove("active"));
 
-      targetTab.classList.add("active");
-      targetView.classList.add("active");
+      targetTab?.classList.add("active");
+      targetView?.classList.add("active");
     }
 
-    tabNavLive.addEventListener("click", () => switchView(tabNavLive, viewLive));
-    tabNavRankings.addEventListener("click", () => {
+    tabNavLive?.addEventListener("click", () => switchView(tabNavLive, viewLive));
+    tabNavRankings?.addEventListener("click", () => {
       switchView(tabNavRankings, viewRankings);
       if (rankState.list.length === 0) resetAndLoadRankings();
     });
-    tabNavAbout.addEventListener("click", () => switchView(tabNavAbout, viewAbout));
+    tabNavAbout?.addEventListener("click", () => switchView(tabNavAbout, viewAbout));
 
-    // FAQ 手风琴点击折叠逻辑
+    // FAQ 手风琴折叠交互
     document.querySelectorAll(".faq-question").forEach(q => {
       q.addEventListener("click", () => {
         const item = q.parentElement;
-        item.classList.toggle("open");
+        item?.classList.toggle("open");
       });
+    });
+
+    // =========================================================================
+    // 小猫塔罗牌核心系统（精选12大阿卡那 + 3D翻牌动效 + Canvas 海报生成）
+    // =========================================================================
+    const TAROT_DECK = [
+      { id: 0, name: "0 · 好奇幼猫 (The Fool)", symbol: "🐾", upright: "勇敢探索、未知旅程、毫无畏惧的新起点", reversed: "过于冒进、注意踩空、请备好退路", quote: "“世界上最远的距离不是天涯海角，而是猫爪够不到的逗猫棒。”", food: "鲜美幼猫羊奶羹", wish: "宜：大胆尝试新事物" },
+      { id: 1, name: "I · 抓鱼大师 (The Magician)", symbol: "🐟", upright: "技能拉满、创造力迸发、万事皆有掌控力", reversed: "眼高手低、准备不足、稍显手忙脚乱", quote: "“爪子伸进水里的那一刻，鱼儿便知命运已成定局。”", food: "特级深海金枪鱼排", wish: "宜：执行力拉满" },
+      { id: 2, name: "II · 静默黑猫 (The High Priestess)", symbol: "🌙", upright: "第六感极强、静观其变、内在沉静与智慧", reversed: "胡思乱想、直觉被屏蔽、沟通遇到障碍", quote: "“居高临下的凝视，不仅是观察领地，更是洞察人心。”", food: "慢熬鸡胸肉浓汤", wish: "宜：相信第一直觉" },
+      { id: 3, name: "III · 丰盛三花 (The Empress)", symbol: "🌸", upright: "丰盛富足、被爱包围、尽情享受当下与美食", reversed: "过度躺平、体重失控、生活节奏懒散", quote: "“每一粒落进碗里的猫粮，都是宇宙无差别的爱意倾注。”", food: "顶级冻干混合拼盘", wish: "宜：犒赏自己一顿大餐" },
+      { id: 4, name: "IV · 霸气大橘 (The Emperor)", symbol: "👑", upright: "主导全场、稳健担当、安全感与秩序守护者", reversed: "暴躁哈气、专横独断、抗拒外界变化", quote: "“大橘为重，坐稳方寸之间，山河皆归我有。”", food: "厚切原切牛肉块", wish: "宜：承担重任，主掌节奏" },
+      { id: 6, name: "VI · 贴贴双喵 (The Lovers)", symbol: "💖", upright: "亲密无间、灵魂契合、彼此完全信任", reversed: "互哈炸毛、缺乏安全感、意见分歧冷战", quote: "“互相舔毛的默契，无需言语，温度自会说明一切。”", food: "夹心猫草小饼干", wish: "宜：主动表达关怀" },
+      { id: 8, name: "VIII · 温柔抚摸 (Strength)", symbol: "🦁", upright: "以柔克刚、耐心治愈、用呼噜声融化一切坚冰", reversed: "失去耐心、强行撸猫反被抓、情绪急躁", quote: "“真正的力量从不是爪牙的锋利，而是主动露出的柔软肚皮。”", food: "滋补鸭肉益生菌冻干", wish: "宜：以温和化解矛盾" },
+      { id: 9, name: "IX · 纸箱哲学家 (The Hermit)", symbol: "📦", upright: "向内探索、享受独处、在安静中找回内心平静", reversed: "孤僻自闭、逃避社交、过度封闭心扉", quote: "“纸箱虽小，容得下整座喵星的深邃沉思。”", food: "高纤化毛膏", wish: "宜：静心复盘独处" },
+      { id: 10, name: "X · 逗猫之轮 (Wheel of Fortune)", symbol: "🎡", upright: "转机降临、时来运转、顺应周期拥抱好运", reversed: "偶遇扑空、暂时逆流、保持耐心继续埋伏", quote: "“旋转的飞羽转盘终会停下，好运的猎物必将落入掌心。”", food: "极鲜诱食小鱼干", wish: "宜：顺其自然抓住契机" },
+      { id: 17, name: "XVII · 赛博猫眼 (The Star)", symbol: "⭐", upright: "希望升起、灵感泉涌、纯净清澈的治愈能量", reversed: "失落迷茫、缺乏自信、期待过高带来落差", quote: "“抬头看看星光吧，它们与你眼里的亮光同样璀璨。”", food: "蓝莓三文鱼抗氧化泥", wish: "宜：许愿与创作" },
+      { id: 19, name: "XIX · 暖阳橘喵 (The Sun)", symbol: "☀️", upright: "纯粹快乐、朝气蓬勃、万物向阳温暖前行", reversed: "稍显倦怠、虚张声势、注意避免过度消耗", quote: "“躺在阳光照到的木地板上，全世界都值得被原谅。”", food: "鲜肉多汁主食罐", wish: "宜：晒太阳与户外活动" },
+      { id: 21, name: "XXI · 圆满猫球 (The World)", symbol: "🪐", upright: "圆满闭环、心愿达成、收获平静与幸福", reversed: "差临门一脚、延迟圆满、需要善始善终", quote: "“把自己蜷成一个完美的毛茸茸圆球，世界在此刻完整。”", food: "满汉全席猫条飨宴", wish: "宜：庆祝阶段性胜利" }
+    ];
+
+    const btnOpenTarot = document.getElementById("btnOpenTarot");
+    const tarotModal = document.getElementById("tarotModal");
+    const btnCloseTarot = document.getElementById("btnCloseTarot");
+    const btnResetTarot = document.getElementById("btnResetTarot");
+    const btnSaveTarotPoster = document.getElementById("btnSaveTarotPoster");
+    const tarotCardsArea = document.getElementById("tarotCardsArea");
+    const tarotResultPanel = document.getElementById("tarotResultPanel");
+    const tarotHeaderTip = document.getElementById("tarotHeaderTip");
+    const tarotResultBadge = document.getElementById("tarotResultBadge");
+    const tarotWisdomQuote = document.getElementById("tarotWisdomQuote");
+    const tarotLuckyFood = document.getElementById("tarotLuckyFood");
+    const tarotLuckyAction = document.getElementById("tarotLuckyAction");
+    const tarotCanvas = document.getElementById("tarotCanvas");
+
+    let currentTarotResult = null;
+    let tarotHasDrawn = false;
+
+    function initTarotDesk() {
+      tarotHasDrawn = false;
+      currentTarotResult = null;
+      if (tarotHeaderTip) tarotHeaderTip.textContent = "在心中默念你今天关心的问题，轻触选定一张牌";
+      if (tarotResultPanel) tarotResultPanel.style.display = "none";
+      if (btnSaveTarotPoster) btnSaveTarotPoster.style.display = "none";
+
+      const cards = tarotCardsArea ? tarotCardsArea.querySelectorAll(".tarot-card") : [];
+      cards.forEach((card) => {
+        card.className = "tarot-card";
+        card.style.display = "block";
+        const front = card.querySelector(".tarot-card-front");
+        if (front) front.className = "tarot-card-face tarot-card-front";
+      });
+    }
+
+    btnOpenTarot?.addEventListener("click", () => {
+      requireAuth(() => {
+        initTarotDesk();
+        tarotModal?.classList.add("show");
+      });
+    });
+
+    btnCloseTarot?.addEventListener("click", () => tarotModal?.classList.remove("show"));
+    btnResetTarot?.addEventListener("click", initTarotDesk);
+    tarotModal?.addEventListener("click", (e) => {
+      if (e.target === tarotModal) tarotModal?.classList.remove("show");
+    });
+
+    // 抽牌核心点击事件
+    if (tarotCardsArea) {
+      tarotCardsArea.querySelectorAll(".tarot-card").forEach(card => {
+        card.addEventListener("click", () => {
+          if (tarotHasDrawn) return;
+          tarotHasDrawn = true;
+
+          const randomCard = TAROT_DECK[Math.floor(Math.random() * TAROT_DECK.length)];
+          const isReversed = Math.random() < 0.35;
+
+          currentTarotResult = { ...randomCard, isReversed };
+
+          const front = card.querySelector(".tarot-card-front");
+          const symbolEl = card.querySelector(".tarot-front-symbol");
+          const nameEl = card.querySelector(".tarot-front-name");
+
+          if (symbolEl) symbolEl.textContent = randomCard.symbol;
+          if (nameEl) nameEl.textContent = isReversed ? `${randomCard.name} (逆位)` : randomCard.name;
+
+          card.classList.add("flipped");
+          if (isReversed) {
+            front?.classList.add("is-reversed");
+            card.classList.add("is-reversed");
+          }
+
+          tarotCardsArea.querySelectorAll(".tarot-card").forEach(other => {
+            if (other !== card) other.classList.add("fade-out");
+          });
+
+          setTimeout(() => {
+            if (tarotHeaderTip) tarotHeaderTip.textContent = "✦ 喵星神启已降临 ✦";
+            if (tarotResultBadge) {
+              tarotResultBadge.className = `tarot-result-badge ${isReversed ? 'reversed' : 'upright'}`;
+              tarotResultBadge.textContent = isReversed ? `逆位 · ${randomCard.reversed}` : `正位 · ${randomCard.upright}`;
+            }
+            if (tarotWisdomQuote) tarotWisdomQuote.textContent = randomCard.quote;
+            if (tarotLuckyFood) tarotLuckyFood.textContent = randomCard.food;
+            if (tarotLuckyAction) tarotLuckyAction.textContent = randomCard.wish;
+
+            if (tarotResultPanel) tarotResultPanel.style.display = "flex";
+            if (btnSaveTarotPoster) btnSaveTarotPoster.style.display = "inline-flex";
+            fireConfetti();
+          }, 600);
+        });
+      });
+    }
+
+    btnSaveTarotPoster?.addEventListener("click", () => {
+      if (!currentTarotResult || !tarotCanvas) return;
+      const res = currentTarotResult;
+      const canvas = tarotCanvas;
+      const ctx = canvas.getContext("2d");
+      canvas.width = 600;
+      canvas.height = 840;
+
+      const grad = ctx.createLinearGradient(0, 0, 600, 840);
+      grad.addColorStop(0, "#1e1b4b");
+      grad.addColorStop(0.5, "#0f172a");
+      grad.addColorStop(1, "#090a0f");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 600, 840);
+
+      ctx.strokeStyle = "#a855f7";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(20, 20, 560, 800);
+
+      ctx.strokeStyle = "rgba(251, 191, 36, 0.4)";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([8, 5]);
+      ctx.strokeRect(30, 30, 540, 780);
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = "#c084fc";
+      ctx.font = "bold 13px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("✦ MEOW TAROT DIVINATION · 喵星塔罗 ✦", 300, 80);
+
+      ctx.save();
+      ctx.translate(300, 210);
+      if (res.isReversed) ctx.rotate(Math.PI);
+      ctx.font = "80px sans-serif";
+      ctx.fillText(res.symbol, 0, 25);
+      ctx.restore();
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "bold 30px -apple-system, sans-serif";
+      ctx.fillText(res.name, 300, 320);
+
+      ctx.fillStyle = res.isReversed ? "rgba(239, 68, 68, 0.2)" : "rgba(16, 185, 129, 0.2)";
+      ctx.beginPath();
+      ctx.roundRect(160, 345, 280, 36, 18);
+      ctx.fill();
+
+      ctx.fillStyle = res.isReversed ? "#f87171" : "#34d399";
+      ctx.font = "bold 15px -apple-system, sans-serif";
+      ctx.fillText(res.isReversed ? `【 逆 位 】` : `【 正 位 】`, 300, 368);
+
+      ctx.fillStyle = "rgba(255, 255, 255, 0.04)";
+      ctx.fillRect(50, 410, 500, 160);
+
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#f3f4f6";
+      ctx.font = "16px sans-serif";
+      ctx.fillText(res.isReversed ? res.reversed : res.upright, 300, 455);
+
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "italic 16px sans-serif";
+      ctx.fillText(res.quote, 300, 510);
+
+      ctx.font = "14px sans-serif";
+      ctx.fillStyle = "#9ca3af";
+      ctx.fillText(`🐟 幸运干粮：${res.food}    |    ✨ 宜忌：${res.wish}`, 300, 610);
+
+      const userNick = getUserFixedNickname();
+      const dateStr = new Date().toLocaleDateString('zh-CN');
+      ctx.font = "13px monospace";
+      ctx.fillStyle = "#64748b";
+      ctx.fillText(`占卜官：${userNick}   |   机位：${currentRoomName}   |   ${dateStr}`, 300, 660);
+
+      ctx.fillStyle = "#10b981";
+      ctx.font = "bold 18px sans-serif";
+      ctx.fillText("毛毛星球 MeowHub · 智能养宠", 300, 735);
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "12px sans-serif";
+      ctx.fillText("别让你家毛孩子再成为留守儿童了", 300, 762);
+
+      const dataUrl = canvas.toDataURL("image/png");
+      if (polaroidImg) polaroidImg.src = dataUrl;
+      if (downloadPolaroidBtn) {
+        downloadPolaroidBtn.href = dataUrl;
+        downloadPolaroidBtn.download = `meow_tarot_${res.name}_${Date.now()}.png`;
+      }
+      tarotModal?.classList.remove("show");
+      polaroidModal?.classList.add("show");
     });
 
     // =========================================================================
@@ -1279,7 +1706,7 @@
     const myBarRankTip = document.getElementById("myBarRankTip");
     const myBarRight = document.getElementById("myBarRight");
     const btnRankLoginNow = document.getElementById("btnRankLoginNow");
-    btnRankLoginNow.addEventListener("click", openClerkSignInModal);
+    btnRankLoginNow?.addEventListener("click", openClerkSignInModal);
 
     let rankState = {
       range: "all",
@@ -1294,35 +1721,38 @@
     function updateMyRankStickyBar() {
       const u = ClerkAuth.getUser();
       if (!u) {
-        myBarAvatar.textContent = "🐾";
-        myBarName.textContent = "未登录猫友";
-        myBarRankTip.textContent = "登录后可查看我的专属战绩";
-        myBarRight.innerHTML = '<button class="btn-login-to-rank" onclick="openClerkSignInModal()">立即登录</button>';
+        if (myBarAvatar) myBarAvatar.textContent = "🐾";
+        if (myBarName) myBarName.textContent = "未登录猫友";
+        if (myBarRankTip) myBarRankTip.textContent = "登录后可查看我的专属战绩";
+        if (myBarRight) myBarRight.innerHTML = '<button class="btn-login-to-rank" onclick="openClerkSignInModal()">立即登录</button>';
         return;
       }
 
       if (u.avatar && u.avatar.startsWith("http")) {
-        myBarAvatar.innerHTML = `<img src="${u.avatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />`;
+        if (myBarAvatar) myBarAvatar.innerHTML = `<img src="${u.avatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />`;
       } else {
-        myBarAvatar.textContent = u.avatar || "🐱";
+        if (myBarAvatar) myBarAvatar.textContent = u.avatar || "🐱";
       }
-      myBarName.textContent = u.nickname;
+      if (myBarName) myBarName.textContent = u.nickname;
 
       if (rankState.myRankData) {
-        myBarRankTip.innerHTML = `当前全站并列第 <b style="color: #fbbf24; font-size: 14px;">${rankState.myRankData.rank}</b> 名`;
-        myBarRight.innerHTML = `
-          <div style="text-align: right;">
-            <span style="font-size: 18px; font-weight: 800; color: #10b981; font-family: monospace;">${rankState.myRankData.feedCount}</span>
-            <span style="font-size: 12px; color: var(--text-sub);"> 次投喂</span>
-          </div>
-        `;
+        if (myBarRankTip) myBarRankTip.innerHTML = `当前全站并列第 <b style="color: #fbbf24; font-size: 14px;">${rankState.myRankData.rank}</b> 名`;
+        if (myBarRight) {
+          myBarRight.innerHTML = `
+            <div style="text-align: right;">
+              <span style="font-size: 18px; font-weight: 800; color: #10b981; font-family: monospace;">${rankState.myRankData.feedCount}</span>
+              <span style="font-size: 12px; color: var(--text-sub);"> 次投喂</span>
+            </div>
+          `;
+        }
       } else {
-        myBarRankTip.textContent = "暂未上榜，快去直播间为毛孩子加餐吧！";
-        myBarRight.innerHTML = '<button class="btn-login-to-rank" onclick="document.getElementById(\'tabNavLive\').click()">去投喂</button>';
+        if (myBarRankTip) myBarRankTip.textContent = "暂未上榜，快去直播间为毛孩子加餐吧！";
+        if (myBarRight) myBarRight.innerHTML = '<button class="btn-login-to-rank" onclick="document.getElementById(\'tabNavLive\')?.click()">去投喂</button>';
       }
     }
 
     function renderRankRows(items) {
+      if (!rankTableBody) return;
       items.forEach((item) => {
         const tr = document.createElement("tr");
         const topClass = item.rank === 1 ? "top-1" : (item.rank === 2 ? "top-2" : (item.rank === 3 ? "top-3" : ""));
@@ -1355,7 +1785,7 @@
     async function fetchRankingsPage() {
       if (rankState.isLoading || !rankState.hasMore) return;
       rankState.isLoading = true;
-      rankLoadingTrigger.textContent = "正在加载更多猫友...";
+      if (rankLoadingTrigger) rankLoadingTrigger.textContent = "正在加载更多猫友...";
 
       const u = ClerkAuth.getUser();
       const currentUid = u ? u.id : "";
@@ -1372,22 +1802,24 @@
           rankState.myRankData = data.myRank || null;
 
           if (rankState.page === 1 && fetchedItems.length === 0) {
-            rankTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-sub); padding: 40px 0;">该时间段内暂无投喂数据，快来拿下榜一吧！🐾</td></tr>';
-            rankLoadingTrigger.style.display = "none";
+            if (rankTableBody) rankTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-sub); padding: 40px 0;">该时间段内暂无投喂数据，快来拿下榜一吧！🐾</td></tr>';
+            if (rankLoadingTrigger) rankLoadingTrigger.style.display = "none";
           } else {
             renderRankRows(fetchedItems);
             rankState.page++;
 
-            if (!rankState.hasMore) {
-              rankLoadingTrigger.textContent = "— 已展示全部上榜猫友 —";
-            } else {
-              rankLoadingTrigger.textContent = "下拉自动加载更多...";
+            if (rankLoadingTrigger) {
+              if (!rankState.hasMore) {
+                rankLoadingTrigger.textContent = "— 已展示全部上榜猫友 —";
+              } else {
+                rankLoadingTrigger.textContent = "下拉自动加载更多...";
+              }
             }
           }
           updateMyRankStickyBar();
         }
       } catch (e) {
-        rankLoadingTrigger.textContent = "加载失败，请重试";
+        if (rankLoadingTrigger) rankLoadingTrigger.textContent = "加载失败，请重试";
       } finally {
         rankState.isLoading = false;
       }
@@ -1397,8 +1829,8 @@
       rankState.page = 1;
       rankState.hasMore = true;
       rankState.list = [];
-      rankTableBody.innerHTML = "";
-      rankLoadingTrigger.style.display = "block";
+      if (rankTableBody) rankTableBody.innerHTML = "";
+      if (rankLoadingTrigger) rankLoadingTrigger.style.display = "block";
       fetchRankingsPage();
     }
 
@@ -1411,9 +1843,8 @@
       });
     });
 
-    // 触底自动滚动懒加载 20 条
     window.addEventListener("scroll", () => {
-      if (!viewRankings.classList.contains("active")) return;
+      if (!viewRankings || !viewRankings.classList.contains("active")) return;
       const scrollHeight = document.documentElement.scrollHeight;
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const clientHeight = window.innerHeight;
@@ -1423,7 +1854,9 @@
       }
     });
 
-    // 2. 页面核心逻辑 (播放器、打卡、段位、弹幕)
+    // =========================================================================
+    // 基础业务（打卡、周段位、抓拍与播放逻辑）
+    // =========================================================================
     let currentRoomId = "1";
     let currentRoomName = "苏州猫岛";
     let ezPlayer = null;
@@ -1441,7 +1874,6 @@
         }).catch(() => {});
       } catch (e) {}
     }
-
     trackEvent("pv");
 
     const video = document.getElementById("mainVideo");
@@ -1449,7 +1881,6 @@
     const audioBtn = document.getElementById("audioBtn");
     const danmakuToggleBtn = document.getElementById("danmakuToggleBtn");
     const snapshotBtn = document.getElementById("snapshotBtn");
-    const fortuneBtn = document.getElementById("fortuneBtn");
     const danmakuBox = document.getElementById("danmakuBox");
     const chatList = document.getElementById("chatList");
     const chatForm = document.getElementById("chatForm");
@@ -1460,7 +1891,6 @@
     const emptyCopy = document.getElementById("emptyCopy");
     const currentRoomTitle = document.getElementById("currentRoomTitle");
     const roomButtonList = document.getElementById("roomButtonList");
-    const btnDownloadApp = document.getElementById("btnDownloadApp");
     const noticeBar = document.getElementById("noticeBar");
     const noticeContent = document.getElementById("noticeContent");
     const myHonorBadge = document.getElementById("myHonorBadge");
@@ -1472,27 +1902,19 @@
     const mobileRoomBadge = document.getElementById("mobileRoomBadge");
     const drawerTotalCount = document.getElementById("drawerTotalCount");
 
-    btnOpenRoomDrawer.addEventListener("click", () => {
-      roomDrawerModal.classList.add("show");
-    });
-    closeDrawerBtn.addEventListener("click", () => {
-      roomDrawerModal.classList.remove("show");
-    });
-    roomDrawerModal.addEventListener("click", (e) => {
-      if (e.target === roomDrawerModal) {
-        roomDrawerModal.classList.remove("show");
-      }
+    btnOpenRoomDrawer?.addEventListener("click", () => roomDrawerModal?.classList.add("show"));
+    closeDrawerBtn?.addEventListener("click", () => roomDrawerModal?.classList.remove("show"));
+    roomDrawerModal?.addEventListener("click", (e) => {
+      if (e.target === roomDrawerModal) roomDrawerModal?.classList.remove("show");
     });
 
     let activePlayingSeconds = 0;
-
     function flushRoomDuration() {
       if (activePlayingSeconds <= 0 || !currentRoomId) return;
       const secToReport = activePlayingSeconds;
       activePlayingSeconds = 0;
       trackEvent("room_duration", { roomId: String(currentRoomId), seconds: secToReport });
     }
-
     setInterval(flushRoomDuration, 30000);
     window.addEventListener("pagehide", flushRoomDuration);
     window.addEventListener("beforeunload", flushRoomDuration);
@@ -1503,7 +1925,6 @@
     const closeAvatarBtn = document.getElementById("closeAvatarBtn");
 
     const AVATAR_LIST = ["🐱", "😸", "😻", "😽", "😼", "🦁", "🐯", "🦊", "🐼", "🐨", "🐶", "🐾"];
-    
     function getUserAvatar() {
       let av = localStorage.getItem("meow_user_avatar");
       if (!av) {
@@ -1512,15 +1933,14 @@
       }
       return av;
     }
-
     function setUserAvatar(av) {
       localStorage.setItem("meow_user_avatar", av);
-      btnChooseAvatar.textContent = av;
+      if (btnChooseAvatar) btnChooseAvatar.textContent = av;
     }
-
-    btnChooseAvatar.textContent = getUserAvatar();
+    if (btnChooseAvatar) btnChooseAvatar.textContent = getUserAvatar();
 
     function renderAvatarGrid() {
+      if (!avatarGrid) return;
       avatarGrid.innerHTML = "";
       const cur = getUserAvatar();
       AVATAR_LIST.forEach(av => {
@@ -1531,20 +1951,20 @@
         btn.addEventListener("click", () => {
           setUserAvatar(av);
           renderAvatarGrid();
-          avatarModal.classList.remove("show");
+          avatarModal?.classList.remove("show");
         });
         avatarGrid.appendChild(btn);
       });
     }
 
-    btnChooseAvatar.addEventListener("click", () => {
+    btnChooseAvatar?.addEventListener("click", () => {
       requireAuth(() => {
         renderAvatarGrid();
-        avatarModal.classList.add("show");
+        avatarModal?.classList.add("show");
       });
     });
-    closeAvatarBtn.addEventListener("click", () => avatarModal.classList.remove("show"));
-    avatarModal.addEventListener("click", (e) => { if (e.target === avatarModal) avatarModal.classList.remove("show"); });
+    closeAvatarBtn?.addEventListener("click", () => avatarModal?.classList.remove("show"));
+    avatarModal?.addEventListener("click", (e) => { if (e.target === avatarModal) avatarModal?.classList.remove("show"); });
 
     const btnOpenCheckin = document.getElementById("btnOpenCheckin");
     const checkinStreakCount = document.getElementById("checkinStreakCount");
@@ -1561,13 +1981,6 @@
     const downloadPolaroidBtn = document.getElementById("downloadPolaroidBtn");
     const closePolaroidBtn = document.getElementById("closePolaroidBtn");
     const snapshotCanvas = document.getElementById("snapshotCanvas");
-
-    const fortuneModal = document.getElementById("fortuneModal");
-    const fortuneImg = document.getElementById("fortuneImg");
-    const downloadFortuneBtn = document.getElementById("downloadFortuneBtn");
-    const reFortuneBtn = document.getElementById("reFortuneBtn");
-    const closeFortuneBtn = document.getElementById("closeFortuneBtn");
-    const fortuneCanvas = document.getElementById("fortuneCanvas");
 
     const honorModal = document.getElementById("honorModal");
     const modalHonorTitle = document.getElementById("modalHonorTitle");
@@ -1589,18 +2002,18 @@
     const confettiCanvas = document.getElementById("confettiCanvas");
     const danmakuFxCanvas = document.getElementById("danmakuFxCanvas");
 
-    let roomList = [];
     let danmakuEnabled = true;
     let seenCommentIds = new Set();
     let latestCommentId = "";
     let pollTimer = null;
     let cooldownTimer = null;
 
-    const fxCtx = danmakuFxCanvas.getContext("2d");
+    const fxCtx = danmakuFxCanvas ? danmakuFxCanvas.getContext("2d") : null;
     let fxParticles = [];
     let fxAnimId = null;
 
     function resizeFxCanvas() {
+      if (!danmakuFxCanvas) return;
       danmakuFxCanvas.width = window.innerWidth;
       danmakuFxCanvas.height = window.innerHeight;
     }
@@ -1608,6 +2021,7 @@
     resizeFxCanvas();
 
     function triggerDanmakuEasterEgg(type) {
+      if (!fxCtx) return;
       if (fxAnimId) cancelAnimationFrame(fxAnimId);
       fxParticles = [];
 
@@ -1649,24 +2063,15 @@
           p.vx = -1.5;
           p.size = Math.random() * 8 + 14;
         }
-
         fxParticles.push(p);
       }
 
       function renderFx() {
         fxCtx.clearRect(0, 0, danmakuFxCanvas.width, danmakuFxCanvas.height);
         let alive = false;
-
         fxParticles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.rot += p.rotSpeed;
-
-          let isVisible = false;
-          if (type === "fish") isVisible = p.x > -100;
-          else if (type === "balloon") isVisible = p.y > -100;
-          else isVisible = p.y < window.innerHeight + 100;
-
+          p.x += p.vx; p.y += p.vy; p.rot += p.rotSpeed;
+          let isVisible = (type === "fish") ? (p.x > -100) : (type === "balloon" ? (p.y > -100) : (p.y < window.innerHeight + 100));
           if (isVisible) {
             alive = true;
             fxCtx.save();
@@ -1679,12 +2084,8 @@
             fxCtx.restore();
           }
         });
-
-        if (alive) {
-          fxAnimId = requestAnimationFrame(renderFx);
-        } else {
-          fxCtx.clearRect(0, 0, danmakuFxCanvas.width, danmakuFxCanvas.height);
-        }
+        if (alive) fxAnimId = requestAnimationFrame(renderFx);
+        else fxCtx.clearRect(0, 0, danmakuFxCanvas.width, danmakuFxCanvas.height);
       }
       renderFx();
     }
@@ -1703,12 +2104,7 @@
     }
 
     function loadCheckinData() {
-      const defaultData = {
-        lastCheckinDate: "",
-        streakDays: 0,
-        totalDays: 0,
-        historyDates: []
-      };
+      const defaultData = { lastCheckinDate: "", streakDays: 0, totalDays: 0, historyDates: [] };
       try {
         const raw = localStorage.getItem("meow_checkin_data");
         return raw ? JSON.parse(raw) : defaultData;
@@ -1716,91 +2112,83 @@
         return defaultData;
       }
     }
-
-    function saveCheckinData(data) {
-      localStorage.setItem("meow_checkin_data", JSON.stringify(data));
-    }
-
+    function saveCheckinData(data) { localStorage.setItem("meow_checkin_data", JSON.stringify(data)); }
     let checkinData = loadCheckinData();
 
     function updateCheckinHeaderUI() {
-      checkinStreakCount.textContent = checkinData.streakDays || 0;
+      if (checkinStreakCount) checkinStreakCount.textContent = checkinData.streakDays || 0;
     }
     updateCheckinHeaderUI();
 
     function renderCheckinModal() {
-      modalStreakDays.textContent = checkinData.streakDays;
-      modalTotalDays.textContent = checkinData.totalDays;
-
+      if (modalStreakDays) modalStreakDays.textContent = checkinData.streakDays;
+      if (modalTotalDays) modalTotalDays.textContent = checkinData.totalDays;
       const stampsCount = Math.min(Math.floor(checkinData.streakDays / 7), 4);
-      stampProgressText.textContent = `${stampsCount} / 4 印章`;
+      if (stampProgressText) stampProgressText.textContent = `${stampsCount} / 4 印章`;
 
       for (let i = 1; i <= 4; i++) {
         const card = document.getElementById(`stampCard${i}`);
-        if (i <= stampsCount) card.classList.add("stamped");
-        else card.classList.remove("stamped");
+        if (card) {
+          if (i <= stampsCount) card.classList.add("stamped");
+          else card.classList.remove("stamped");
+        }
       }
 
-      weekCalendarGrid.innerHTML = "";
-      const todayStr = getTodayString();
-      const now = new Date();
+      if (weekCalendarGrid) {
+        weekCalendarGrid.innerHTML = "";
+        const todayStr = getTodayString();
+        const now = new Date();
 
-      for (let i = 6; i >= 0; i--) {
-        const target = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-        const dateStr = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, '0')}-${String(target.getDate()).padStart(2, '0')}`;
-        const isChecked = checkinData.historyDates.includes(dateStr);
-        const isToday = (dateStr === todayStr);
+        for (let i = 6; i >= 0; i--) {
+          const target = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+          const dateStr = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, '0')}-${String(target.getDate()).padStart(2, '0')}`;
+          const isChecked = checkinData.historyDates.includes(dateStr);
+          const isToday = (dateStr === todayStr);
 
-        const cell = document.createElement("div");
-        cell.className = `cal-day-cell ${isChecked ? 'active-day' : ''} ${isToday ? 'today-cell' : ''}`;
-        
-        const weekNames = ["日", "一", "二", "三", "四", "五", "六"];
-        cell.innerHTML = `
-          <span>周${weekNames[target.getDay()]}</span>
-          <span style="font-size: 13px; margin: 2px 0;">${isChecked ? '🐾' : target.getDate()}</span>
-        `;
-        weekCalendarGrid.appendChild(cell);
+          const cell = document.createElement("div");
+          cell.className = `cal-day-cell ${isChecked ? 'active-day' : ''} ${isToday ? 'today-cell' : ''}`;
+          const weekNames = ["日", "一", "二", "三", "四", "五", "六"];
+          cell.innerHTML = `<span>周${weekNames[target.getDay()]}</span><span style="font-size: 13px; margin: 2px 0;">${isChecked ? '🐾' : target.getDate()}</span>`;
+          weekCalendarGrid.appendChild(cell);
+        }
       }
 
       const isTodayChecked = (checkinData.lastCheckinDate === todayStr);
-      if (isTodayChecked) {
-        btnDoCheckin.textContent = "今日已打卡 ✓";
-        btnDoCheckin.disabled = true;
-        btnDoCheckin.style.opacity = "0.6";
-      } else {
-        btnDoCheckin.textContent = "✨ 立即打卡盖章";
-        btnDoCheckin.disabled = false;
-        btnDoCheckin.style.opacity = "1";
+      if (btnDoCheckin) {
+        if (isTodayChecked) {
+          btnDoCheckin.textContent = "今日已打卡 ✓";
+          btnDoCheckin.disabled = true;
+          btnDoCheckin.style.opacity = "0.6";
+        } else {
+          btnDoCheckin.textContent = "✨ 立即打卡盖章";
+          btnDoCheckin.disabled = false;
+          btnDoCheckin.style.opacity = "1";
+        }
       }
     }
 
-    btnOpenCheckin.addEventListener("click", () => {
+    btnOpenCheckin?.addEventListener("click", () => {
       requireAuth(() => {
         renderCheckinModal();
-        checkinModal.classList.add("show");
+        checkinModal?.classList.add("show");
       });
     });
-    closeCheckinBtn.addEventListener("click", () => checkinModal.classList.remove("show"));
-    checkinModal.addEventListener("click", (e) => { if (e.target === checkinModal) checkinModal.classList.remove("show"); });
+    closeCheckinBtn?.addEventListener("click", () => checkinModal?.classList.remove("show"));
+    checkinModal?.addEventListener("click", (e) => { if (e.target === checkinModal) checkinModal?.classList.remove("show"); });
 
-    btnDoCheckin.addEventListener("click", () => {
+    btnDoCheckin?.addEventListener("click", () => {
       const todayStr = getTodayString();
       if (checkinData.lastCheckinDate === todayStr) return;
 
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const yestStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
 
-      if (checkinData.lastCheckinDate === yestStr) {
-        checkinData.streakDays += 1;
-      } else {
-        checkinData.streakDays = 1;
-      }
+      if (checkinData.lastCheckinDate === yestStr) checkinData.streakDays += 1;
+      else checkinData.streakDays = 1;
 
       checkinData.totalDays += 1;
       checkinData.lastCheckinDate = todayStr;
-      if (!checkinData.historyDates.includes(todayStr)) {
-        checkinData.historyDates.push(todayStr);
-      }
+      if (!checkinData.historyDates.includes(todayStr)) checkinData.historyDates.push(todayStr);
       saveCheckinData(checkinData);
 
       updateCheckinHeaderUI();
@@ -1864,24 +2252,27 @@
       const honor = getCurrentHonor();
       const mins = Math.floor(staySeconds / 60);
       const starStr = crownStamps > 0 ? ` [★×${crownStamps}]` : "";
-      myHonorBadge.textContent = `${honor.title}${starStr} (${mins}m) ⓘ`;
-      myHonorBadge.className = `honor-badge ${honor.class}`;
+      if (myHonorBadge) {
+        myHonorBadge.textContent = `${honor.title}${starStr} (${mins}m) ⓘ`;
+        myHonorBadge.className = `honor-badge ${honor.class}`;
+      }
     }
-
     updateHonorUI();
 
-    let confettiCtx = confettiCanvas.getContext("2d");
+    let confettiCtx = confettiCanvas ? confettiCanvas.getContext("2d") : null;
     let confettiParticles = [];
     let confettiAnimationId = null;
 
     function resizeConfetti() {
+      if (!confettiCanvas) return;
       confettiCanvas.width = window.innerWidth;
       confettiCanvas.height = window.innerHeight;
     }
     window.addEventListener("resize", resizeConfetti);
-    resizeFxCanvas && resizeConfetti();
+    resizeConfetti();
 
     function fireConfetti() {
+      if (!confettiCtx) return;
       confettiParticles = [];
       const colors = ["#10b981", "#f59e0b", "#3b82f6", "#ec4899", "#8b5cf6", "#ffffff"];
       for (let i = 0; i < 120; i++) {
@@ -1897,19 +2288,12 @@
           opacity: 1
         });
       }
-
       if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
-
       function render() {
         confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
         let alive = false;
         confettiParticles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += 0.35;
-          p.rotation += p.rotationSpeed;
-          p.opacity -= 0.008;
-
+          p.x += p.vx; p.y += p.vy; p.vy += 0.35; p.rotation += p.rotationSpeed; p.opacity -= 0.008;
           if (p.opacity > 0) {
             alive = true;
             confettiCtx.save();
@@ -1921,12 +2305,8 @@
             confettiCtx.restore();
           }
         });
-
-        if (alive) {
-          confettiAnimationId = requestAnimationFrame(render);
-        } else {
-          confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-        }
+        if (alive) confettiAnimationId = requestAnimationFrame(render);
+        else confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
       }
       render();
     }
@@ -1934,16 +2314,17 @@
     let latestUnlockedTier = null;
     function triggerLevelUpCelebration(tier) {
       latestUnlockedTier = tier;
-      levelUpIcon.textContent = tier.icon;
-      levelUpTitle.textContent = `晋升受封：${tier.title}！`;
-      levelUpDesc.textContent = `恭喜达成【${tier.desc}】！已点亮本周专属身份勋章。`;
-      levelUpModal.classList.add("show");
+      if (levelUpIcon) levelUpIcon.textContent = tier.icon;
+      if (levelUpTitle) levelUpTitle.textContent = `晋升受封：${tier.title}！`;
+      if (levelUpDesc) levelUpDesc.textContent = `恭喜达成【${tier.desc}】！已点亮本周专属身份勋章。`;
+      levelUpModal?.classList.add("show");
       fireConfetti();
     }
 
-    btnGenerateCert.addEventListener("click", () => {
+    btnGenerateCert?.addEventListener("click", () => {
       const tier = latestUnlockedTier || getCurrentHonor();
       const canvas = certCanvas;
+      if (!canvas) return;
       const ctx = canvas.getContext("2d");
       canvas.width = 600;
       canvas.height = 800;
@@ -2010,15 +2391,17 @@
       ctx.fillText("别让你家毛孩子再成为留守儿童了", 300, 735);
 
       const dataUrl = canvas.toDataURL("image/png");
-      polaroidImg.src = dataUrl;
-      downloadPolaroidBtn.href = dataUrl;
-      downloadPolaroidBtn.download = `meow_cert_${tier.title}_${Date.now()}.png`;
-      levelUpModal.classList.remove("show");
-      polaroidModal.classList.add("show");
+      if (polaroidImg) polaroidImg.src = dataUrl;
+      if (downloadPolaroidBtn) {
+        downloadPolaroidBtn.href = dataUrl;
+        downloadPolaroidBtn.download = `meow_cert_${tier.title}_${Date.now()}.png`;
+      }
+      levelUpModal?.classList.remove("show");
+      polaroidModal?.classList.add("show");
     });
 
-    closeLevelUpBtn.addEventListener("click", () => levelUpModal.classList.remove("show"));
-    levelUpModal.addEventListener("click", (e) => { if (e.target === levelUpModal) levelUpModal.classList.remove("show"); });
+    closeLevelUpBtn?.addEventListener("click", () => levelUpModal?.classList.remove("show"));
+    levelUpModal?.addEventListener("click", (e) => { if (e.target === levelUpModal) levelUpModal?.classList.remove("show"); });
 
     setInterval(() => {
       const isVideoPlaying = (video && !video.paused && video.readyState >= 2);
@@ -2047,10 +2430,10 @@
       const currentIdx = HONOR_TIERS.findIndex(h => h.level === current.level);
       const mins = Math.floor(staySeconds / 60);
 
-      modalSeasonLabel.textContent = `📅 当前赛季：${currentSeasonKey} (每周一重置)`;
-      modalHonorTitle.textContent = current.title;
-      modalStayTimeText.textContent = `${mins} 分钟 (${staySeconds} 秒)`;
-      modalCrownCount.textContent = `${crownStamps} 枚`;
+      if (modalSeasonLabel) modalSeasonLabel.textContent = `📅 当前赛季：${currentSeasonKey} (每周一重置)`;
+      if (modalHonorTitle) modalHonorTitle.textContent = current.title;
+      if (modalStayTimeText) modalStayTimeText.textContent = `${mins} 分钟 (${staySeconds} 秒)`;
+      if (modalCrownCount) modalCrownCount.textContent = `${crownStamps} 枚`;
 
       if (currentIdx < HONOR_TIERS.length - 1) {
         const next = HONOR_TIERS[currentIdx + 1];
@@ -2058,152 +2441,46 @@
         const totalGap = next.minSec - prevSec;
         const curGap = staySeconds - prevSec;
         const pct = Math.min(Math.max((curGap / totalGap) * 100, 0), 100);
-
-        modalProgressFill.style.width = `${pct}%`;
+        if (modalProgressFill) modalProgressFill.style.width = `${pct}%`;
         const needMins = Math.ceil((next.minSec - staySeconds) / 60);
-        modalNextTierTip.textContent = `距解锁【${next.title}】还需约 ${needMins} 分钟`;
+        if (modalNextTierTip) modalNextTierTip.textContent = `距解锁【${next.title}】还需约 ${needMins} 分钟`;
       } else {
-        modalProgressFill.style.width = "100%";
-        modalNextTierTip.textContent = "已达成最高殿堂荣耀！赛季结算将斩获守护神星标 👑";
+        if (modalProgressFill) modalProgressFill.style.width = "100%";
+        if (modalNextTierTip) modalNextTierTip.textContent = "已达成最高殿堂荣耀！赛季结算将斩获守护神星标 👑";
       }
 
-      honorListContainer.innerHTML = "";
-      HONOR_TIERS.forEach((tier) => {
-        const isUnlocked = staySeconds >= tier.minSec;
-        const row = document.createElement("div");
-        row.className = `honor-item ${isUnlocked ? 'unlocked' : ''}`;
-
-        row.innerHTML = `
-          <div class="honor-item-left">
-            <div class="honor-item-icon">${tier.icon}</div>
-            <div>
-              <div class="honor-item-name">Lv.${tier.level} ${tier.title}</div>
-              <div class="honor-item-req">${tier.desc}</div>
+      if (honorListContainer) {
+        honorListContainer.innerHTML = "";
+        HONOR_TIERS.forEach((tier) => {
+          const isUnlocked = staySeconds >= tier.minSec;
+          const row = document.createElement("div");
+          row.className = `honor-item ${isUnlocked ? 'unlocked' : ''}`;
+          row.innerHTML = `
+            <div class="honor-item-left">
+              <div class="honor-item-icon">${tier.icon}</div>
+              <div>
+                <div class="honor-item-name">Lv.${tier.level} ${tier.title}</div>
+                <div class="honor-item-req">${tier.desc}</div>
+              </div>
             </div>
-          </div>
-          <div class="honor-item-status">${isUnlocked ? '已达成 ✓' : '未解锁 🔒'}</div>
-        `;
-        honorListContainer.appendChild(row);
-      });
-
-      honorModal.classList.add("show");
+            <div class="honor-item-status">${isUnlocked ? '已达成 ✓' : '未解锁 🔒'}</div>
+          `;
+          honorListContainer.appendChild(row);
+        });
+      }
+      honorModal?.classList.add("show");
     }
 
-    myHonorBadge.addEventListener("click", () => {
-      requireAuth(() => {
-        openHonorModal();
-      });
+    myHonorBadge?.addEventListener("click", () => {
+      requireAuth(() => openHonorModal());
     });
-    closeHonorBtn.addEventListener("click", () => honorModal.classList.remove("show"));
-    honorModal.addEventListener("click", (e) => { if (e.target === honorModal) honorModal.classList.remove("show"); });
-
-    const FORTUNES = [
-      { title: "大吉 · 招财橘", star: "★★★★★", color: "橘猫色", food: "特级金枪鱼罐", desc: "今日诸事顺遂，吸猫吸到饱，工位财运滚滚来！", wish: "宜：定点投喂，忌：工位焦虑" },
-      { title: "大吉 · 绝美三花", star: "★★★★★", color: "三花色", food: "新鲜冻干鸡肉", desc: "气质优雅气场全开，今天遇到的都是喜欢你的人。", wish: "宜：晒太阳，忌：熬夜加班" },
-      { title: "上吉 · 威武狸花", star: "★★★★☆", color: "狸花斑纹", food: "鲜肉大猫条", desc: "精力充沛抓力拉满，所有难题都能一爪子搞定。", wish: "宜：运动伸展，忌：犹豫不决" },
-      { title: "中吉 · 睡神布偶", star: "★★★★☆", color: "海双色", food: "三文鱼慕斯", desc: "躺平也能遇好事，保持好心态，随时准备打个呼噜。", wish: "宜：午间小憩，忌：过度内卷" },
-      { title: "上吉 · 赛博奶牛", star: "★★★★☆", color: "黑白拼色", food: "大草鱼干", desc: "思维敏捷整活大师，今天会有意想不到的惊喜灵感！", wish: "宜：画鱼互动，忌：一本正经" }
-    ];
-
-    function drawFortuneCard() {
-      const f = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
-      const canvas = fortuneCanvas;
-      const ctx = canvas.getContext("2d");
-      canvas.width = 540;
-      canvas.height = 720;
-
-      const grad = ctx.createLinearGradient(0, 0, 540, 720);
-      grad.addColorStop(0, "#18181b");
-      grad.addColorStop(1, "#090a0f");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 540, 720);
-
-      ctx.strokeStyle = "#f59e0b";
-      ctx.lineWidth = 4;
-      ctx.strokeRect(20, 20, 500, 680);
-
-      ctx.strokeStyle = "rgba(245, 158, 11, 0.3)";
-      ctx.lineWidth = 1;
-      ctx.setLineDash([6, 4]);
-      ctx.strokeRect(30, 30, 480, 660);
-      ctx.setLineDash([]);
-
-      ctx.fillStyle = "#f59e0b";
-      ctx.font = "bold 28px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText("🐾 今日猫生运势签 🐾", 270, 85);
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 36px sans-serif";
-      ctx.fillText(f.title, 270, 160);
-
-      ctx.fillStyle = "#fbbf24";
-      ctx.font = "20px sans-serif";
-      ctx.fillText(`运势指数：${f.star}`, 270, 205);
-
-      ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
-      ctx.fillRect(50, 240, 440, 140);
-
-      ctx.textAlign = "left";
-      ctx.font = "16px sans-serif";
-      ctx.fillStyle = "#9ca3af";
-      ctx.fillText("🎨 幸运猫色：", 75, 280);
-      ctx.fillStyle = "#34d399";
-      ctx.fillText(f.color, 180, 280);
-
-      ctx.fillStyle = "#9ca3af";
-      ctx.fillText("🐟 幸运干粮：", 75, 320);
-      ctx.fillStyle = "#60a5fa";
-      ctx.fillText(f.food, 180, 320);
-
-      ctx.fillStyle = "#9ca3af";
-      ctx.fillText("✨ 宜忌指引：", 75, 360);
-      ctx.fillStyle = "#f59e0b";
-      ctx.fillText(f.wish, 180, 360);
-
-      ctx.fillStyle = "#f3f4f6";
-      ctx.font = "17px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(`“ ${f.desc} ”`, 270, 440);
-
-      const userNick = getUserFixedNickname();
-      const nowStr = new Date().toLocaleDateString('zh-CN');
-      ctx.font = "14px monospace";
-      ctx.fillStyle = "#9ca3af";
-      ctx.fillText(`持签猫友：${userNick}  |  ${nowStr}`, 270, 520);
-
-      ctx.fillStyle = "#10b981";
-      ctx.font = "bold 18px sans-serif";
-      ctx.fillText("毛毛星球 MeowHub · 智能养宠", 270, 610);
-      ctx.fillStyle = "#6b7280";
-      ctx.font = "12px sans-serif";
-      ctx.fillText("别让你家毛孩子再成为留守儿童了", 270, 638);
-
-      const dataUrl = canvas.toDataURL("image/png");
-      fortuneImg.src = dataUrl;
-      downloadFortuneBtn.href = dataUrl;
-      fortuneModal.classList.add("show");
-    }
-
-    fortuneBtn.addEventListener("click", () => {
-      requireAuth(() => {
-        drawFortuneCard();
-      });
-    });
-
-    reFortuneBtn.addEventListener("click", () => {
-      requireAuth(() => {
-        drawFortuneCard();
-      });
-    });
-
-    closeFortuneBtn.addEventListener("click", () => fortuneModal.classList.remove("show"));
-    fortuneModal.addEventListener("click", (e) => { if (e.target === fortuneModal) fortuneModal.classList.remove("show"); });
+    closeHonorBtn?.addEventListener("click", () => honorModal?.classList.remove("show"));
+    honorModal?.addEventListener("click", (e) => { if (e.target === honorModal) honorModal?.classList.remove("show"); });
 
     const GONGDE_TEXTS = ["功德+1 ✨", "猫粮+5g 🍗", "毛量+100 🐾", "治愈值+1 💖", "寒冬抵御+1 ☀️", "吸猫快乐+999 😻"];
     const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
 
-    videoWrapper.addEventListener("dblclick", (e) => {
+    videoWrapper?.addEventListener("dblclick", (e) => {
       requireAuth(() => {
         const rect = videoWrapper.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -2232,8 +2509,8 @@
         const res = await fetch(`${API_ENDPOINT}/api/notice`);
         const data = await res.json();
         if (data && data.notice && data.notice.trim()) {
-          noticeContent.textContent = data.notice.trim();
-          noticeBar.style.display = "flex";
+          if (noticeContent) noticeContent.textContent = data.notice.trim();
+          if (noticeBar) noticeBar.style.display = "flex";
         }
       } catch (e) {}
     }
@@ -2246,25 +2523,14 @@
     ];
 
     const BOT_MESSAGES = [
-      "咪咪快来吃好吃的~ 🍗",
-      "今天天气不错，小猫都在晒太阳呢 ☀️",
-      "这只小猫好萌呀，想抱走！",
-      "吸猫打卡+1 🐾",
-      "大橘为重，多吃点长大个！",
-      "又是被小猫治愈的一天 🥰",
-      "好想隔着屏幕伸手摸摸它",
-      "在工位偷偷云吸猫被发现了 🤣",
-      "看猫咪干饭真的好解压",
-      "给直播间各位猫友打个招呼 👋",
-      "定点喂养真的太有爱心了！",
-      "蹲一个三花出镜 👀",
-      "猫猫的警惕性还挺高呢",
-      "赛博云投喂，快乐翻倍 🐟",
-      "刚刚跑过去的是哪只呀？"
+      "咪咪快来吃好吃的~ 🍗", "今天天气不错，小猫都在晒太阳呢 ☀️", "这只小猫好萌呀，想抱走！",
+      "吸猫打卡+1 🐾", "大橘为重，多吃点长大个！", "又是被小猫治愈的一天 🥰",
+      "好想隔着屏幕伸手摸摸它", "在工位偷偷云吸猫被发现了 🤣", "看猫咪干饭真的好解压",
+      "给直播间各位猫友打个招呼 👋", "定点喂养真的太有爱心了！", "蹲一个三花出镜 👀",
+      "猫猫的警惕性还挺高呢", "赛博云投喂，快乐翻倍 🐟", "刚刚跑过去的是哪只呀？"
     ];
 
     let botTimer = null;
-
     function triggerBotComment() {
       const randomName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
       const randomText = BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)];
@@ -2277,14 +2543,11 @@
         avatar: randomAvatar,
         isBot: true
       };
-
       renderComments([botMsg], false);
       shootDanmaku(`${randomName}: ${randomText}`, false);
-
       const nextDelay = Math.floor(Math.random() * 20000) + 15000;
       botTimer = setTimeout(triggerBotComment, nextDelay);
     }
-
     function startAtmosphereBot() {
       if (botTimer) clearTimeout(botTimer);
       botTimer = setTimeout(triggerBotComment, 6000);
@@ -2293,13 +2556,15 @@
     document.querySelectorAll(".chip-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         requireAuth(() => {
-          textInput.value = btn.textContent.trim();
-          textInput.focus();
+          if (textInput) {
+            textInput.value = btn.textContent.trim();
+            textInput.focus();
+          }
         });
       });
     });
 
-    audioBtn.addEventListener("click", () => {
+    audioBtn?.addEventListener("click", () => {
       requireAuth(() => {
         if (ezPlayer) {
           const isMuted = audioBtn.textContent.includes("开启");
@@ -2317,15 +2582,15 @@
       });
     });
 
-    danmakuToggleBtn.addEventListener("click", () => {
+    danmakuToggleBtn?.addEventListener("click", () => {
       requireAuth(() => {
         danmakuEnabled = !danmakuEnabled;
-        danmakuBox.style.display = danmakuEnabled ? "block" : "none";
+        if (danmakuBox) danmakuBox.style.display = danmakuEnabled ? "block" : "none";
         danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
       });
     });
 
-    snapshotBtn.addEventListener("click", () => {
+    snapshotBtn?.addEventListener("click", () => {
       requireAuth(() => {
         const vidEl = document.querySelector("#ezuikitPlayer video") || video;
         const cvsEl = document.querySelector("#ezuikitPlayer canvas");
@@ -2337,6 +2602,7 @@
         }
 
         const canvas = snapshotCanvas;
+        if (!canvas) return;
         const ctx = canvas.getContext("2d");
         const CARD_W = 600;
         const CARD_H = 780;
@@ -2421,29 +2687,26 @@
 
         try {
           const dataUrl = canvas.toDataURL("image/png");
-          polaroidImg.src = dataUrl;
-          downloadPolaroidBtn.href = dataUrl;
-          downloadPolaroidBtn.download = `meowhub_${currentRoomName}_${Date.now()}.png`;
-          polaroidModal.classList.add("show");
+          if (polaroidImg) polaroidImg.src = dataUrl;
+          if (downloadPolaroidBtn) {
+            downloadPolaroidBtn.href = dataUrl;
+            downloadPolaroidBtn.download = `meowhub_${currentRoomName}_${Date.now()}.png`;
+          }
+          polaroidModal?.classList.add("show");
         } catch (e) {
-          alert("截屏生成失败，可能是浏览器权限限制，请直接使用手机截屏哦~");
+          alert("截屏生成失败，请直接使用手机截屏~");
         }
       });
     });
 
-    closePolaroidBtn.addEventListener("click", () => polaroidModal.classList.remove("show"));
-    polaroidModal.addEventListener("click", (e) => { if (e.target === polaroidModal) polaroidModal.classList.remove("show"); });
+    closePolaroidBtn?.addEventListener("click", () => polaroidModal?.classList.remove("show"));
+    polaroidModal?.addEventListener("click", (e) => { if (e.target === polaroidModal) polaroidModal?.classList.remove("show"); });
 
-    video.addEventListener("timeupdate", () => {
-      if (video.currentTime > 0) playerEmpty.style.display = "none";
-    });
-
-    video.addEventListener("playing", () => {
-      playerEmpty.style.display = "none";
-    });
+    video?.addEventListener("timeupdate", () => { if (video.currentTime > 0 && playerEmpty) playerEmpty.style.display = "none"; });
+    video?.addEventListener("playing", () => { if (playerEmpty) playerEmpty.style.display = "none"; });
 
     function shootDanmaku(text, isMe = false) {
-      if (!danmakuEnabled) return;
+      if (!danmakuEnabled || !danmakuBox) return;
       const el = document.createElement("div");
       const honor = getCurrentHonor();
       const stampsCount = Math.min(Math.floor(checkinData.streakDays / 7), 4);
@@ -2451,8 +2714,7 @@
 
       el.className = `danmaku-item ${isMe ? 'is-me' : ''} ${isGold ? 'tier-gold' : ''}`;
       el.textContent = text;
-      const topPos = Math.floor(Math.random() * 60) + 15;
-      el.style.top = `${topPos}%`;
+      el.style.top = `${Math.floor(Math.random() * 60) + 15}%`;
       danmakuBox.appendChild(el);
       el.addEventListener("animationend", () => el.remove());
     }
@@ -2466,159 +2728,55 @@
     }
 
     function renderComments(comments, isInitial = false) {
+      if (!chatList) return;
       if (isInitial) {
         chatList.innerHTML = "";
         seenCommentIds.clear();
       }
-
-      if (!comments || comments.length === 0) {
-        if (chatList.children.length === 0) {
-          chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
-        }
-        return;
-      }
-
-      const placeholder = chatList.querySelector('div[style*="text-align: center"]');
-      if (placeholder) placeholder.remove();
+      if (!comments || comments.length === 0) return;
 
       const myCurrentName = getUserFixedNickname();
-      const isAtBottom = chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 50;
-
       comments.forEach(c => {
         if (seenCommentIds.has(c.id)) return;
         seenCommentIds.add(c.id);
-        if (!c.isBot) latestCommentId = c.id;
+        latestCommentId = c.id;
 
-        const isMe = Boolean(c.isLocal) || (myCurrentName && c.name === myCurrentName);
-
+        const isMe = (myCurrentName && c.name === myCurrentName);
         const row = document.createElement("div");
-        row.id = `msg_${c.id}`;
         row.className = `message-item ${isMe ? 'is-me' : ''}`;
-
-        const avatarDiv = document.createElement("div");
-        avatarDiv.className = "msg-avatar";
-        avatarDiv.textContent = isMe ? getUserAvatar() : (c.avatar || getAvatarByName(c.name));
-
-        const contentWrapper = document.createElement("div");
-        contentWrapper.className = "msg-content-wrapper";
-
-        const userSpan = document.createElement("span");
-        userSpan.className = "msg-user";
-        userSpan.textContent = `${c.name || '热心猫友'}:`;
-
-        if (isMe) {
-          const badge = document.createElement("span");
-          badge.className = "msg-badge-me";
-          badge.textContent = "我";
-          userSpan.appendChild(badge);
-        }
-
-        const textSpan = document.createElement("span");
-        textSpan.className = "msg-text";
-        textSpan.textContent = ` ${c.text || ''}`;
-
-        const timeSpan = document.createElement("span");
-        timeSpan.className = "msg-time";
-        timeSpan.textContent = c.time || '';
-
-        contentWrapper.appendChild(userSpan);
-        contentWrapper.appendChild(textSpan);
-        contentWrapper.appendChild(timeSpan);
-
-        row.appendChild(avatarDiv);
-        row.appendChild(contentWrapper);
-
+        row.innerHTML = `
+          <div class="msg-avatar">${isMe ? getUserAvatar() : (c.avatar || '🐱')}</div>
+          <div class="msg-content-wrapper">
+            <span class="msg-user">${c.name || '热心猫友'}:${isMe ? '<span class="msg-badge-me">我</span>' : ''}</span>
+            <span class="msg-text">${c.text || ''}</span>
+            <span class="msg-time">${c.time || ''}</span>
+          </div>
+        `;
         chatList.appendChild(row);
-
-        if (!isInitial && !c.isLocal && !c.isBot) {
-          shootDanmaku(`${c.name}: ${c.text}`, isMe);
-          checkEasterEgg(c.text);
-        }
+        if (!isInitial) shootDanmaku(`${c.name}: ${c.text}`, isMe);
       });
-
-      if (isInitial && comments.length > 0) {
-        const historyList = comments.slice(-6);
-        historyList.forEach((item, index) => {
-          setTimeout(() => {
-            const isMe = (myCurrentName && item.name === myCurrentName);
-            shootDanmaku(`${item.name}: ${item.text}`, isMe);
-          }, index * 600 + 300);
-        });
-      }
-
-      if (isAtBottom || isInitial) {
-        chatList.scrollTo({ top: chatList.scrollHeight, behavior: 'smooth' });
-      }
+      chatList.scrollTo({ top: chatList.scrollHeight, behavior: 'smooth' });
     }
 
     async function fetchComments(isInitial = false) {
       if (!currentRoomId) return;
       try {
-        let query = `${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}`;
-        if (!isInitial && latestCommentId) {
-          query += `&since=${encodeURIComponent(latestCommentId)}`;
-        }
-
-        const res = await fetch(query, { method: "GET" });
+        let q = `${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}`;
+        if (!isInitial && latestCommentId) q += `&since=${encodeURIComponent(latestCommentId)}`;
+        const res = await fetch(q);
         const data = await res.json();
-        if (data && Array.isArray(data.comments)) {
-          renderComments(data.comments, isInitial);
-        } else {
-          renderComments([], isInitial);
-        }
-      } catch (e) {
-        if (isInitial) renderComments([], isInitial);
-      }
+        if (data && Array.isArray(data.comments)) renderComments(data.comments, isInitial);
+      } catch (e) {}
     }
 
-    function startCooldown() {
-      let timeLeft = 3;
-      btnSend.disabled = true;
-      btnSend.textContent = `${timeLeft}s`;
-
-      cooldownTimer = setInterval(() => {
-        timeLeft--;
-        if (timeLeft <= 0) {
-          clearInterval(cooldownTimer);
-          btnSend.disabled = false;
-          btnSend.textContent = "发送";
-        } else {
-          btnSend.textContent = `${timeLeft}s`;
-        }
-      }, 1000);
-    }
-
-    chatForm.addEventListener("submit", async (e) => {
+    chatForm?.addEventListener("submit", async (e) => {
       e.preventDefault();
       requireAuth(async () => {
-        if (btnSend.disabled) return;
-
-        const text = textInput.value.trim();
+        if (btnSend && btnSend.disabled) return;
+        const text = textInput ? textInput.value.trim() : "";
         if (!text) return;
-        if (text.length > 60) {
-          alert("弹幕字数不能超过 60 个字符~");
-          return;
-        }
-
         const name = getUserFixedNickname();
-        const myAvatar = getUserAvatar();
-
-        textInput.value = "";
-        startCooldown();
-
-        const localId = "loc_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
-        const localMsg = {
-          id: localId,
-          name: name,
-          text: text,
-          time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-          avatar: myAvatar,
-          isLocal: true
-        };
-        
-        renderComments([localMsg], false);
-        shootDanmaku(`${name}: ${text}`, true);
-        checkEasterEgg(text);
+        if (textInput) textInput.value = "";
 
         try {
           const res = await fetch(`${API_ENDPOINT}/api/comments`, {
@@ -2627,325 +2785,13 @@
             body: JSON.stringify({ roomId: String(currentRoomId), name, text })
           });
           const json = await res.json();
-          
-          if (!res.ok || json.code !== 200) {
-            const el = document.getElementById(`msg_${localId}`);
-            if (el) el.remove();
-            alert(json.msg || "发送失败，请稍后再试~");
-            return;
+          if (json.code === 200) {
+            renderComments([{ id: json.data.id, name, text, time: json.data.time }], false);
           }
-
-          if (json && json.data) {
-            seenCommentIds.add(json.data.id);
-            latestCommentId = json.data.id;
-          }
-        } catch (err) {
-          const el = document.getElementById(`msg_${localId}`);
-          if (el) el.remove();
-          alert("网络连接异常，弹幕发送失败");
-        }
+        } catch (err) {}
       });
     });
 
-    // 核心：全网共享倒计时控制器（防止刷新跳过）
-    const btnFeedPet = document.getElementById("btnFeedPet");
-
-    function startBtnCooldown(seconds) {
-      if (activeCooldownInterval) clearInterval(activeCooldownInterval);
-      
-      let remain = parseInt(seconds, 10);
-      if (remain <= 0) {
-        btnFeedPet.disabled = false;
-        btnFeedPet.textContent = "🍗 立即投喂";
-        return;
-      }
-
-      btnFeedPet.disabled = true;
-      btnFeedPet.textContent = `全网冷却中 (${remain}s)`;
-
-      activeCooldownInterval = setInterval(() => {
-        remain--;
-        if (remain <= 0) {
-          clearInterval(activeCooldownInterval);
-          activeCooldownInterval = null;
-          btnFeedPet.disabled = false;
-          btnFeedPet.textContent = "🍗 立即投喂";
-        } else {
-          btnFeedPet.textContent = `全网冷却中 (${remain}s)`;
-        }
-      }, 1000);
-    }
-
-    async function syncRoomCooldownStatus(roomId, imei) {
-      try {
-        const queryImei = imei || activeDeviceImei || "";
-        const res = await fetch(`${API_ENDPOINT}/api/feeder/status?room=${encodeURIComponent(roomId)}&imei=${encodeURIComponent(queryImei)}`);
-        const json = await res.json();
-        if (json && json.code === 200) {
-          if (json.inCooldown && json.remainingSec > 0) {
-            startBtnCooldown(json.remainingSec);
-          } else {
-            if (activeCooldownInterval) clearInterval(activeCooldownInterval);
-            btnFeedPet.disabled = false;
-            btnFeedPet.textContent = "🍗 立即投喂";
-          }
-        }
-      } catch (e) {}
-    }
-
-    function playStream(roomIndex) {
-      flushRoomDuration();
-
-      const room = roomList[roomIndex];
-      if (!room) return;
-
-      // 锁定当前全局机位变量（彻底防错位）
-      currentRoom = room;
-      currentRoomId = String(room.id || (roomIndex + 1));
-      currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
-      currentRoomTitle.textContent = currentRoomName;
-      activeDeviceImei = String(room.imei || "").trim();
-
-      // 核心：每次选台或刷新初始化，立即向后端拉取全网剩余冷却时间
-      syncRoomCooldownStatus(currentRoomId, activeDeviceImei);
-
-      const allButtons = roomButtonList.querySelectorAll(".room-btn");
-      allButtons.forEach((btn, idx) => {
-        btn.classList.toggle("active", idx === roomIndex);
-      });
-
-      const allDrawerItems = drawerRoomList ? drawerRoomList.querySelectorAll(".drawer-room-item") : [];
-      allDrawerItems.forEach((item, idx) => {
-        item.classList.toggle("active", idx === roomIndex);
-      });
-
-      seenCommentIds.clear();
-      latestCommentId = "";
-      chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>';
-      
-      fetchComments(true);
-      startAtmosphereBot();
-
-      if (pollTimer) clearInterval(pollTimer);
-      pollTimer = setInterval(() => {
-        if (document.visibilityState === "visible") {
-          fetchComments(false);
-        }
-      }, 8000);
-
-      playerEmpty.style.display = "grid";
-      emptyTitle.textContent = `正在连接 ${currentRoomName}...`;
-
-      if (ezPlayer) {
-        try {
-          ezPlayer.stop();
-          ezPlayer.destroy();
-        } catch(e) {}
-        ezPlayer = null;
-      }
-
-      if (hls) {
-        hls.stopLoad();
-        hls.detachMedia();
-        hls.destroy();
-        hls = null;
-      }
-
-      video.pause();
-      video.src = "";
-      video.load();
-
-      const ezBox = document.getElementById("ezuikitPlayer");
-      ezBox.innerHTML = "";
-
-      const rawSerial = (room.deviceSerial || "").trim();
-      let ezUrl = room.ezopenUrl || "";
-      const hlsUrl = room.hlsUrl || room.url || "";
-
-      if (!ezUrl && rawSerial) {
-        if (rawSerial.includes(":")) {
-          const [parentSerial, gbChannel] = rawSerial.split(":");
-          ezUrl = `ezopen://open.ys7.com/${parentSerial}/${gbChannel}.live`;
-        } else {
-          ezUrl = `ezopen://open.ys7.com/${rawSerial}/${room.channelNo || 1}.live`;
-        }
-      }
-      
-      if (window.EZUIKit && ezUrl && ezAccessToken) {
-        try {
-          ezBox.style.display = "block";
-          video.style.display = "none";
-
-          ezPlayer = new EZUIKit.EZUIPlayer({
-            id: "ezuikitPlayer",
-            autoplay: true,
-            url: ezUrl,
-            accessToken: ezAccessToken,
-            decoderPath: "https://open.ys7.com/sdk/js/2.0",
-            width: ezBox.clientWidth || 800,
-            height: ezBox.clientHeight || 450,
-            splitBasis: 1,
-            audio: 0,
-            handleSuccess: () => {
-              playerEmpty.style.display = "none";
-            },
-            handleError: (err) => {
-              console.warn("EZUIKit 播放提示:", err);
-              emptyTitle.textContent = `${currentRoomName} 画面加载中`;
-              emptyCopy.textContent = "正在调用软解内核，请稍候...";
-            }
-          });
-          return;
-        } catch(e) {
-          console.warn("EZUIPlayer 初始化异常:", e);
-        }
-      }
-
-      fallbackHlsPlay(hlsUrl);
-    }
-
-    function fallbackHlsPlay(hlsUrl) {
-      const ezBox = document.getElementById("ezuikitPlayer");
-      ezBox.style.display = "none";
-      video.style.display = "block";
-
-      if (!hlsUrl) {
-        emptyTitle.textContent = `${currentRoomName} 待机中`;
-        emptyCopy.textContent = "暂无可用视频流，请切换其他机位";
-        return;
-      }
-
-      if (window.Hls && window.Hls.isSupported()) {
-        hls = new window.Hls({
-          enableWorker: true,
-          lowLatencyMode: true,
-          backBufferLength: 0,
-          maxBufferLength: 3,
-          maxMaxBufferLength: 6,
-          liveSyncDurationCount: 1,
-          liveMaxLatencyDurationCount: 2.5,
-          maxLiveSyncPlaybackRate: 1.15,
-          liveDurationInfinity: true,
-          manifestLoadingTimeOut: 10000,
-          fragLoadingTimeOut: 15000
-        });
-
-        hls.loadSource(hlsUrl);
-        hls.attachMedia(video);
-
-        hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
-          video.muted = true;
-          video.play().catch(() => {});
-        });
-
-        hls.on(window.Hls.Events.ERROR, (_event, data) => {
-          if (data && data.fatal) {
-            switch (data.type) {
-              case window.Hls.ErrorTypes.NETWORK_ERROR:
-                hls.startLoad();
-                break;
-              case window.Hls.ErrorTypes.MEDIA_ERROR:
-                hls.recoverMediaError();
-                break;
-              default:
-                break;
-            }
-          }
-        });
-      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = hlsUrl;
-        video.play().catch(() => {});
-      }
-    }
-
-    async function initPage() {
-      try {
-        const response = await fetch(`${API_ENDPOINT}/api/rooms`);
-        const data = await response.json();
-        let rawRooms = data.rooms || [];
-
-        if (rawRooms.length === 0) {
-          emptyTitle.textContent = "暂无在线直播间";
-          emptyCopy.textContent = "请稍后再试";
-          return;
-        }
-
-        ezAccessToken = data.accessToken || "";
-        roomList = rawRooms;
-
-        document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
-        mobileRoomBadge.textContent = `(${roomList.length}台) ▾`;
-        drawerTotalCount.textContent = `(共${roomList.length}个机位)`;
-
-        roomButtonList.innerHTML = "";
-        roomList.forEach((room, idx) => {
-          const btn = document.createElement("button");
-          btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
-          btn.innerHTML = `
-            <span>${String(room.name || `直播间 ${idx + 1}`)}</span>
-            <span class="status-indicator"><span class="pulse-dot"></span> LIVE</span>
-          `;
-          btn.addEventListener("click", () => {
-            playStream(idx);
-          });
-          roomButtonList.appendChild(btn);
-        });
-
-        drawerRoomList.innerHTML = "";
-        roomList.forEach((room, idx) => {
-          const item = document.createElement("div");
-          item.className = `drawer-room-item ${idx === 0 ? 'active' : ''}`;
-          item.innerHTML = `
-            <div class="drawer-room-left">
-              <span class="drawer-room-idx">${idx + 1}</span>
-              <span>${String(room.name || `直播间 ${idx + 1}`)}</span>
-            </div>
-            <span class="status-indicator" style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--accent-green); font-weight: 700;">
-              <span class="pulse-dot"></span> LIVE
-            </span>
-          `;
-          item.addEventListener("click", () => {
-            roomDrawerModal.classList.remove("show");
-            playStream(idx);
-          });
-          drawerRoomList.appendChild(item);
-        });
-
-        playStream(0);
-      } catch (err) {
-        emptyTitle.textContent = "服务连接异常";
-        emptyCopy.textContent = "请检查网络或稍后刷新重试";
-      }
-    }
-
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        flushRoomDuration();
-        if (pollTimer) {
-          clearInterval(pollTimer);
-          pollTimer = null;
-        }
-      } else {
-        fetchComments(false);
-        if (!pollTimer) {
-          pollTimer = setInterval(() => {
-            if (document.visibilityState === "visible") fetchComments(false);
-          }, 8000);
-        }
-
-        if (hls && hls.liveSyncPosition) {
-          const latency = hls.liveSyncPosition - video.currentTime;
-          if (latency > 2) {
-            video.currentTime = hls.liveSyncPosition;
-          }
-          video.play().catch(() => {});
-        } else if (video.paused && !ezPlayer) {
-          video.play().catch(() => {});
-        }
-      }
-    });
-
-    // 远程投喂：带上用户信息写入排行榜流水
     if (btnFeedPet) {
       btnFeedPet.addEventListener("click", () => {
         requireAuth(async () => {
@@ -2986,12 +2832,10 @@
               triggerDanmakuEasterEgg("food");
               shootDanmaku(`🎉 感谢猫友【${userNick}】为现场毛孩子投喂了猫粮！`, true);
 
-              // 启动本地全网倒计时
               const cdTime = json.cooldownSec || activeRoom.cooldownSec || 30;
               startBtnCooldown(cdTime);
 
-              // 如果已在排行榜页面，投喂成功后自动重拉榜单数据
-              if (viewRankings.classList.contains("active")) {
+              if (viewRankings && viewRankings.classList.contains("active")) {
                 resetAndLoadRankings();
               }
             } else if (json.code === 429) {
@@ -3010,6 +2854,54 @@
           }
         });
       });
+    }
+
+    async function initPage() {
+      try {
+        const response = await fetch(`${API_ENDPOINT}/api/rooms`);
+        const data = await response.json();
+        roomList = data.rooms || [];
+
+        if (roomList.length === 0) {
+          if (emptyTitle) emptyTitle.textContent = "暂无在线直播间";
+          return;
+        }
+
+        ezAccessToken = data.accessToken || "";
+        const onlineEl = document.getElementById("onlineCount");
+        if (onlineEl) onlineEl.textContent = `${roomList.length} 直播间在线`;
+
+        if (roomButtonList) roomButtonList.innerHTML = "";
+        if (drawerRoomList) drawerRoomList.innerHTML = "";
+
+        roomList.forEach((room, idx) => {
+          const btn = document.createElement("button");
+          btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
+          btn.innerHTML = `
+            <span>${String(room.name || `直播间 ${idx + 1}`)}</span>
+            <span class="status-indicator"><span class="pulse-dot"></span> LIVE</span>
+          `;
+          btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            playStream(idx);
+          });
+          roomButtonList?.appendChild(btn);
+
+          const item = document.createElement("div");
+          item.className = `drawer-room-item ${idx === 0 ? 'active' : ''}`;
+          item.innerHTML = `<span>${String(room.name || `直播间 ${idx + 1}`)}</span><span style="color: var(--accent-green); font-size: 11px;">LIVE</span>`;
+          item.addEventListener("click", (e) => {
+            e.preventDefault();
+            roomDrawerModal?.classList.remove("show");
+            playStream(idx);
+          });
+          drawerRoomList?.appendChild(item);
+        });
+
+        playStream(0);
+      } catch (err) {
+        if (emptyTitle) emptyTitle.textContent = "服务连接异常";
+      }
     }
 
     initPage();
