@@ -24,21 +24,22 @@
       --accent-green: #10b981;
       --accent-green-hover: #059669;
       --gold: #f59e0b;
-      --purple: #a855f7;
       --radius: 16px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
+    html, body {
+      width: 100%;
+      min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
-      min-height: 100vh;
       background-image: 
         radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12), transparent 40%),
         radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.08), transparent 30%);
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     .container {
@@ -81,7 +82,7 @@
       letter-spacing: -0.5px;
     }
 
-    /* 顶部主导航 Tab：实时直播 | 投喂榜单 | 关于我们 */
+    /* 顶部导航 Tab */
     .nav-tabs-bar {
       display: flex;
       gap: 6px;
@@ -205,7 +206,7 @@
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
     /* 视图切换容器 */
-    .view-container { display: none; }
+    .view-container { display: none; width: 100%; }
     .view-container.active { display: block; animation: fadeIn 0.3s ease; }
 
     .hero-title {
@@ -320,35 +321,10 @@
       color: #34d399; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.55);
       border-radius: 99px; padding: 3px 12px; font-weight: 700; box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
     }
-    .danmaku-item.tier-gold {
-      color: #fbbf24; background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
-      border: 1px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
-    }
 
     @keyframes danmaku-move {
       from { transform: translateX(100vw); }
       to { transform: translateX(-100%); }
-    }
-
-    .gongde-pop {
-      position: absolute; font-size: 15px; font-weight: 800; color: #fbbf24;
-      text-shadow: 0 0 8px rgba(245, 158, 11, 0.6), 0 2px 4px rgba(0,0,0,0.8);
-      pointer-events: none; z-index: 13; white-space: nowrap; animation: float-gongde 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    }
-    @keyframes float-gongde {
-      0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
-      20% { transform: translate(-50%, -70px) scale(1.15); opacity: 1; }
-      100% { transform: translate(-50%, -150px) scale(1); opacity: 0; }
-    }
-
-    .tap-heart {
-      position: absolute; font-size: 32px; pointer-events: none; z-index: 12;
-      animation: float-up-fade 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
-    }
-    @keyframes float-up-fade {
-      0% { transform: translate(-50%, -50%) scale(0.6) rotate(0deg); opacity: 0; }
-      20% { transform: translate(-50%, -50%) scale(1.3) rotate(-8deg); opacity: 1; }
-      100% { transform: translate(-50%, -130px) scale(1) rotate(12deg); opacity: 0; }
     }
 
     .controls-overlay {
@@ -361,7 +337,6 @@
     .player-ctrl-btn:hover:not(:disabled) { background: rgba(0, 0, 0, 0.85); border-color: rgba(255, 255, 255, 0.3); }
     .player-ctrl-btn:disabled { opacity: 0.65; cursor: not-allowed; filter: grayscale(0.5); }
     
-    /* 塔罗专属紫粉渐变按钮 */
     .player-ctrl-btn.btn-tarot {
       background: linear-gradient(135deg, rgba(168, 85, 247, 0.85), rgba(126, 34, 206, 0.9));
       border-color: rgba(168, 85, 247, 0.6);
@@ -398,6 +373,13 @@
       padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     .chat-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+    .honor-badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 99px;
+      font-size: 12px; font-weight: 700; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-sub); cursor: pointer; transition: all 0.2s ease; user-select: none;
+    }
+    .honor-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
 
     .chat-messages {
       height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 6px;
@@ -550,239 +532,131 @@
       max-height: 200px; padding: 14px 20px 18px; border-top-color: rgba(255, 255, 255, 0.04);
     }
 
-    /* =========================================================================
-       小猫塔罗牌专属动效与样式（支持 PC + 移动端自适应响应）
-       ========================================================================= */
-    .tarot-modal-box {
-      max-width: 500px;
-      width: 94vw;
-      background: radial-gradient(circle at 50% 10%, #1e1b4b, #090a0f 85%);
-      border: 1px solid rgba(168, 85, 247, 0.4);
-      border-radius: 20px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.2);
-      padding: 24px 20px 28px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      position: relative;
-    }
-
-    .tarot-header-subtitle {
-      font-size: 11px;
-      font-weight: 800;
-      color: #c084fc;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-    }
-
-    .tarot-header-title {
-      font-size: 22px;
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .tarot-header-tip {
-      font-size: 13px;
-      color: var(--text-sub);
-      margin-bottom: 20px;
-    }
-
-    /* 三张卡牌选牌容器 */
-    .tarot-cards-area {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-      min-height: 220px;
-      margin-bottom: 16px;
-      perspective: 1000px;
-    }
-
-    .tarot-card {
-      width: 100px;
-      height: 160px;
-      border-radius: 12px;
-      cursor: pointer;
-      position: relative;
-      transform-style: preserve-3d;
-      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, box-shadow 0.3s;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    .tarot-card:hover {
-      transform: translateY(-8px) scale(1.04);
-      box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4);
-    }
-
-    /* 卡牌背面（黑金猫爪暗纹） */
-    .tarot-card-face {
-      position: absolute;
+    /* ================= 核心修复：弹窗体系（确保默认完全隐藏，绝不遮挡主页） ================= */
+    .app-modal {
+      position: fixed;
       inset: 0;
-      border-radius: 12px;
-      backface-visibility: hidden;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-    }
-
-    .tarot-card-back {
-      background: linear-gradient(135deg, #1e1b4b, #0f172a);
-      border: 2px solid #a855f7;
-      box-shadow: inset 0 0 14px rgba(168, 85, 247, 0.3);
-    }
-
-    .tarot-card-back::before {
-      content: '🐾';
-      font-size: 34px;
-      filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8));
-    }
-
-    .tarot-card-back-pattern {
-      font-size: 10px;
-      color: #c084fc;
-      font-weight: 700;
-      letter-spacing: 1px;
-      margin-top: 6px;
-    }
-
-    /* 卡牌正面（翻转后呈现） */
-    .tarot-card-front {
-      background: linear-gradient(180deg, #18181b, #090a0f);
-      border: 2px solid #fbbf24;
-      transform: rotateY(180deg);
-      box-shadow: 0 0 20px rgba(251, 191, 36, 0.35);
-      padding: 10px;
-    }
-
-    .tarot-card-front.is-reversed {
-      transform: rotateY(180deg) rotate(180deg);
-    }
-
-    .tarot-front-symbol {
-      font-size: 40px;
-      margin-bottom: 6px;
-    }
-
-    .tarot-front-name {
-      font-size: 12px;
-      font-weight: 800;
-      color: #fbbf24;
-    }
-
-    /* 翻牌选中状态动画 */
-    .tarot-card.flipped {
-      transform: scale(1.15) rotateY(180deg);
-      cursor: default;
-    }
-
-    .tarot-card.flipped.is-reversed {
-      transform: scale(1.15) rotateY(180deg) rotate(180deg);
-    }
-
-    .tarot-card.fade-out {
-      opacity: 0.15;
-      transform: scale(0.85);
+      z-index: 2500;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
       pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
     }
 
-    /* 占卜详细解读面板 */
-    .tarot-result-panel {
-      display: none;
+    .app-modal.show {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .modal-card-box {
+      max-width: 440px;
+      width: 92vw;
+      background: #161b22;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes pop-in { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+
+    /* 段位弹窗专属美化样式（恢复整齐横向排版） */
+    .honor-modal-header {
+      padding: 24px 20px 16px; background: linear-gradient(180deg, rgba(16, 185, 129, 0.12), transparent);
+      text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .honor-current-title { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .honor-stay-stat { font-size: 13px; color: var(--text-sub); }
+    .honor-progress-wrapper { margin: 14px auto 4px; max-width: 280px; }
+    .honor-progress-bar { height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+    .honor-progress-fill { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 99px; transition: width 0.3s ease; }
+    .crown-stamp-box {
+      margin: 10px 20px 0; padding: 10px 14px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 10px; display: flex; align-items: center; justify-content: space-between; font-size: 12px;
+    }
+    .honor-list {
+      padding: 16px 20px;
+      display: flex;
       flex-direction: column;
-      align-items: center;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(168, 85, 247, 0.25);
-      border-radius: 14px;
-      padding: 16px;
-      margin-top: 4px;
-      animation: fadeIn 0.4s ease;
-    }
-
-    .tarot-result-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .tarot-result-badge.upright {
-      background: rgba(16, 185, 129, 0.2);
-      border: 1px solid rgba(16, 185, 129, 0.5);
-      color: #34d399;
-    }
-
-    .tarot-result-badge.reversed {
-      background: rgba(239, 68, 68, 0.2);
-      border: 1px solid rgba(239, 68, 68, 0.5);
-      color: #f87171;
-    }
-
-    .tarot-wisdom-quote {
-      font-size: 14px;
-      line-height: 1.6;
-      color: #fff;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .tarot-lucky-row {
-      display: flex;
-      justify-content: space-around;
-      width: 100%;
-      font-size: 12px;
-      color: var(--text-sub);
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .tarot-action-bar {
-      display: flex;
       gap: 10px;
-      margin-top: 18px;
-      width: 100%;
+      max-height: 320px;
+      overflow-y: auto;
     }
-
-    .btn-tarot-action {
-      flex: 1;
-      padding: 10px 14px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      border: 1px solid transparent;
-      transition: all 0.2s;
-      text-align: center;
-      text-decoration: none;
-      display: inline-flex;
+    .honor-item {
+      display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      transition: all 0.2s;
     }
+    .honor-item.unlocked { background: rgba(16, 185, 129, 0.06); border-color: rgba(16, 185, 129, 0.25); }
+    .honor-item-left { display: flex; align-items: center; gap: 10px; }
+    .honor-item-icon { font-size: 22px; }
+    .honor-item-name { font-size: 14px; font-weight: 700; color: #fff; }
+    .honor-item-req { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+    .honor-item-status { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: rgba(255, 255, 255, 0.06); color: var(--text-sub); }
+    .honor-item.unlocked .honor-item-status { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 
-    .btn-tarot-action.primary {
-      background: linear-gradient(135deg, #a855f7, #7e22ce);
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);
+    /* 塔罗弹窗样式 */
+    .tarot-modal-box {
+      max-width: 500px; width: 94vw; background: radial-gradient(circle at 50% 10%, #1e1b4b, #090a0f 85%);
+      border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(168, 85, 247, 0.2);
+      padding: 24px 20px 28px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative;
     }
+    .tarot-header-subtitle { font-size: 11px; font-weight: 800; color: #c084fc; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+    .tarot-header-title { font-size: 22px; font-weight: 900; color: #fff; margin-bottom: 4px; }
+    .tarot-header-tip { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; }
 
-    .btn-tarot-action.secondary {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: rgba(255, 255, 255, 0.2);
-      color: #fff;
+    .tarot-cards-area { display: flex; justify-content: center; align-items: center; gap: 12px; width: 100%; min-height: 220px; margin-bottom: 16px; perspective: 1000px; }
+    .tarot-card {
+      width: 100px; height: 160px; border-radius: 12px; cursor: pointer; position: relative;
+      transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, box-shadow 0.3s;
+      user-select: none; -webkit-user-select: none;
     }
+    .tarot-card:hover { transform: translateY(-8px) scale(1.04); box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4); }
+    .tarot-card-face { position: absolute; inset: 0; border-radius: 12px; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .tarot-card-back { background: linear-gradient(135deg, #1e1b4b, #0f172a); border: 2px solid #a855f7; box-shadow: inset 0 0 14px rgba(168, 85, 247, 0.3); }
+    .tarot-card-back::before { content: '🐾'; font-size: 34px; filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.8)); }
+    .tarot-card-back-pattern { font-size: 10px; color: #c084fc; font-weight: 700; letter-spacing: 1px; margin-top: 6px; }
+    .tarot-card-front { background: linear-gradient(180deg, #18181b, #090a0f); border: 2px solid #fbbf24; transform: rotateY(180deg); box-shadow: 0 0 20px rgba(251, 191, 36, 0.35); padding: 10px; }
+    .tarot-card-front.is-reversed { transform: rotateY(180deg) rotate(180deg); }
+    .tarot-front-symbol { font-size: 40px; margin-bottom: 6px; }
+    .tarot-front-name { font-size: 12px; font-weight: 800; color: #fbbf24; }
+    .tarot-card.flipped { transform: scale(1.15) rotateY(180deg); cursor: default; }
+    .tarot-card.flipped.is-reversed { transform: scale(1.15) rotateY(180deg) rotate(180deg); }
+    .tarot-card.fade-out { opacity: 0.15; transform: scale(0.85); pointer-events: none; }
 
-    /* 移动端媒体查询适配 */
+    .tarot-result-panel {
+      display: none; flex-direction: column; align-items: center; width: 100%; background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 14px; padding: 16px; margin-top: 4px; animation: fadeIn 0.4s ease;
+    }
+    .tarot-result-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 99px; font-size: 13px; font-weight: 800; margin-bottom: 8px; }
+    .tarot-result-badge.upright { background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.5); color: #34d399; }
+    .tarot-result-badge.reversed { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #f87171; }
+    .tarot-wisdom-quote { font-size: 14px; line-height: 1.6; color: #fff; font-weight: 600; margin-bottom: 10px; }
+    .tarot-lucky-row { display: flex; justify-content: space-around; width: 100%; font-size: 12px; color: var(--text-sub); padding-top: 8px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+
+    .tarot-action-bar { display: flex; gap: 10px; margin-top: 18px; width: 100%; }
+    .btn-tarot-action {
+      flex: 1; padding: 10px 14px; border-radius: 99px; font-size: 13px; font-weight: 700; cursor: pointer;
+      border: 1px solid transparent; transition: all 0.2s; text-align: center; text-decoration: none;
+      display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+    }
+    .btn-tarot-action.primary { background: linear-gradient(135deg, #a855f7, #7e22ce); color: #fff; box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4); }
+    .btn-tarot-action.secondary { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); color: #fff; }
+
     @media (max-width: 480px) {
       .tarot-modal-box { padding: 18px 14px 22px; }
       .tarot-cards-area { gap: 8px; min-height: 180px; }
@@ -792,19 +666,7 @@
       .tarot-action-bar { flex-direction: column; gap: 8px; }
     }
 
-    /* 原有弹窗体系保持完全一致 */
-    .app-modal {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
-      display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2500;
-      padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
-    }
-    .app-modal.show { opacity: 1; pointer-events: auto; }
-    .modal-card-box {
-      max-width: 440px; width: 92vw; background: #161b22; border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); overflow: hidden;
-      animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    @keyframes pop-in { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    /* 其他辅助弹窗组件 */
     .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
     .btn-modal-action {
       background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff;
@@ -815,12 +677,46 @@
     .btn-modal-action.primary { background: #10b981; border-color: #10b981; color: #090a0f; }
     .btn-modal-action.fortune-color { background: #f59e0b; border-color: #f59e0b; color: #090a0f; }
 
+    #confettiCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 2000; }
+    .levelup-card { text-align: center; padding: 30px 24px; background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.18), #161b22 75%); }
+    .levelup-icon-glow { font-size: 56px; margin-bottom: 12px; animation: bounce-scale 1s infinite alternate ease-in-out; display: inline-block; }
+    @keyframes bounce-scale { from { transform: scale(1) translateY(0); } to { transform: scale(1.12) translateY(-6px); } }
+    .levelup-title { font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px; }
+    .levelup-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; }
+
+    .stamp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 16px 20px; background: rgba(0,0,0,0.2); }
+    .stamp-card {
+      background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px;
+      padding: 12px 6px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.3s;
+    }
+    .stamp-card.stamped { border: 1px solid rgba(245, 158, 11, 0.5); background: rgba(245, 158, 11, 0.08); box-shadow: inset 0 0 12px rgba(245, 158, 11, 0.15); }
+    .stamp-icon { font-size: 26px; filter: grayscale(1) opacity(0.3); transition: all 0.3s; }
+    .stamp-card.stamped .stamp-icon { filter: grayscale(0) opacity(1); transform: scale(1.1) rotate(-8deg); }
+    .stamp-text { font-size: 11px; color: var(--text-sub); font-weight: 600; }
+    .stamp-card.stamped .stamp-text { color: #fbbf24; }
+
+    .calendar-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 12px 20px 16px; }
+    .cal-day-cell {
+      aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      border-radius: 8px; font-size: 11px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: var(--text-sub);
+    }
+    .cal-day-cell.active-day { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.5); color: #34d399; font-weight: 700; }
+    .cal-day-cell.today-cell { border-color: #fbbf24; box-shadow: 0 0 6px rgba(251, 191, 36, 0.4); }
+
+    #danmakuFxCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 1500; }
+    .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 20px; }
+    .avatar-option-btn {
+      aspect-ratio: 1; border-radius: 14px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border);
+      font-size: 28px; display: grid; place-items: center; cursor: pointer; transition: all 0.2s;
+    }
+    .avatar-option-btn:hover { background: rgba(16, 185, 129, 0.15); border-color: var(--accent-green); transform: scale(1.1); }
+    .avatar-option-btn.selected { background: rgba(16, 185, 129, 0.25); border-color: var(--accent-green); box-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
+
     .footer-box {
       background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius);
       padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(12px);
       margin-top: 24px; margin-bottom: 16px;
     }
-
     footer { margin-top: 32px; text-align: center; font-size: 12px; color: var(--text-sub); }
     footer a { color: var(--text-sub); text-decoration: none; }
 
@@ -846,6 +742,14 @@
       color: #f3f4f6; font-size: 14px; font-weight: 600; cursor: pointer;
     }
     .drawer-room-item.active { background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(5, 150, 105, 0.25)); border-color: rgba(16, 185, 129, 0.6); color: #fff; }
+
+    @media (max-width: 860px) {
+      .container { padding: 16px 12px 32px; }
+      .hero-title { font-size: 20px; }
+      .live-layout { display: block; margin-bottom: 16px; }
+      .room-sidebar { display: none !important; }
+      .btn-mobile-choose-room { display: inline-flex; }
+    }
   </style>
 </head>
 <body>
@@ -1110,7 +1014,6 @@
       <div class="tarot-header-title">🔮 喵星塔罗启示录</div>
       <div class="tarot-header-tip" id="tarotHeaderTip">在心中默念你今天关心的问题，轻触选定一张牌</div>
 
-      <!-- 3张卡牌容器 -->
       <div class="tarot-cards-area" id="tarotCardsArea">
         <div class="tarot-card" data-idx="0">
           <div class="tarot-card-face tarot-card-back">
@@ -1143,7 +1046,6 @@
         </div>
       </div>
 
-      <!-- 解读面板 -->
       <div class="tarot-result-panel" id="tarotResultPanel">
         <div class="tarot-result-badge upright" id="tarotResultBadge">正位 · 盛放</div>
         <div class="tarot-wisdom-quote" id="tarotWisdomQuote">“好奇心不会害死猫，勇敢伸出爪子吧！”</div>
@@ -1482,7 +1384,6 @@
       if (e.target === tarotModal) tarotModal.classList.remove("show");
     });
 
-    // 抽牌核心点击事件
     tarotCardsArea.querySelectorAll(".tarot-card").forEach(card => {
       card.addEventListener("click", () => {
         if (tarotHasDrawn) return;
@@ -1490,11 +1391,10 @@
 
         const chosenIdx = parseInt(card.dataset.idx, 10);
         const randomCard = TAROT_DECK[Math.floor(Math.random() * TAROT_DECK.length)];
-        const isReversed = Math.random() < 0.35; // 35% 逆位概率
+        const isReversed = Math.random() < 0.35;
 
         currentTarotResult = { ...randomCard, isReversed };
 
-        // 渲染牌面
         const front = card.querySelector(".tarot-card-front");
         const symbolEl = card.querySelector(".tarot-front-symbol");
         const nameEl = card.querySelector(".tarot-front-name");
@@ -1502,19 +1402,16 @@
         symbolEl.textContent = randomCard.symbol;
         nameEl.textContent = isReversed ? `${randomCard.name} (逆位)` : randomCard.name;
 
-        // 翻牌动效
         card.classList.add("flipped");
         if (isReversed) {
           front.classList.add("is-reversed");
           card.classList.add("is-reversed");
         }
 
-        // 淡化其余牌
         tarotCardsArea.querySelectorAll(".tarot-card").forEach(other => {
           if (other !== card) other.classList.add("fade-out");
         });
 
-        // 呈现占卜解答
         setTimeout(() => {
           tarotHeaderTip.textContent = "✦ 喵星神启已降临 ✦";
           tarotResultBadge.className = `tarot-result-badge ${isReversed ? 'reversed' : 'upright'}`;
@@ -1530,7 +1427,6 @@
       });
     });
 
-    // 生成复古塔罗分享海报 Canvas
     btnSaveTarotPoster.addEventListener("click", () => {
       if (!currentTarotResult) return;
       const res = currentTarotResult;
@@ -1539,7 +1435,6 @@
       canvas.width = 600;
       canvas.height = 840;
 
-      // 背景与暗夜渐变
       const grad = ctx.createLinearGradient(0, 0, 600, 840);
       grad.addColorStop(0, "#1e1b4b");
       grad.addColorStop(0.5, "#0f172a");
@@ -1547,7 +1442,6 @@
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, 600, 840);
 
-      // 烫金边框装饰
       ctx.strokeStyle = "#a855f7";
       ctx.lineWidth = 4;
       ctx.strokeRect(20, 20, 560, 800);
@@ -1558,13 +1452,11 @@
       ctx.strokeRect(30, 30, 540, 780);
       ctx.setLineDash([]);
 
-      // 标题与星芒
       ctx.fillStyle = "#c084fc";
       ctx.font = "bold 13px sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("✦ MEOW TAROT DIVINATION · 喵星塔罗 ✦", 300, 80);
 
-      // 牌面大符号
       ctx.save();
       ctx.translate(300, 210);
       if (res.isReversed) ctx.rotate(Math.PI);
@@ -1572,12 +1464,10 @@
       ctx.fillText(res.symbol, 0, 25);
       ctx.restore();
 
-      // 牌名
       ctx.fillStyle = "#fbbf24";
       ctx.font = "bold 30px -apple-system, sans-serif";
       ctx.fillText(res.name, 300, 320);
 
-      // 正逆位勋章
       ctx.fillStyle = res.isReversed ? "rgba(239, 68, 68, 0.2)" : "rgba(16, 185, 129, 0.2)";
       ctx.beginPath();
       ctx.roundRect(160, 345, 280, 36, 18);
@@ -1587,7 +1477,6 @@
       ctx.font = "bold 15px -apple-system, sans-serif";
       ctx.fillText(res.isReversed ? `【 逆 位 】` : `【 正 位 】`, 300, 368);
 
-      // 寓意与箴言卡
       ctx.fillStyle = "rgba(255, 255, 255, 0.04)";
       ctx.fillRect(50, 410, 500, 160);
 
@@ -1600,19 +1489,16 @@
       ctx.font = "italic 16px sans-serif";
       ctx.fillText(res.quote, 300, 510);
 
-      // 幸运参数
       ctx.font = "14px sans-serif";
       ctx.fillStyle = "#9ca3af";
       ctx.fillText(`🐟 幸运干粮：${res.food}    |    ✨ 宜忌：${res.wish}`, 300, 610);
 
-      // 持签官与日期机位
       const userNick = getUserFixedNickname();
       const dateStr = new Date().toLocaleDateString('zh-CN');
       ctx.font = "13px monospace";
       ctx.fillStyle = "#64748b";
       ctx.fillText(`占卜官：${userNick}   |   机位：${currentRoomName}   |   ${dateStr}`, 300, 660);
 
-      // 底部品牌
       ctx.fillStyle = "#10b981";
       ctx.font = "bold 18px sans-serif";
       ctx.fillText("毛毛星球 MeowHub · 智能养宠", 300, 735);
@@ -1629,7 +1515,7 @@
     });
 
     // =========================================================================
-    // 排行榜前端核心逻辑（并列名次 + 20条滚动分页懒加载 + 底部常驻卡片）
+    // 页面核心运行逻辑
     // =========================================================================
     const rankTableBody = document.getElementById("rankTableBody");
     const rankLoadingTrigger = document.getElementById("rankLoadingTrigger");
@@ -1783,27 +1669,13 @@
       }
     });
 
-    // =========================================================================
-    // 基础业务（打卡、周段位、抓拍与播放逻辑）
-    // =========================================================================
-    let currentRoomId = "1";
-    let currentRoomName = "苏州猫岛";
-    let ezPlayer = null;
-    let ezAccessToken = "";
-    let hls = null;
-
-    function trackEvent(type, extra = {}) {
-      try {
-        const payload = JSON.stringify({ type, ...extra });
-        fetch(`${API_ENDPOINT}/api/track`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: payload,
-          keepalive: true
-        }).catch(() => {});
-      } catch (e) {}
-    }
-    trackEvent("pv");
+    // 播放器、弹幕与房间调度
+    let roomList = [];
+    let danmakuEnabled = true;
+    let seenCommentIds = new Set();
+    let latestCommentId = "";
+    let pollTimer = null;
+    let cooldownTimer = null;
 
     const video = document.getElementById("mainVideo");
     const videoWrapper = document.getElementById("videoWrapper");
@@ -1835,982 +1707,6 @@
     closeDrawerBtn.addEventListener("click", () => roomDrawerModal.classList.remove("show"));
     roomDrawerModal.addEventListener("click", (e) => {
       if (e.target === roomDrawerModal) roomDrawerModal.classList.remove("show");
-    });
-
-    let activePlayingSeconds = 0;
-    function flushRoomDuration() {
-      if (activePlayingSeconds <= 0 || !currentRoomId) return;
-      const secToReport = activePlayingSeconds;
-      activePlayingSeconds = 0;
-      trackEvent("room_duration", { roomId: String(currentRoomId), seconds: secToReport });
-    }
-    setInterval(flushRoomDuration, 30000);
-    window.addEventListener("pagehide", flushRoomDuration);
-    window.addEventListener("beforeunload", flushRoomDuration);
-
-    const btnChooseAvatar = document.getElementById("btnChooseAvatar");
-    const avatarModal = document.getElementById("avatarModal");
-    const avatarGrid = document.getElementById("avatarGrid");
-    const closeAvatarBtn = document.getElementById("closeAvatarBtn");
-
-    const AVATAR_LIST = ["🐱", "😸", "😻", "😽", "😼", "🦁", "🐯", "🦊", "🐼", "🐨", "🐶", "🐾"];
-    function getUserAvatar() {
-      let av = localStorage.getItem("meow_user_avatar");
-      if (!av) {
-        av = AVATAR_LIST[Math.floor(Math.random() * AVATAR_LIST.length)];
-        localStorage.setItem("meow_user_avatar", av);
-      }
-      return av;
-    }
-    function setUserAvatar(av) {
-      localStorage.setItem("meow_user_avatar", av);
-      btnChooseAvatar.textContent = av;
-    }
-    btnChooseAvatar.textContent = getUserAvatar();
-
-    function renderAvatarGrid() {
-      avatarGrid.innerHTML = "";
-      const cur = getUserAvatar();
-      AVATAR_LIST.forEach(av => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = `avatar-option-btn ${av === cur ? 'selected' : ''}`;
-        btn.textContent = av;
-        btn.addEventListener("click", () => {
-          setUserAvatar(av);
-          renderAvatarGrid();
-          avatarModal.classList.remove("show");
-        });
-        avatarGrid.appendChild(btn);
-      });
-    }
-
-    btnChooseAvatar.addEventListener("click", () => {
-      requireAuth(() => {
-        renderAvatarGrid();
-        avatarModal.classList.add("show");
-      });
-    });
-    closeAvatarBtn.addEventListener("click", () => avatarModal.classList.remove("show"));
-    avatarModal.addEventListener("click", (e) => { if (e.target === avatarModal) avatarModal.classList.remove("show"); });
-
-    const btnOpenCheckin = document.getElementById("btnOpenCheckin");
-    const checkinStreakCount = document.getElementById("checkinStreakCount");
-    const checkinModal = document.getElementById("checkinModal");
-    const closeCheckinBtn = document.getElementById("closeCheckinBtn");
-    const btnDoCheckin = document.getElementById("btnDoCheckin");
-    const modalStreakDays = document.getElementById("modalStreakDays");
-    const modalTotalDays = document.getElementById("modalTotalDays");
-    const stampProgressText = document.getElementById("stampProgressText");
-    const weekCalendarGrid = document.getElementById("weekCalendarGrid");
-
-    const polaroidModal = document.getElementById("polaroidModal");
-    const polaroidImg = document.getElementById("polaroidImg");
-    const downloadPolaroidBtn = document.getElementById("downloadPolaroidBtn");
-    const closePolaroidBtn = document.getElementById("closePolaroidBtn");
-    const snapshotCanvas = document.getElementById("snapshotCanvas");
-
-    const honorModal = document.getElementById("honorModal");
-    const modalHonorTitle = document.getElementById("modalHonorTitle");
-    const modalStayTimeText = document.getElementById("modalStayTimeText");
-    const modalProgressFill = document.getElementById("modalProgressFill");
-    const modalNextTierTip = document.getElementById("modalNextTierTip");
-    const honorListContainer = document.getElementById("honorListContainer");
-    const closeHonorBtn = document.getElementById("closeHonorBtn");
-    const modalCrownCount = document.getElementById("modalCrownCount");
-    const modalSeasonLabel = document.getElementById("modalSeasonLabel");
-
-    const levelUpModal = document.getElementById("levelUpModal");
-    const levelUpIcon = document.getElementById("levelUpIcon");
-    const levelUpTitle = document.getElementById("levelUpTitle");
-    const levelUpDesc = document.getElementById("levelUpDesc");
-    const btnGenerateCert = document.getElementById("btnGenerateCert");
-    const closeLevelUpBtn = document.getElementById("closeLevelUpBtn");
-    const certCanvas = document.getElementById("certCanvas");
-    const confettiCanvas = document.getElementById("confettiCanvas");
-    const danmakuFxCanvas = document.getElementById("danmakuFxCanvas");
-
-    let roomList = [];
-    let danmakuEnabled = true;
-    let seenCommentIds = new Set();
-    let latestCommentId = "";
-    let pollTimer = null;
-    let cooldownTimer = null;
-
-    const fxCtx = danmakuFxCanvas.getContext("2d");
-    let fxParticles = [];
-    let fxAnimId = null;
-
-    function resizeFxCanvas() {
-      danmakuFxCanvas.width = window.innerWidth;
-      danmakuFxCanvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeFxCanvas);
-    resizeFxCanvas();
-
-    function triggerDanmakuEasterEgg(type) {
-      if (fxAnimId) cancelAnimationFrame(fxAnimId);
-      fxParticles = [];
-
-      const count = type === "rain" ? 70 : 35;
-      for (let i = 0; i < count; i++) {
-        let p = {
-          x: Math.random() * window.innerWidth,
-          y: type === "balloon" ? window.innerHeight + Math.random() * 200 : -50 - Math.random() * 300,
-          vx: (Math.random() - 0.5) * 2,
-          vy: 0,
-          size: 24,
-          icon: "🍗",
-          alpha: 1,
-          rot: Math.random() * 360,
-          rotSpeed: (Math.random() - 0.5) * 6
-        };
-
-        if (type === "food") {
-          const foods = ["🍗", "🥫", "🥩", "🥓", "🍲"];
-          p.icon = foods[Math.floor(Math.random() * foods.length)];
-          p.vy = Math.random() * 4 + 3;
-          p.size = Math.random() * 12 + 24;
-        } else if (type === "fish") {
-          const fishes = ["🐟", "🐠", "🐡", "✨"];
-          p.icon = fishes[Math.floor(Math.random() * fishes.length)];
-          p.x = window.innerWidth + Math.random() * 200;
-          p.y = Math.random() * window.innerHeight * 0.8;
-          p.vx = -(Math.random() * 6 + 4);
-          p.vy = Math.sin(i) * 1.5;
-          p.size = Math.random() * 10 + 26;
-        } else if (type === "balloon") {
-          const items = ["🎈", "🎉", "💐", "💖", "🌸"];
-          p.icon = items[Math.floor(Math.random() * items.length)];
-          p.vy = -(Math.random() * 3 + 2.5);
-          p.size = Math.random() * 14 + 26;
-        } else if (type === "rain") {
-          p.icon = "💧";
-          p.vy = Math.random() * 9 + 8;
-          p.vx = -1.5;
-          p.size = Math.random() * 8 + 14;
-        }
-        fxParticles.push(p);
-      }
-
-      function renderFx() {
-        fxCtx.clearRect(0, 0, danmakuFxCanvas.width, danmakuFxCanvas.height);
-        let alive = false;
-        fxParticles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.rot += p.rotSpeed;
-          let isVisible = (type === "fish") ? (p.x > -100) : (type === "balloon" ? (p.y > -100) : (p.y < window.innerHeight + 100));
-          if (isVisible) {
-            alive = true;
-            fxCtx.save();
-            fxCtx.translate(p.x, p.y);
-            fxCtx.rotate((p.rot * Math.PI) / 180);
-            fxCtx.font = `${p.size}px sans-serif`;
-            fxCtx.textAlign = "center";
-            fxCtx.textBaseline = "middle";
-            fxCtx.fillText(p.icon, 0, 0);
-            fxCtx.restore();
-          }
-        });
-        if (alive) fxAnimId = requestAnimationFrame(renderFx);
-        else fxCtx.clearRect(0, 0, danmakuFxCanvas.width, danmakuFxCanvas.height);
-      }
-      renderFx();
-    }
-
-    function checkEasterEgg(text) {
-      if (!text) return;
-      if (/开饭|加餐|干饭|猫条|罐头/.test(text)) triggerDanmakuEasterEgg("food");
-      else if (/鱼干|抓鱼|小鱼|摸鱼|鱼缸/.test(text)) triggerDanmakuEasterEgg("fish");
-      else if (/撒花|恭喜|庆祝|好棒|快乐/.test(text)) triggerDanmakuEasterEgg("balloon");
-      else if (/下雨|打雷|淅淅沥沥|雨天/.test(text)) triggerDanmakuEasterEgg("rain");
-    }
-
-    function getTodayString() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    }
-
-    function loadCheckinData() {
-      const defaultData = { lastCheckinDate: "", streakDays: 0, totalDays: 0, historyDates: [] };
-      try {
-        const raw = localStorage.getItem("meow_checkin_data");
-        return raw ? JSON.parse(raw) : defaultData;
-      } catch (e) {
-        return defaultData;
-      }
-    }
-    function saveCheckinData(data) { localStorage.setItem("meow_checkin_data", JSON.stringify(data)); }
-    let checkinData = loadCheckinData();
-
-    function updateCheckinHeaderUI() { checkinStreakCount.textContent = checkinData.streakDays || 0; }
-    updateCheckinHeaderUI();
-
-    function renderCheckinModal() {
-      modalStreakDays.textContent = checkinData.streakDays;
-      modalTotalDays.textContent = checkinData.totalDays;
-      const stampsCount = Math.min(Math.floor(checkinData.streakDays / 7), 4);
-      stampProgressText.textContent = `${stampsCount} / 4 印章`;
-
-      for (let i = 1; i <= 4; i++) {
-        const card = document.getElementById(`stampCard${i}`);
-        if (i <= stampsCount) card.classList.add("stamped");
-        else card.classList.remove("stamped");
-      }
-
-      weekCalendarGrid.innerHTML = "";
-      const todayStr = getTodayString();
-      const now = new Date();
-
-      for (let i = 6; i >= 0; i--) {
-        const target = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-        const dateStr = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, '0')}-${String(target.getDate()).padStart(2, '0')}`;
-        const isChecked = checkinData.historyDates.includes(dateStr);
-        const isToday = (dateStr === todayStr);
-
-        const cell = document.createElement("div");
-        cell.className = `cal-day-cell ${isChecked ? 'active-day' : ''} ${isToday ? 'today-cell' : ''}`;
-        const weekNames = ["日", "一", "二", "三", "四", "五", "六"];
-        cell.innerHTML = `<span>周${weekNames[target.getDay()]}</span><span style="font-size: 13px; margin: 2px 0;">${isChecked ? '🐾' : target.getDate()}</span>`;
-        weekCalendarGrid.appendChild(cell);
-      }
-
-      const isTodayChecked = (checkinData.lastCheckinDate === todayStr);
-      if (isTodayChecked) {
-        btnDoCheckin.textContent = "今日已打卡 ✓";
-        btnDoCheckin.disabled = true;
-        btnDoCheckin.style.opacity = "0.6";
-      } else {
-        btnDoCheckin.textContent = "✨ 立即打卡盖章";
-        btnDoCheckin.disabled = false;
-        btnDoCheckin.style.opacity = "1";
-      }
-    }
-
-    btnOpenCheckin.addEventListener("click", () => {
-      requireAuth(() => {
-        renderCheckinModal();
-        checkinModal.classList.add("show");
-      });
-    });
-    closeCheckinBtn.addEventListener("click", () => checkinModal.classList.remove("show"));
-    checkinModal.addEventListener("click", (e) => { if (e.target === checkinModal) checkinModal.classList.remove("show"); });
-
-    btnDoCheckin.addEventListener("click", () => {
-      const todayStr = getTodayString();
-      if (checkinData.lastCheckinDate === todayStr) return;
-
-      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      const yestStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
-
-      if (checkinData.lastCheckinDate === yestStr) checkinData.streakDays += 1;
-      else checkinData.streakDays = 1;
-
-      checkinData.totalDays += 1;
-      checkinData.lastCheckinDate = todayStr;
-      if (!checkinData.historyDates.includes(todayStr)) checkinData.historyDates.push(todayStr);
-      saveCheckinData(checkinData);
-
-      updateCheckinHeaderUI();
-      renderCheckinModal();
-      fireConfetti();
-      triggerDanmakuEasterEgg("balloon");
-    });
-
-    function getWeekKey() {
-      const now = new Date();
-      const oneJan = new Date(now.getFullYear(), 0, 1);
-      const numberOfDays = Math.floor((now - oneJan) / (24 * 60 * 60 * 1000));
-      const weekNum = Math.ceil((now.getDay() + 1 + numberOfDays) / 7);
-      return `${now.getFullYear()}_W${weekNum}`;
-    }
-
-    const currentSeasonKey = getWeekKey();
-    const savedSeasonKey = localStorage.getItem("meow_current_season_key");
-    let crownStamps = parseInt(localStorage.getItem("meow_crown_stamps") || "0", 10);
-
-    if (savedSeasonKey && savedSeasonKey !== currentSeasonKey) {
-      const lastWeekSec = parseInt(localStorage.getItem("meow_weekly_stay_sec") || "0", 10);
-      if (lastWeekSec >= 7200) {
-        crownStamps += 1;
-        localStorage.setItem("meow_crown_stamps", String(crownStamps));
-      }
-      localStorage.setItem("meow_weekly_stay_sec", "0");
-      localStorage.setItem("meow_celebrated_tiers", "[]");
-    }
-    localStorage.setItem("meow_current_season_key", currentSeasonKey);
-
-    let staySeconds = parseInt(localStorage.getItem("meow_weekly_stay_sec") || "0", 10);
-    let celebratedTiers = JSON.parse(localStorage.getItem("meow_celebrated_tiers") || "[]");
-
-    const HONOR_TIERS = [
-      { level: 0, minSec: 0, title: "🌱 路过猫奴", icon: "🌱", desc: "初来乍到，与毛毛星球结缘", class: "" },
-      { level: 1, minSec: 60, title: "🐾 初级铲屎官", icon: "🐾", desc: "本周累计陪伴满 1 分钟", class: "tier-1" },
-      { level: 2, minSec: 180, title: "🍗 猫条投喂员", icon: "🍗", desc: "本周累计陪伴满 3 分钟", class: "tier-2" },
-      { level: 3, minSec: 360, title: "🐟 干饭引路人", icon: "🐟", desc: "本周累计陪伴满 6 分钟", class: "tier-3" },
-      { level: 4, minSec: 600, title: "🧸 金牌陪玩师", icon: "🧸", desc: "本周累计陪伴满 10 分钟", class: "tier-4" },
-      { level: 5, minSec: 900, title: "🏡 资深云爸妈", icon: "🏡", desc: "本周累计陪伴满 15 分钟", class: "tier-5" },
-      { level: 6, minSec: 1500, title: "🩺 喵星健康官", icon: "🩺", desc: "本周累计陪伴满 25 分钟", class: "tier-6" },
-      { level: 7, minSec: 2400, title: "🛡️ 巡逻队长", icon: "🛡️", desc: "本周累计陪伴满 40 分钟", class: "tier-7" },
-      { level: 8, minSec: 3600, title: "⭐ 护喵大使", icon: "⭐", desc: "本周累计陪伴满 60 分钟", class: "tier-8" },
-      { level: 9, minSec: 5400, title: "🏰 星球领主", icon: "🏰", desc: "本周累计陪伴满 90 分钟", class: "tier-9" },
-      { level: 10, minSec: 7200, title: "👑 猫岛守护神", icon: "👑", desc: "本周累计陪伴满 120 分钟", class: "tier-10" }
-    ];
-
-    function getCurrentHonor() {
-      let current = HONOR_TIERS[0];
-      for (let i = HONOR_TIERS.length - 1; i >= 0; i--) {
-        if (staySeconds >= HONOR_TIERS[i].minSec) {
-          current = HONOR_TIERS[i];
-          break;
-        }
-      }
-      return current;
-    }
-
-    function updateHonorUI() {
-      const honor = getCurrentHonor();
-      const mins = Math.floor(staySeconds / 60);
-      const starStr = crownStamps > 0 ? ` [★×${crownStamps}]` : "";
-      myHonorBadge.textContent = `${honor.title}${starStr} (${mins}m) ⓘ`;
-      myHonorBadge.className = `honor-badge ${honor.class}`;
-    }
-    updateHonorUI();
-
-    let confettiCtx = confettiCanvas.getContext("2d");
-    let confettiParticles = [];
-    let confettiAnimationId = null;
-
-    function resizeConfetti() {
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeConfetti);
-    resizeFxCanvas && resizeConfetti();
-
-    function fireConfetti() {
-      confettiParticles = [];
-      const colors = ["#10b981", "#f59e0b", "#3b82f6", "#ec4899", "#8b5cf6", "#ffffff"];
-      for (let i = 0; i < 120; i++) {
-        confettiParticles.push({
-          x: window.innerWidth / 2,
-          y: window.innerHeight / 2,
-          vx: (Math.random() - 0.5) * 16,
-          vy: (Math.random() - 0.7) * 18,
-          size: Math.random() * 8 + 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          rotation: Math.random() * 360,
-          rotationSpeed: (Math.random() - 0.5) * 10,
-          opacity: 1
-        });
-      }
-      if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
-      function render() {
-        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-        let alive = false;
-        confettiParticles.forEach(p => {
-          p.x += p.vx; p.y += p.vy; p.vy += 0.35; p.rotation += p.rotationSpeed; p.opacity -= 0.008;
-          if (p.opacity > 0) {
-            alive = true;
-            confettiCtx.save();
-            confettiCtx.translate(p.x, p.y);
-            confettiCtx.rotate((p.rotation * Math.PI) / 180);
-            confettiCtx.globalAlpha = p.opacity;
-            confettiCtx.fillStyle = p.color;
-            confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
-            confettiCtx.restore();
-          }
-        });
-        if (alive) confettiAnimationId = requestAnimationFrame(render);
-        else confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      }
-      render();
-    }
-
-    let latestUnlockedTier = null;
-    function triggerLevelUpCelebration(tier) {
-      latestUnlockedTier = tier;
-      levelUpIcon.textContent = tier.icon;
-      levelUpTitle.textContent = `晋升受封：${tier.title}！`;
-      levelUpDesc.textContent = `恭喜达成【${tier.desc}】！已点亮本周专属身份勋章。`;
-      levelUpModal.classList.add("show");
-      fireConfetti();
-    }
-
-    btnGenerateCert.addEventListener("click", () => {
-      const tier = latestUnlockedTier || getCurrentHonor();
-      const canvas = certCanvas;
-      const ctx = canvas.getContext("2d");
-      canvas.width = 600;
-      canvas.height = 800;
-
-      const grad = ctx.createLinearGradient(0, 0, 600, 800);
-      grad.addColorStop(0, "#1c1917");
-      grad.addColorStop(1, "#0c0a09");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 600, 800);
-
-      ctx.strokeStyle = "#f59e0b";
-      ctx.lineWidth = 6;
-      ctx.strokeRect(24, 24, 552, 752);
-
-      ctx.strokeStyle = "rgba(245, 158, 11, 0.4)";
-      ctx.lineWidth = 1.5;
-      ctx.strokeRect(34, 34, 532, 732);
-
-      ctx.font = "60px sans-serif";
-      ctx.textAlign = "center";
-      ctx.fillText(tier.icon, 300, 120);
-
-      ctx.fillStyle = "#f59e0b";
-      ctx.font = "bold 26px -apple-system, sans-serif";
-      ctx.fillText("毛毛星球 · 周赛季受封证书", 300, 180);
-
-      ctx.fillStyle = "#9ca3af";
-      ctx.font = "13px sans-serif";
-      ctx.fillText(`SEASON: ${currentSeasonKey} · HONORARY GUARDIAN`, 300, 205);
-
-      const userNick = getUserFixedNickname();
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 28px -apple-system, sans-serif";
-      ctx.fillText(`兹授予：${userNick}`, 300, 290);
-
-      ctx.fillStyle = "#34d399";
-      ctx.font = "bold 34px -apple-system, sans-serif";
-      ctx.fillText(`【 ${tier.title} 】`, 300, 360);
-
-      ctx.fillStyle = "#d1d5db";
-      ctx.font = "15px sans-serif";
-      ctx.fillText("感谢您在毛毛星球本赛季的温情守护与不离陪伴。", 300, 430);
-      ctx.fillText("特授予此赛季荣誉称号，愿爱与善意常伴每一只流浪生灵！", 300, 460);
-
-      const mins = Math.floor(staySeconds / 60);
-      const nowStr = new Date().toLocaleDateString('zh-CN');
-      ctx.fillStyle = "#9ca3af";
-      ctx.font = "14px monospace";
-      ctx.fillText(`本周陪伴时长：${mins} 分钟 (${staySeconds} 秒)`, 300, 530);
-      ctx.fillText(`受封认证日期：${nowStr}`, 300, 560);
-
-      ctx.fillStyle = "#ef4444";
-      ctx.beginPath();
-      ctx.arc(300, 650, 42, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 13px sans-serif";
-      ctx.fillText("毛毛星球", 300, 645);
-      ctx.fillText("官方印鉴", 300, 663);
-
-      ctx.fillStyle = "#6b7280";
-      ctx.font = "11px sans-serif";
-      ctx.fillText("别让你家毛孩子再成为留守儿童了", 300, 735);
-
-      const dataUrl = canvas.toDataURL("image/png");
-      polaroidImg.src = dataUrl;
-      downloadPolaroidBtn.href = dataUrl;
-      downloadPolaroidBtn.download = `meow_cert_${tier.title}_${Date.now()}.png`;
-      levelUpModal.classList.remove("show");
-      polaroidModal.classList.add("show");
-    });
-
-    closeLevelUpBtn.addEventListener("click", () => levelUpModal.classList.remove("show"));
-    levelUpModal.addEventListener("click", (e) => { if (e.target === levelUpModal) levelUpModal.classList.remove("show"); });
-
-    setInterval(() => {
-      const isVideoPlaying = (video && !video.paused && video.readyState >= 2);
-      const isEzPlaying = (ezPlayer !== null);
-      if (!document.hidden && (isVideoPlaying || isEzPlaying)) {
-        activePlayingSeconds++;
-        staySeconds++;
-        updateHonorUI();
-
-        HONOR_TIERS.forEach(tier => {
-          if (tier.level > 0 && staySeconds >= tier.minSec && !celebratedTiers.includes(tier.level)) {
-            celebratedTiers.push(tier.level);
-            localStorage.setItem("meow_celebrated_tiers", JSON.stringify(celebratedTiers));
-            triggerLevelUpCelebration(tier);
-          }
-        });
-
-        if (staySeconds % 5 === 0) {
-          localStorage.setItem("meow_weekly_stay_sec", String(staySeconds));
-        }
-      }
-    }, 1000);
-
-    function openHonorModal() {
-      const current = getCurrentHonor();
-      const currentIdx = HONOR_TIERS.findIndex(h => h.level === current.level);
-      const mins = Math.floor(staySeconds / 60);
-
-      modalSeasonLabel.textContent = `📅 当前赛季：${currentSeasonKey} (每周一重置)`;
-      modalHonorTitle.textContent = current.title;
-      modalStayTimeText.textContent = `${mins} 分钟 (${staySeconds} 秒)`;
-      modalCrownCount.textContent = `${crownStamps} 枚`;
-
-      if (currentIdx < HONOR_TIERS.length - 1) {
-        const next = HONOR_TIERS[currentIdx + 1];
-        const prevSec = current.minSec;
-        const totalGap = next.minSec - prevSec;
-        const curGap = staySeconds - prevSec;
-        const pct = Math.min(Math.max((curGap / totalGap) * 100, 0), 100);
-        modalProgressFill.style.width = `${pct}%`;
-        const needMins = Math.ceil((next.minSec - staySeconds) / 60);
-        modalNextTierTip.textContent = `距解锁【${next.title}】还需约 ${needMins} 分钟`;
-      } else {
-        modalProgressFill.style.width = "100%";
-        modalNextTierTip.textContent = "已达成最高殿堂荣耀！赛季结算将斩获守护神星标 👑";
-      }
-
-      honorListContainer.innerHTML = "";
-      HONOR_TIERS.forEach((tier) => {
-        const isUnlocked = staySeconds >= tier.minSec;
-        const row = document.createElement("div");
-        row.className = `honor-item ${isUnlocked ? 'unlocked' : ''}`;
-        row.innerHTML = `
-          <div class="honor-item-left">
-            <div class="honor-item-icon">${tier.icon}</div>
-            <div>
-              <div class="honor-item-name">Lv.${tier.level} ${tier.title}</div>
-              <div class="honor-item-req">${tier.desc}</div>
-            </div>
-          </div>
-          <div class="honor-item-status">${isUnlocked ? '已达成 ✓' : '未解锁 🔒'}</div>
-        `;
-        honorListContainer.appendChild(row);
-      });
-      honorModal.classList.add("show");
-    }
-
-    myHonorBadge.addEventListener("click", () => {
-      requireAuth(() => openHonorModal());
-    });
-    closeHonorBtn.addEventListener("click", () => honorModal.classList.remove("show"));
-    honorModal.addEventListener("click", (e) => { if (e.target === honorModal) honorModal.classList.remove("show"); });
-
-    const GONGDE_TEXTS = ["功德+1 ✨", "猫粮+5g 🍗", "毛量+100 🐾", "治愈值+1 💖", "寒冬抵御+1 ☀️", "吸猫快乐+999 😻"];
-    const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
-
-    videoWrapper.addEventListener("dblclick", (e) => {
-      requireAuth(() => {
-        const rect = videoWrapper.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        const heart = document.createElement("div");
-        heart.className = "tap-heart";
-        heart.textContent = ICONS[Math.floor(Math.random() * ICONS.length)];
-        heart.style.left = `${x}px`;
-        heart.style.top = `${y}px`;
-        videoWrapper.appendChild(heart);
-        heart.addEventListener("animationend", () => heart.remove());
-
-        const gongde = document.createElement("div");
-        gongde.className = "gongde-pop";
-        gongde.textContent = GONGDE_TEXTS[Math.floor(Math.random() * GONGDE_TEXTS.length)];
-        gongde.style.left = `${x}px`;
-        gongde.style.top = `${y}px`;
-        videoWrapper.appendChild(gongde);
-        gongde.addEventListener("animationend", () => gongde.remove());
-      });
-    });
-
-    async function fetchNotice() {
-      try {
-        const res = await fetch(`${API_ENDPOINT}/api/notice`);
-        const data = await res.json();
-        if (data && data.notice && data.notice.trim()) {
-          noticeContent.textContent = data.notice.trim();
-          noticeBar.style.display = "flex";
-        }
-      } catch (e) {}
-    }
-    fetchNotice();
-
-    const BOT_NAMES = [
-      "猫猫教信徒", "吸猫专业户", "橘猫大军团长", "三花天下第一", "今天也要摸猫",
-      "赛博铲屎官", "罐头赞助商", "喵呜星人", "佛系云养猫", "工位偷猫选手",
-      "大橘为重", "毛茸茸爱好者", "软萌收割机", "猫尾巴摇摇", "小鱼干采购员"
-    ];
-
-    const BOT_MESSAGES = [
-      "咪咪快来吃好吃的~ 🍗", "今天天气不错，小猫都在晒太阳呢 ☀️", "这只小猫好萌呀，想抱走！",
-      "吸猫打卡+1 🐾", "大橘为重，多吃点长大个！", "又是被小猫治愈的一天 🥰",
-      "好想隔着屏幕伸手摸摸它", "在工位偷偷云吸猫被发现了 🤣", "看猫咪干饭真的好解压",
-      "给直播间各位猫友打个招呼 👋", "定点喂养真的太有爱心了！", "蹲一个三花出镜 👀",
-      "猫猫的警惕性还挺高呢", "赛博云投喂，快乐翻倍 🐟", "刚刚跑过去的是哪只呀？"
-    ];
-
-    let botTimer = null;
-    function triggerBotComment() {
-      const randomName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
-      const randomText = BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)];
-      const randomAvatar = AVATAR_LIST[Math.floor(Math.random() * AVATAR_LIST.length)];
-      const botMsg = {
-        id: "bot_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
-        name: randomName,
-        text: randomText,
-        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-        avatar: randomAvatar,
-        isBot: true
-      };
-      renderComments([botMsg], false);
-      shootDanmaku(`${randomName}: ${randomText}`, false);
-      const nextDelay = Math.floor(Math.random() * 20000) + 15000;
-      botTimer = setTimeout(triggerBotComment, nextDelay);
-    }
-    function startAtmosphereBot() {
-      if (botTimer) clearTimeout(botTimer);
-      botTimer = setTimeout(triggerBotComment, 6000);
-    }
-
-    document.querySelectorAll(".chip-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        requireAuth(() => {
-          textInput.value = btn.textContent.trim();
-          textInput.focus();
-        });
-      });
-    });
-
-    audioBtn.addEventListener("click", () => {
-      requireAuth(() => {
-        if (ezPlayer) {
-          const isMuted = audioBtn.textContent.includes("开启");
-          if (isMuted) {
-            try { ezPlayer.openSound(); } catch(e) {}
-            audioBtn.innerHTML = '🔊 静音';
-          } else {
-            try { ezPlayer.closeSound(); } catch(e) {}
-            audioBtn.innerHTML = '🔇 开启声音';
-          }
-        } else if (video) {
-          video.muted = !video.muted;
-          audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
-        }
-      });
-    });
-
-    danmakuToggleBtn.addEventListener("click", () => {
-      requireAuth(() => {
-        danmakuEnabled = !danmakuEnabled;
-        danmakuBox.style.display = danmakuEnabled ? "block" : "none";
-        danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
-      });
-    });
-
-    snapshotBtn.addEventListener("click", () => {
-      requireAuth(() => {
-        const vidEl = document.querySelector("#ezuikitPlayer video") || video;
-        const cvsEl = document.querySelector("#ezuikitPlayer canvas");
-        const sourceElement = vidEl || cvsEl;
-
-        if (!sourceElement || (vidEl && vidEl.readyState < 2 && vidEl.videoWidth === 0)) {
-          alert("视频流正在加载中，请稍候再抓拍~");
-          return;
-        }
-
-        const canvas = snapshotCanvas;
-        const ctx = canvas.getContext("2d");
-        const CARD_W = 600;
-        const CARD_H = 780;
-        canvas.width = CARD_W;
-        canvas.height = CARD_H;
-
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, CARD_W, CARD_H);
-
-        const PHOTO_X = 30;
-        const PHOTO_Y = 30;
-        const PHOTO_W = 540;
-        const PHOTO_H = 420;
-
-        const vW = sourceElement.videoWidth || sourceElement.width || 1280;
-        const vH = sourceElement.videoHeight || sourceElement.height || 720;
-        const targetRatio = PHOTO_W / PHOTO_H;
-        const videoRatio = vW / vH;
-        let sX = 0, sY = 0, sW = vW, sH = vH;
-
-        if (videoRatio > targetRatio) {
-          sW = vH * targetRatio;
-          sX = (vW - sW) / 2;
-        } else {
-          sH = vW / targetRatio;
-          sY = (vH - sH) / 2;
-        }
-
-        try {
-          ctx.drawImage(sourceElement, sX, sY, sW, sH, PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
-        } catch (err) {
-          alert("画面受跨域保护，请稍后刷新重试或直接手机截屏！");
-          return;
-        }
-
-        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-        ctx.beginPath();
-        ctx.roundRect(PHOTO_X + 16, PHOTO_Y + 16, 125, 28, 14);
-        ctx.fill();
-
-        ctx.fillStyle = "#ef4444";
-        ctx.beginPath();
-        ctx.arc(PHOTO_X + 30, PHOTO_Y + 30, 5, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 12px sans-serif";
-        ctx.fillText("LIVE SNAP", PHOTO_X + 42, PHOTO_Y + 34);
-
-        const userNick = getUserFixedNickname();
-        const honor = getCurrentHonor();
-        const now = new Date();
-        const timeStr = now.getFullYear() + "." + 
-          String(now.getMonth() + 1).padStart(2, '0') + "." + 
-          String(now.getDate()).padStart(2, '0') + " " + 
-          String(now.getHours()).padStart(2, '0') + ":" + 
-          String(now.getMinutes()).padStart(2, '0') + ":" + 
-          String(now.getSeconds()).padStart(2, '0');
-
-        ctx.fillStyle = "#111827";
-        ctx.font = "bold 24px -apple-system, sans-serif";
-        ctx.fillText(`📍 ${currentRoomName} · 现场抓拍`, PHOTO_X + 4, PHOTO_Y + PHOTO_H + 50);
-
-        ctx.fillStyle = "#6b7280";
-        ctx.font = "14px monospace";
-        ctx.fillText(`📅 ${timeStr}`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 82);
-
-        ctx.fillStyle = "#059669";
-        ctx.font = "bold 15px -apple-system, sans-serif";
-        ctx.fillText(`🐾 抓拍官：${userNick} [${honor.title}]`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
-
-        ctx.textAlign = "right";
-        ctx.fillStyle = "#10b981";
-        ctx.font = "bold 16px -apple-system, sans-serif";
-        ctx.fillText("毛毛星球 MeowHub", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 75);
-
-        ctx.fillStyle = "#9ca3af";
-        ctx.font = "12px sans-serif";
-        ctx.fillText("别让你家毛孩子再成为留守儿童了", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 102);
-
-        ctx.textAlign = "left";
-
-        try {
-          const dataUrl = canvas.toDataURL("image/png");
-          polaroidImg.src = dataUrl;
-          downloadPolaroidBtn.href = dataUrl;
-          downloadPolaroidBtn.download = `meowhub_${currentRoomName}_${Date.now()}.png`;
-          polaroidModal.classList.add("show");
-        } catch (e) {
-          alert("截屏生成失败，请直接使用手机截屏~");
-        }
-      });
-    });
-
-    closePolaroidBtn.addEventListener("click", () => polaroidModal.classList.remove("show"));
-    polaroidModal.addEventListener("click", (e) => { if (e.target === polaroidModal) polaroidModal.classList.remove("show"); });
-
-    video.addEventListener("timeupdate", () => {
-      if (video.currentTime > 0) playerEmpty.style.display = "none";
-    });
-    video.addEventListener("playing", () => {
-      playerEmpty.style.display = "none";
-    });
-
-    function shootDanmaku(text, isMe = false) {
-      if (!danmakuEnabled) return;
-      const el = document.createElement("div");
-      const honor = getCurrentHonor();
-      const stampsCount = Math.min(Math.floor(checkinData.streakDays / 7), 4);
-      const isGold = isMe && (honor.level >= 8 || stampsCount >= 4);
-
-      el.className = `danmaku-item ${isMe ? 'is-me' : ''} ${isGold ? 'tier-gold' : ''}`;
-      el.textContent = text;
-      const topPos = Math.floor(Math.random() * 60) + 15;
-      el.style.top = `${topPos}%`;
-      danmakuBox.appendChild(el);
-      el.addEventListener("animationend", () => el.remove());
-    }
-
-    function getAvatarByName(name) {
-      if (!name) return "🐱";
-      let hash = 0;
-      for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-      const index = Math.abs(hash) % AVATAR_LIST.length;
-      return AVATAR_LIST[index];
-    }
-
-    function renderComments(comments, isInitial = false) {
-      if (isInitial) {
-        chatList.innerHTML = "";
-        seenCommentIds.clear();
-      }
-      if (!comments || comments.length === 0) {
-        if (chatList.children.length === 0) {
-          chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
-        }
-        return;
-      }
-
-      const placeholder = chatList.querySelector('div[style*="text-align: center"]');
-      if (placeholder) placeholder.remove();
-
-      const myCurrentName = getUserFixedNickname();
-      const isAtBottom = chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 50;
-
-      comments.forEach(c => {
-        if (seenCommentIds.has(c.id)) return;
-        seenCommentIds.add(c.id);
-        if (!c.isBot) latestCommentId = c.id;
-
-        const isMe = Boolean(c.isLocal) || (myCurrentName && c.name === myCurrentName);
-        const row = document.createElement("div");
-        row.id = `msg_${c.id}`;
-        row.className = `message-item ${isMe ? 'is-me' : ''}`;
-
-        const avatarDiv = document.createElement("div");
-        avatarDiv.className = "msg-avatar";
-        avatarDiv.textContent = isMe ? getUserAvatar() : (c.avatar || getAvatarByName(c.name));
-
-        const contentWrapper = document.createElement("div");
-        contentWrapper.className = "msg-content-wrapper";
-
-        const userSpan = document.createElement("span");
-        userSpan.className = "msg-user";
-        userSpan.textContent = `${c.name || '热心猫友'}:`;
-
-        if (isMe) {
-          const badge = document.createElement("span");
-          badge.className = "msg-badge-me";
-          badge.textContent = "我";
-          userSpan.appendChild(badge);
-        }
-
-        const textSpan = document.createElement("span");
-        textSpan.className = "msg-text";
-        textSpan.textContent = ` ${c.text || ''}`;
-
-        const timeSpan = document.createElement("span");
-        timeSpan.className = "msg-time";
-        timeSpan.textContent = c.time || '';
-
-        contentWrapper.appendChild(userSpan);
-        contentWrapper.appendChild(textSpan);
-        contentWrapper.appendChild(timeSpan);
-
-        row.appendChild(avatarDiv);
-        row.appendChild(contentWrapper);
-        chatList.appendChild(row);
-
-        if (!isInitial && !c.isLocal && !c.isBot) {
-          shootDanmaku(`${c.name}: ${c.text}`, isMe);
-          checkEasterEgg(c.text);
-        }
-      });
-
-      if (isInitial && comments.length > 0) {
-        const historyList = comments.slice(-6);
-        historyList.forEach((item, index) => {
-          setTimeout(() => {
-            const isMe = (myCurrentName && item.name === myCurrentName);
-            shootDanmaku(`${item.name}: ${item.text}`, isMe);
-          }, index * 600 + 300);
-        });
-      }
-
-      if (isAtBottom || isInitial) {
-        chatList.scrollTo({ top: chatList.scrollHeight, behavior: 'smooth' });
-      }
-    }
-
-    async function fetchComments(isInitial = false) {
-      if (!currentRoomId) return;
-      try {
-        let query = `${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}`;
-        if (!isInitial && latestCommentId) {
-          query += `&since=${encodeURIComponent(latestCommentId)}`;
-        }
-        const res = await fetch(query, { method: "GET" });
-        const data = await res.json();
-        if (data && Array.isArray(data.comments)) {
-          renderComments(data.comments, isInitial);
-        } else {
-          renderComments([], isInitial);
-        }
-      } catch (e) {
-        if (isInitial) renderComments([], isInitial);
-      }
-    }
-
-    function startCooldown() {
-      let timeLeft = 3;
-      btnSend.disabled = true;
-      btnSend.textContent = `${timeLeft}s`;
-
-      cooldownTimer = setInterval(() => {
-        timeLeft--;
-        if (timeLeft <= 0) {
-          clearInterval(cooldownTimer);
-          btnSend.disabled = false;
-          btnSend.textContent = "发送";
-        } else {
-          btnSend.textContent = `${timeLeft}s`;
-        }
-      }, 1000);
-    }
-
-    chatForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      requireAuth(async () => {
-        if (btnSend.disabled) return;
-        const text = textInput.value.trim();
-        if (!text) return;
-        if (text.length > 60) {
-          alert("弹幕字数不能超过 60 个字符~");
-          return;
-        }
-
-        const name = getUserFixedNickname();
-        const myAvatar = getUserAvatar();
-        textInput.value = "";
-        startCooldown();
-
-        const localId = "loc_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
-        const localMsg = {
-          id: localId,
-          name: name,
-          text: text,
-          time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-          avatar: myAvatar,
-          isLocal: true
-        };
-        
-        renderComments([localMsg], false);
-        shootDanmaku(`${name}: ${text}`, true);
-        checkEasterEgg(text);
-
-        try {
-          const res = await fetch(`${API_ENDPOINT}/api/comments`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ roomId: String(currentRoomId), name, text })
-          });
-          const json = await res.json();
-          if (!res.ok || json.code !== 200) {
-            const el = document.getElementById(`msg_${localId}`);
-            if (el) el.remove();
-            alert(json.msg || "发送失败，请稍后再试~");
-            return;
-          }
-          if (json && json.data) {
-            seenCommentIds.add(json.data.id);
-            latestCommentId = json.data.id;
-          }
-        } catch (err) {
-          const el = document.getElementById(`msg_${localId}`);
-          if (el) el.remove();
-          alert("网络连接异常，弹幕发送失败");
-        }
-      });
     });
 
     const btnFeedPet = document.getElementById("btnFeedPet");
@@ -2987,87 +1883,216 @@
       }
     }
 
-    async function initPage() {
-      try {
-        const response = await fetch(`${API_ENDPOINT}/api/rooms`);
-        const data = await response.json();
-        let rawRooms = data.rooms || [];
+    video.addEventListener("timeupdate", () => { if (video.currentTime > 0) playerEmpty.style.display = "none"; });
+    video.addEventListener("playing", () => { playerEmpty.style.display = "none"; });
 
-        if (rawRooms.length === 0) {
-          emptyTitle.textContent = "暂无在线直播间";
-          emptyCopy.textContent = "请稍后再试";
+    audioBtn.addEventListener("click", () => {
+      requireAuth(() => {
+        if (ezPlayer) {
+          const isMuted = audioBtn.textContent.includes("开启");
+          if (isMuted) {
+            try { ezPlayer.openSound(); } catch(e) {}
+            audioBtn.innerHTML = '🔊 静音';
+          } else {
+            try { ezPlayer.closeSound(); } catch(e) {}
+            audioBtn.innerHTML = '🔇 开启声音';
+          }
+        } else if (video) {
+          video.muted = !video.muted;
+          audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
+        }
+      });
+    });
+
+    danmakuToggleBtn.addEventListener("click", () => {
+      requireAuth(() => {
+        danmakuEnabled = !danmakuEnabled;
+        danmakuBox.style.display = danmakuEnabled ? "block" : "none";
+        danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
+      });
+    });
+
+    snapshotBtn.addEventListener("click", () => {
+      requireAuth(() => {
+        const vidEl = document.querySelector("#ezuikitPlayer video") || video;
+        const cvsEl = document.querySelector("#ezuikitPlayer canvas");
+        const sourceElement = vidEl || cvsEl;
+
+        if (!sourceElement || (vidEl && vidEl.readyState < 2 && vidEl.videoWidth === 0)) {
+          alert("视频流正在加载中，请稍候再抓拍~");
           return;
         }
 
-        ezAccessToken = data.accessToken || "";
-        roomList = rawRooms;
+        const canvas = snapshotCanvas;
+        const ctx = canvas.getContext("2d");
+        const CARD_W = 600;
+        const CARD_H = 780;
+        canvas.width = CARD_W;
+        canvas.height = CARD_H;
 
-        document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
-        mobileRoomBadge.textContent = `(${roomList.length}台) ▾`;
-        drawerTotalCount.textContent = `(共${roomList.length}个机位)`;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-        roomButtonList.innerHTML = "";
-        roomList.forEach((room, idx) => {
-          const btn = document.createElement("button");
-          btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
-          btn.innerHTML = `
-            <span>${String(room.name || `直播间 ${idx + 1}`)}</span>
-            <span class="status-indicator"><span class="pulse-dot"></span> LIVE</span>
-          `;
-          btn.addEventListener("click", () => playStream(idx));
-          roomButtonList.appendChild(btn);
-        });
+        const PHOTO_X = 30;
+        const PHOTO_Y = 30;
+        const PHOTO_W = 540;
+        const PHOTO_H = 420;
 
-        drawerRoomList.innerHTML = "";
-        roomList.forEach((room, idx) => {
-          const item = document.createElement("div");
-          item.className = `drawer-room-item ${idx === 0 ? 'active' : ''}`;
-          item.innerHTML = `
-            <div class="drawer-room-left">
-              <span class="drawer-room-idx">${idx + 1}</span>
-              <span>${String(room.name || `直播间 ${idx + 1}`)}</span>
-            </div>
-            <span class="status-indicator" style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--accent-green); font-weight: 700;">
-              <span class="pulse-dot"></span> LIVE
-            </span>
-          `;
-          item.addEventListener("click", () => {
-            roomDrawerModal.classList.remove("show");
-            playStream(idx);
-          });
-          drawerRoomList.appendChild(item);
-        });
+        const vW = sourceElement.videoWidth || sourceElement.width || 1280;
+        const vH = sourceElement.videoHeight || sourceElement.height || 720;
+        const targetRatio = PHOTO_W / PHOTO_H;
+        const videoRatio = vW / vH;
+        let sX = 0, sY = 0, sW = vW, sH = vH;
 
-        playStream(0);
-      } catch (err) {
-        emptyTitle.textContent = "服务连接异常";
-        emptyCopy.textContent = "请检查网络或稍后刷新重试";
-      }
+        if (videoRatio > targetRatio) {
+          sW = vH * targetRatio;
+          sX = (vW - sW) / 2;
+        } else {
+          sH = vW / targetRatio;
+          sY = (vH - sH) / 2;
+        }
+
+        try {
+          ctx.drawImage(sourceElement, sX, sY, sW, sH, PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H);
+        } catch (err) {
+          alert("画面受跨域保护，请稍后刷新重试或直接手机截屏！");
+          return;
+        }
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        ctx.beginPath();
+        ctx.roundRect(PHOTO_X + 16, PHOTO_Y + 16, 125, 28, 14);
+        ctx.fill();
+
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath();
+        ctx.arc(PHOTO_X + 30, PHOTO_Y + 30, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText("LIVE SNAP", PHOTO_X + 42, PHOTO_Y + 34);
+
+        const userNick = getUserFixedNickname();
+        const honor = getCurrentHonor();
+        const now = new Date();
+        const timeStr = now.getFullYear() + "." + 
+          String(now.getMonth() + 1).padStart(2, '0') + "." + 
+          String(now.getDate()).padStart(2, '0') + " " + 
+          String(now.getHours()).padStart(2, '0') + ":" + 
+          String(now.getMinutes()).padStart(2, '0') + ":" + 
+          String(now.getSeconds()).padStart(2, '0');
+
+        ctx.fillStyle = "#111827";
+        ctx.font = "bold 24px -apple-system, sans-serif";
+        ctx.fillText(`📍 ${currentRoomName} · 现场抓拍`, PHOTO_X + 4, PHOTO_Y + PHOTO_H + 50);
+
+        ctx.fillStyle = "#6b7280";
+        ctx.font = "14px monospace";
+        ctx.fillText(`📅 ${timeStr}`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 82);
+
+        ctx.fillStyle = "#059669";
+        ctx.font = "bold 15px -apple-system, sans-serif";
+        ctx.fillText(`🐾 抓拍官：${userNick} [${honor.title}]`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
+
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#10b981";
+        ctx.font = "bold 16px -apple-system, sans-serif";
+        ctx.fillText("毛毛星球 MeowHub", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 75);
+
+        ctx.fillStyle = "#9ca3af";
+        ctx.font = "12px sans-serif";
+        ctx.fillText("别让你家毛孩子再成为留守儿童了", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 102);
+
+        ctx.textAlign = "left";
+
+        try {
+          const dataUrl = canvas.toDataURL("image/png");
+          polaroidImg.src = dataUrl;
+          downloadPolaroidBtn.href = dataUrl;
+          downloadPolaroidBtn.download = `meowhub_${currentRoomName}_${Date.now()}.png`;
+          polaroidModal.classList.add("show");
+        } catch (e) {
+          alert("截屏生成失败，请直接使用手机截屏~");
+        }
+      });
+    });
+
+    closePolaroidBtn.addEventListener("click", () => polaroidModal.classList.remove("show"));
+    polaroidModal.addEventListener("click", (e) => { if (e.target === polaroidModal) polaroidModal.classList.remove("show"); });
+
+    function shootDanmaku(text, isMe = false) {
+      if (!danmakuEnabled) return;
+      const el = document.createElement("div");
+      el.className = `danmaku-item ${isMe ? 'is-me' : ''}`;
+      el.textContent = text;
+      el.style.top = `${Math.floor(Math.random() * 60) + 15}%`;
+      danmakuBox.appendChild(el);
+      el.addEventListener("animationend", () => el.remove());
     }
 
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        flushRoomDuration();
-        if (pollTimer) {
-          clearInterval(pollTimer);
-          pollTimer = null;
-        }
-      } else {
-        fetchComments(false);
-        if (!pollTimer) {
-          pollTimer = setInterval(() => {
-            if (document.visibilityState === "visible") fetchComments(false);
-          }, 8000);
-        }
-
-        if (hls && hls.liveSyncPosition) {
-          const latency = hls.liveSyncPosition - video.currentTime;
-          if (latency > 2) video.currentTime = hls.liveSyncPosition;
-          video.play().catch(() => {});
-        } else if (video.paused && !ezPlayer) {
-          video.play().catch(() => {});
-        }
+    function renderComments(comments, isInitial = false) {
+      if (isInitial) {
+        chatList.innerHTML = "";
+        seenCommentIds.clear();
       }
+      if (!comments || comments.length === 0) return;
+
+      const myCurrentName = getUserFixedNickname();
+      comments.forEach(c => {
+        if (seenCommentIds.has(c.id)) return;
+        seenCommentIds.add(c.id);
+        latestCommentId = c.id;
+
+        const isMe = (myCurrentName && c.name === myCurrentName);
+        const row = document.createElement("div");
+        row.className = `message-item ${isMe ? 'is-me' : ''}`;
+        row.innerHTML = `
+          <div class="msg-avatar">${isMe ? getUserAvatar() : (c.avatar || '🐱')}</div>
+          <div class="msg-content-wrapper">
+            <span class="msg-user">${c.name || '热心猫友'}:${isMe ? '<span class="msg-badge-me">我</span>' : ''}</span>
+            <span class="msg-text">${c.text || ''}</span>
+            <span class="msg-time">${c.time || ''}</span>
+          </div>
+        `;
+        chatList.appendChild(row);
+        if (!isInitial) shootDanmaku(`${c.name}: ${c.text}`, isMe);
+      });
+      chatList.scrollTo({ top: chatList.scrollHeight, behavior: 'smooth' });
+    }
+
+    async function fetchComments(isInitial = false) {
+      if (!currentRoomId) return;
+      try {
+        let q = `${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}`;
+        if (!isInitial && latestCommentId) q += `&since=${encodeURIComponent(latestCommentId)}`;
+        const res = await fetch(q);
+        const data = await res.json();
+        if (data && Array.isArray(data.comments)) renderComments(data.comments, isInitial);
+      } catch (e) {}
+    }
+
+    chatForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      requireAuth(async () => {
+        if (btnSend.disabled) return;
+        const text = textInput.value.trim();
+        if (!text) return;
+        const name = getUserFixedNickname();
+        textInput.value = "";
+
+        try {
+          const res = await fetch(`${API_ENDPOINT}/api/comments`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ roomId: String(currentRoomId), name, text })
+          });
+          const json = await res.json();
+          if (json.code === 200) {
+            renderComments([{ id: json.data.id, name, text, time: json.data.time }], false);
+          }
+        } catch (err) {}
+      });
     });
 
     if (btnFeedPet) {
@@ -3132,6 +2157,49 @@
           }
         });
       });
+    }
+
+    async function initPage() {
+      try {
+        const response = await fetch(`${API_ENDPOINT}/api/rooms`);
+        const data = await response.json();
+        roomList = data.rooms || [];
+
+        if (roomList.length === 0) {
+          emptyTitle.textContent = "暂无在线直播间";
+          return;
+        }
+
+        ezAccessToken = data.accessToken || "";
+        document.getElementById("onlineCount").textContent = `${roomList.length} 直播间在线`;
+
+        roomButtonList.innerHTML = "";
+        drawerRoomList.innerHTML = "";
+
+        roomList.forEach((room, idx) => {
+          const btn = document.createElement("button");
+          btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
+          btn.innerHTML = `
+            <span>${String(room.name || `直播间 ${idx + 1}`)}</span>
+            <span class="status-indicator"><span class="pulse-dot"></span> LIVE</span>
+          `;
+          btn.addEventListener("click", () => playStream(idx));
+          roomButtonList.appendChild(btn);
+
+          const item = document.createElement("div");
+          item.className = `drawer-room-item ${idx === 0 ? 'active' : ''}`;
+          item.innerHTML = `<span>${String(room.name || `直播间 ${idx + 1}`)}</span><span style="color: var(--accent-green); font-size: 11px;">LIVE</span>`;
+          item.addEventListener("click", () => {
+            roomDrawerModal.classList.remove("show");
+            playStream(idx);
+          });
+          drawerRoomList.appendChild(item);
+        });
+
+        playStream(0);
+      } catch (err) {
+        emptyTitle.textContent = "服务连接异常";
+      }
     }
 
     initPage();
