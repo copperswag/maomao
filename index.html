@@ -977,6 +977,7 @@
             <div class="controls-overlay">
               <button class="player-ctrl-btn" id="btnFeedPet" style="background: linear-gradient(135deg, #10b981, #059669); font-weight: 700;" type="button">🍗 立即投喂</button>
               <button class="player-ctrl-btn btn-tarot" id="btnOpenTarot" type="button">🔮 喵星塔罗</button>
+              <button class="player-ctrl-btn" id="btnOpenBazi" style="background: linear-gradient(135deg, #d97706, #92400e); color:#fff; font-weight:700;" type="button">📜 小猫算命</button>
               <button class="player-ctrl-btn" id="snapshotBtn" type="button">📷 拍立得</button>
               <button class="player-ctrl-btn" id="danmakuToggleBtn" type="button">💬 弹幕: 开</button>
               <button class="player-ctrl-btn" id="audioBtn" type="button">🔇 开启声音</button>
@@ -3411,6 +3412,283 @@
     }
 
     initPage();
+    // ==========================================
+// 独立挂载：小猫算命系统
+// ==========================================
+(function() {
+  const BAZI_DATA_BASE = [
+    {
+      title: "【易经 · 潜喵在渊格】",
+      quote: "“玄鳞隐于纸盒，不见天日；待肉香四溢，飞龙在天。”",
+      source: "《周易·乾》：“潜龙勿用，阳在下也。”",
+      text: "此猫内蕴深厚，擅长藏锋敛锐。日间多蜷伏于纸箱深思，非孤僻也，实乃吐纳天地之元气。戌亥之交跑酷，必展吞吐天地之威。",
+      noble: "提罐开饭两脚兽", avoid: "吸尘器、洗澡盆"
+    },
+    {
+      title: "【坤卦 · 厚膘载物大橘格】",
+      quote: "“体胖则心宽，膘厚则福泽深。肚腩垂地，招财进宝。”",
+      source: "《周易·坤》：“地势坤，君子以厚德载物。”",
+      text: "此猫命中带食神，肚如满月，心宽能纳万千小鱼干。行步如四平八稳之重臣，为镇宅守家之极品神兽，体重每增，家宅财气愈隆。",
+      noble: "定时开荤铲屎官", avoid: "素食减脂猫粮"
+    },
+    {
+      title: "【诗经 · 关关雎鸠水木格】",
+      quote: "“关关雎鸠，在河之洲。窈窕小鱼，猫之好逑。”",
+      source: "《诗经·周南·关雎》",
+      text: "天生带水木清华之秀气，眼神如秋水含情。身段曼妙，轻盈若柳。虽身在猫窝，心系大河之鱼。每受抚摩必以踩奶咕噜相报，桃花两脚兽缘奇旺。",
+      noble: "温柔梳毛人", avoid: "粗暴拽尾巴"
+    },
+    {
+      title: "【诗经 · 呦呦鹿鸣食神格】",
+      quote: "“呦呦鹿鸣，食野之猫草。我有两脚兽，加餐吹笙。”",
+      source: "《诗经·小雅·鹿鸣》",
+      text: "天赐食禄，声若穿云裂石。凡见食盆渐空，必鸣鸣示警。叫声悠扬穿堂过室，两脚兽闻之无不飞奔侍奉，一生衣食无虞，福慧双修。",
+      noble: "慷慨解囊打赏人", avoid: "空空如也之饭盆"
+    },
+    {
+      title: "【论语 · 吾日三省猫德格】",
+      quote: "“为人守舍而不蹭乎？见飞虫而不扑乎？罐头食之尽乎？”",
+      source: "《论语·学而》：“吾日三省吾身。”",
+      text: "儒家猫德模范，规矩森严，举止端方。日间巡视领地，夜间按时暖被。不哈气，不拆家，恪守君子猫道，深得全家敬重爱戴。",
+      noble: "作息规律两脚兽", avoid: "熊孩子强抱"
+    },
+    {
+      title: "【尚书 · 曲直霸气狸花格】",
+      quote: "“爪利牙尖，木气冲天。攀缘纵跃，街巷称尊。”",
+      source: "《尚书·洪范》：“木曰曲直，作酸。”",
+      text: "得东方青木纯正之气，骨健筋坚，爪若铁钩。目光如电，威风凛凛。凡领地之内鼠蚁遁形，遇事敢上硬刚，实乃百兽退避之草莽霸主。",
+      noble: "高处猫爬架", avoid: "戴耻辱圈"
+    }
+  ];
+
+  const btnOpen = document.getElementById("btnOpenBazi");
+  const modal = document.getElementById("baziModal");
+  const btnClose = document.getElementById("btnCloseBaziModal");
+  const btnCalc = document.getElementById("btnDoBaziCalc");
+  const btnRand = document.getElementById("btnDoBaziRandom");
+  const btnSave = document.getElementById("btnSaveBaziCanvas");
+  const resBox = document.getElementById("baziResultBox");
+
+  let currentBaziInfo = null;
+
+  btnOpen?.addEventListener("click", () => {
+    if (typeof requireAuth === "function") {
+      requireAuth(() => modal?.classList.add("show"));
+    } else {
+      modal?.classList.add("show");
+    }
+  });
+
+  btnClose?.addEventListener("click", () => modal?.classList.remove("show"));
+  modal?.addEventListener("click", (e) => { if (e.target === modal) modal?.classList.remove("show"); });
+
+  function executeBazi(nameInput, color, season) {
+    const finalName = nameInput.trim() || (typeof currentRoomName !== "undefined" ? currentRoomName : "咪咪");
+    let hash = 0;
+    const seed = `${finalName}_${color}_${season}`;
+    for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) % 100000;
+    const item = BAZI_DATA_BASE[Math.abs(hash) % BAZI_DATA_BASE.length];
+
+    currentBaziInfo = { name: finalName, color, season, ...item };
+
+    document.getElementById("outBaziCatInfo").textContent = `${finalName} (${color} · 岁在${season})`;
+    document.getElementById("outBaziTitle").textContent = item.title;
+    document.getElementById("outBaziQuote").textContent = item.quote;
+    document.getElementById("outBaziText").innerHTML = `<b>【典籍渊源】</b>${item.source}<br>${item.text}`;
+    document.getElementById("outBaziNoble").textContent = item.noble;
+    document.getElementById("outBaziAvoid").textContent = item.avoid;
+
+    resBox.style.display = "block";
+    btnSave.style.display = "inline-flex";
+    if (typeof fireConfetti === "function") fireConfetti();
+  }
+
+  btnCalc?.addEventListener("click", () => {
+    const name = document.getElementById("baziCatName").value;
+    const color = document.getElementById("baziCatColor").value;
+    const season = document.getElementById("baziSeason").value;
+    executeBazi(name, color, season);
+  });
+
+  btnRand?.addEventListener("click", () => {
+    const colors = ["纯橘", "玄猫", "三花", "狸花", "白猫", "奶牛"];
+    const seasons = ["孟春", "仲夏", "金秋", "隆冬"];
+    const rc = colors[Math.floor(Math.random() * colors.length)];
+    const rs = seasons[Math.floor(Math.random() * seasons.length)];
+    document.getElementById("baziCatColor").value = rc;
+    document.getElementById("baziSeason").value = rs;
+    executeBazi("", rc, rs);
+  });
+
+  btnSave?.addEventListener("click", () => {
+    if (!currentBaziInfo) return;
+    const d = currentBaziInfo;
+    const canvas = document.getElementById("baziCustomCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 600;
+    canvas.height = 840;
+
+    ctx.fillStyle = "#fef3c7";
+    ctx.fillRect(0, 0, 600, 840);
+
+    ctx.strokeStyle = "#78350f";
+    ctx.lineWidth = 6;
+    ctx.strokeRect(20, 20, 560, 800);
+    ctx.strokeStyle = "rgba(180, 83, 9, 0.4)";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(30, 30, 540, 780);
+
+    ctx.fillStyle = "#92400e";
+    ctx.font = "bold 13px serif";
+    ctx.textAlign = "center";
+    ctx.fillText("✦ 喵 星 钦 天 监 · 终 生 命 盘 批 帖 ✦", 300, 75);
+
+    ctx.fillStyle = "#78350f";
+    ctx.font = "bold 26px serif";
+    ctx.fillText(`命主：${d.name} (${d.color})`, 300, 130);
+
+    ctx.fillStyle = "#b45309";
+    ctx.font = "14px serif";
+    ctx.fillText(`岁在 ${d.season} · 乾坤排定`, 300, 160);
+
+    ctx.fillStyle = "#991b1b";
+    ctx.font = "bold 24px serif";
+    ctx.fillText(d.title, 300, 230);
+
+    ctx.fillStyle = "#78350f";
+    ctx.font = "italic 16px serif";
+    ctx.fillText(d.quote, 300, 280);
+
+    ctx.fillStyle = "rgba(120, 53, 15, 0.05)";
+    ctx.fillRect(50, 320, 500, 240);
+
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#78350f";
+    ctx.font = "bold 15px serif";
+    ctx.fillText("【经籍渊源】", 70, 360);
+    ctx.fillStyle = "#92400e";
+    ctx.font = "14px serif";
+    ctx.fillText(d.source, 70, 390);
+
+    ctx.fillStyle = "#451a03";
+    ctx.font = "14px serif";
+    const words = d.text;
+    let line = "", y = 430;
+    for (let n = 0; n < words.length; n++) {
+      const test = line + words[n];
+      if (ctx.measureText(test).width > 450 && n > 0) {
+        ctx.fillText(line, 70, y);
+        line = words[n];
+        y += 24;
+      } else {
+        line = test;
+      }
+    }
+    ctx.fillText(line, 70, y);
+
+    ctx.textAlign = "center";
+    ctx.font = "14px serif";
+    ctx.fillStyle = "#78350f";
+    ctx.fillText(`✦ 合拍贵人：${d.noble}    |    ✦ 避忌煞星：${d.avoid}`, 300, 620);
+
+    const userNick = typeof getUserFixedNickname === "function" ? getUserFixedNickname() : "两脚兽";
+    const curR = typeof currentRoomName !== "undefined" ? currentRoomName : "猫岛";
+    const dateStr = new Date().toLocaleDateString('zh-CN');
+    ctx.font = "13px monospace";
+    ctx.fillStyle = "#92400e";
+    ctx.fillText(`奉旨司命：${userNick}   |   机位：${curR}   |   ${dateStr}`, 300, 660);
+
+    ctx.save();
+    ctx.translate(460, 690);
+    ctx.rotate(-0.2);
+    ctx.strokeStyle = "#b91c1c";
+    ctx.lineWidth = 3;
+    ctx.strokeRect(-40, -40, 80, 80);
+    ctx.fillStyle = "#b91c1c";
+    ctx.font = "bold 15px serif";
+    ctx.fillText("钦天监", 0, -10);
+    ctx.fillText("猫命帖", 0, 16);
+    ctx.restore();
+
+    ctx.fillStyle = "#059669";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText("毛毛星球 MeowHub · 智能养宠", 300, 755);
+
+    const dataUrl = canvas.toDataURL("image/png");
+    const pImg = document.getElementById("polaroidImg");
+    const pBtn = document.getElementById("downloadPolaroidBtn");
+    const pModal = document.getElementById("polaroidModal");
+    if (pImg && pBtn && pModal) {
+      pImg.src = dataUrl;
+      pBtn.href = dataUrl;
+      pBtn.download = `meow_bazi_${d.name}_${Date.now()}.png`;
+      modal?.classList.remove("show");
+      pModal.classList.add("show");
+    }
+  });
+})();
   </script>
+  <!-- 小猫算命弹窗 -->
+  <div class="app-modal" id="baziModal">
+    <div class="modal-card-box" style="background:#181411; border:2px solid #b45309; color:#fef3c7; padding:20px;">
+      <div style="text-align:center; border-bottom:1px dashed rgba(245,158,11,0.3); padding-bottom:10px;">
+        <div style="font-size:11px; color:#fbbf24; letter-spacing:2px;">喵星钦天监 · 四柱八字推衍</div>
+        <h3 style="font-size:20px; font-weight:900; color:#fef3c7; margin-top:4px;">📜 喵星周易算命帖</h3>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px; text-align:left;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#fbbf24;">🐾 爱猫芳名：</label>
+          <input type="text" id="baziCatName" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;" placeholder="例如: 咪咪 / 当前小猫" maxlength="12" />
+        </div>
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label style="font-size:12px; font-weight:700; color:#fbbf24;">🎨 毛色五行：</label>
+            <select id="baziCatColor" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;">
+              <option value="纯橘">大橘 (金火·富贵旺财)</option>
+              <option value="玄猫">玄猫 (玄水·辟邪镇煞)</option>
+              <option value="三花">三花 (全木火·福泽无疆)</option>
+              <option value="狸花">狸花 (青木·捕猎战神)</option>
+              <option value="白猫">素白 (兑金·高冷出尘)</option>
+              <option value="奶牛">奶牛 (水火相济·灵动神经)</option>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:12px; font-weight:700; color:#fbbf24;">⏳ 出生时节：</label>
+            <select id="baziSeason" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;">
+              <option value="孟春">孟春 (初春苏醒)</option>
+              <option value="仲夏">仲夏 (向阳舒展)</option>
+              <option value="金秋">金秋 (贴膘丰收)</option>
+              <option value="隆冬">隆冬 (盘窝冬眠)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:4px;">
+          <button id="btnDoBaziCalc" class="btn-modal-action primary" style="flex:1; justify-content:center; background:linear-gradient(135deg, #d97706, #92400e);" type="button">☯️ 奉旨排盘</button>
+          <button id="btnDoBaziRandom" class="btn-modal-action" style="flex:1; justify-content:center;" type="button">🎲 拈指一算</button>
+        </div>
+      </div>
+
+      <!-- 结果命帖 -->
+      <div id="baziResultBox" style="display:none; background:#fef3c7; color:#451a03; border-radius:12px; border:4px double #78350f; padding:16px; margin-top:14px; text-align:left; position:relative;">
+        <div style="font-size:13px; font-weight:800; border-bottom:1px dashed #78350f; padding-bottom:6px;">
+          命主尊讳：<span id="outBaziCatInfo" style="color:#991b1b;">-</span>
+        </div>
+        <div id="outBaziTitle" style="font-size:16px; font-weight:900; color:#991b1b; margin:10px 0 4px;">-</div>
+        <div id="outBaziQuote" style="font-size:13px; font-style:italic; color:#78350f; margin-bottom:8px;">-</div>
+        <div id="outBaziText" style="font-size:12px; line-height:1.6; color:#451a03;">-</div>
+        <div style="font-size:11px; color:#78350f; margin-top:8px; border-top:1px dotted #78350f; padding-top:6px;">
+          ✦ 合拍贵人：<b id="outBaziNoble" style="color:#991b1b;">-</b> | ✦ 避忌煞星：<b id="outBaziAvoid">-</b>
+        </div>
+        <div style="position:absolute; bottom:10px; right:12px; width:56px; height:56px; border:2px solid #b91c1c; color:#b91c1c; font-size:11px; font-weight:800; display:grid; place-items:center; border-radius:6px; transform:rotate(-12deg); opacity:0.85;">钦天监<br>猫命帖</div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button id="btnSaveBaziCanvas" class="btn-modal-action primary" style="display:none; flex:1; justify-content:center; background:#b45309;" type="button">📥 保存命帖海报</button>
+        <button id="btnCloseBaziModal" class="btn-modal-action" style="flex:1; justify-content:center;" type="button">关闭</button>
+      </div>
+    </div>
+  </div>
+  <canvas id="baziCustomCanvas" style="display:none;"></canvas>
 </body>
 </html>
