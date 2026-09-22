@@ -915,6 +915,66 @@
       .room-sidebar { display: none !important; }
       .btn-mobile-choose-room { display: inline-flex; }
     }
+
+  /* 小猫算命（古典宣纸命帖）专属样式 */
+.bazi-modal-box {
+  max-width: 520px;
+  width: 94vw;
+  background: #181411;
+  border: 2px solid #b45309;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(245, 158, 11, 0.2);
+  padding: 24px 20px 24px;
+  color: #fef3c7;
+  display: flex;
+  flex-direction: column;
+}
+.bazi-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+  text-align: left;
+}
+.bazi-label { font-size: 12px; font-weight: 700; color: #fbbf24; }
+.bazi-input, .bazi-select {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #b45309;
+  color: #fef3c7;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 13px;
+  outline: none;
+}
+.bazi-result-card {
+  display: none;
+  background: #fef3c7;
+  color: #451a03;
+  border-radius: 12px;
+  border: 4px double #78350f;
+  padding: 18px 16px;
+  margin-top: 14px;
+  text-align: left;
+  font-family: "PingFang SC", "Songti SC", "SimSun", serif;
+  position: relative;
+}
+.bazi-seal {
+  position: absolute;
+  bottom: 12px;
+  right: 14px;
+  width: 60px;
+  height: 60px;
+  border: 2px solid #b91c1c;
+  color: #b91c1c;
+  font-size: 11px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  transform: rotate(-12deg);
+  user-select: none;
+  opacity: 0.85;
+}
   </style>
 </head>
 <body>
@@ -1342,6 +1402,69 @@
   <!-- 严格保持原始可正常播放的稳定 SDK 依赖 -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
   <script src="https://open.ys7.com/sdk/js/2.0/ezuikit.js"></script>
+
+  <!-- 小猫算命弹窗 -->
+  <div class="app-modal" id="baziModal">
+    <div class="modal-card-box" style="background:#181411; border:2px solid #b45309; color:#fef3c7; padding:20px;">
+      <div style="text-align:center; border-bottom:1px dashed rgba(245,158,11,0.3); padding-bottom:10px;">
+        <div style="font-size:11px; color:#fbbf24; letter-spacing:2px;">喵星钦天监 · 四柱八字推衍</div>
+        <h3 style="font-size:20px; font-weight:900; color:#fef3c7; margin-top:4px;">📜 喵星周易算命帖</h3>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px; text-align:left;">
+        <div>
+          <label style="font-size:12px; font-weight:700; color:#fbbf24;">🐾 爱猫芳名：</label>
+          <input type="text" id="baziCatName" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;" placeholder="例如: 咪咪 / 当前小猫" maxlength="12" />
+        </div>
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label style="font-size:12px; font-weight:700; color:#fbbf24;">🎨 毛色五行：</label>
+            <select id="baziCatColor" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;">
+              <option value="纯橘">大橘 (金火·富贵旺财)</option>
+              <option value="玄猫">玄猫 (玄水·辟邪镇煞)</option>
+              <option value="三花">三花 (全木火·福泽无疆)</option>
+              <option value="狸花">狸花 (青木·捕猎战神)</option>
+              <option value="白猫">素白 (兑金·高冷出尘)</option>
+              <option value="奶牛">奶牛 (水火相济·灵动神经)</option>
+            </select>
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:12px; font-weight:700; color:#fbbf24;">⏳ 出生时节：</label>
+            <select id="baziSeason" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;">
+              <option value="孟春">孟春 (初春苏醒)</option>
+              <option value="仲夏">仲夏 (向阳舒展)</option>
+              <option value="金秋">金秋 (贴膘丰收)</option>
+              <option value="隆冬">隆冬 (盘窝冬眠)</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:4px;">
+          <button id="btnDoBaziCalc" class="btn-modal-action primary" style="flex:1; justify-content:center; background:linear-gradient(135deg, #d97706, #92400e);" type="button">☯️ 奉旨排盘</button>
+          <button id="btnDoBaziRandom" class="btn-modal-action" style="flex:1; justify-content:center;" type="button">🎲 拈指一算</button>
+        </div>
+      </div>
+
+      <!-- 结果命帖 -->
+      <div id="baziResultBox" style="display:none; background:#fef3c7; color:#451a03; border-radius:12px; border:4px double #78350f; padding:16px; margin-top:14px; text-align:left; position:relative;">
+        <div style="font-size:13px; font-weight:800; border-bottom:1px dashed #78350f; padding-bottom:6px;">
+          命主尊讳：<span id="outBaziCatInfo" style="color:#991b1b;">-</span>
+        </div>
+        <div id="outBaziTitle" style="font-size:16px; font-weight:900; color:#991b1b; margin:10px 0 4px;">-</div>
+        <div id="outBaziQuote" style="font-size:13px; font-style:italic; color:#78350f; margin-bottom:8px;">-</div>
+        <div id="outBaziText" style="font-size:12px; line-height:1.6; color:#451a03;">-</div>
+        <div style="font-size:11px; color:#78350f; margin-top:8px; border-top:1px dotted #78350f; padding-top:6px;">
+          ✦ 合拍贵人：<b id="outBaziNoble" style="color:#991b1b;">-</b> | ✦ 避忌煞星：<b id="outBaziAvoid">-</b>
+        </div>
+        <div style="position:absolute; bottom:10px; right:12px; width:56px; height:56px; border:2px solid #b91c1c; color:#b91c1c; font-size:11px; font-weight:800; display:grid; place-items:center; border-radius:6px; transform:rotate(-12deg); opacity:0.85;">钦天监<br>猫命帖</div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-top:16px;">
+        <button id="btnSaveBaziCanvas" class="btn-modal-action primary" style="display:none; flex:1; justify-content:center; background:#b45309;" type="button">📥 保存命帖海报</button>
+        <button id="btnCloseBaziModal" class="btn-modal-action" style="flex:1; justify-content:center;" type="button">关闭</button>
+      </div>
+    </div>
+  </div>
+  <canvas id="baziCustomCanvas" style="display:none;"></canvas>
 
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
@@ -3510,8 +3633,6 @@
     if (sEl) sEl.value = rs;
     executeBazi("", rc, rs);
   });
-})();
-
   btnSave?.addEventListener("click", () => {
     if (!currentBaziInfo) return;
     const d = currentBaziInfo;
@@ -3620,126 +3741,5 @@
   });
 })();
   </script>
-  <!-- 小猫算命弹窗 -->
-  <div class="app-modal" id="baziModal">
-    <div class="modal-card-box" style="background:#181411; border:2px solid #b45309; color:#fef3c7; padding:20px;">
-      <div style="text-align:center; border-bottom:1px dashed rgba(245,158,11,0.3); padding-bottom:10px;">
-        <div style="font-size:11px; color:#fbbf24; letter-spacing:2px;">喵星钦天监 · 四柱八字推衍</div>
-        <h3 style="font-size:20px; font-weight:900; color:#fef3c7; margin-top:4px;">📜 喵星周易算命帖</h3>
-      </div>
-
-      <div style="display:flex; flex-direction:column; gap:12px; margin-top:14px; text-align:left;">
-        <div>
-          <label style="font-size:12px; font-weight:700; color:#fbbf24;">🐾 爱猫芳名：</label>
-          <input type="text" id="baziCatName" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;" placeholder="例如: 咪咪 / 当前小猫" maxlength="12" />
-        </div>
-        <div style="display:flex; gap:10px;">
-          <div style="flex:1;">
-            <label style="font-size:12px; font-weight:700; color:#fbbf24;">🎨 毛色五行：</label>
-            <select id="baziCatColor" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;">
-              <option value="纯橘">大橘 (金火·富贵旺财)</option>
-              <option value="玄猫">玄猫 (玄水·辟邪镇煞)</option>
-              <option value="三花">三花 (全木火·福泽无疆)</option>
-              <option value="狸花">狸花 (青木·捕猎战神)</option>
-              <option value="白猫">素白 (兑金·高冷出尘)</option>
-              <option value="奶牛">奶牛 (水火相济·灵动神经)</option>
-            </select>
-          </div>
-          <div style="flex:1;">
-            <label style="font-size:12px; font-weight:700; color:#fbbf24;">⏳ 出生时节：</label>
-            <select id="baziSeason" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;">
-              <option value="孟春">孟春 (初春苏醒)</option>
-              <option value="仲夏">仲夏 (向阳舒展)</option>
-              <option value="金秋">金秋 (贴膘丰收)</option>
-              <option value="隆冬">隆冬 (盘窝冬眠)</option>
-            </select>
-          </div>
-        </div>
-        <div style="display:flex; gap:10px; margin-top:4px;">
-          <button id="btnDoBaziCalc" class="btn-modal-action primary" style="flex:1; justify-content:center; background:linear-gradient(135deg, #d97706, #92400e);" type="button">☯️ 奉旨排盘</button>
-          <button id="btnDoBaziRandom" class="btn-modal-action" style="flex:1; justify-content:center;" type="button">🎲 拈指一算</button>
-        </div>
-      </div>
-
-      <!-- 结果命帖 -->
-      <div id="baziResultBox" style="display:none; background:#fef3c7; color:#451a03; border-radius:12px; border:4px double #78350f; padding:16px; margin-top:14px; text-align:left; position:relative;">
-        <div style="font-size:13px; font-weight:800; border-bottom:1px dashed #78350f; padding-bottom:6px;">
-          命主尊讳：<span id="outBaziCatInfo" style="color:#991b1b;">-</span>
-        </div>
-        <div id="outBaziTitle" style="font-size:16px; font-weight:900; color:#991b1b; margin:10px 0 4px;">-</div>
-        <div id="outBaziQuote" style="font-size:13px; font-style:italic; color:#78350f; margin-bottom:8px;">-</div>
-        <div id="outBaziText" style="font-size:12px; line-height:1.6; color:#451a03;">-</div>
-        <div style="font-size:11px; color:#78350f; margin-top:8px; border-top:1px dotted #78350f; padding-top:6px;">
-          ✦ 合拍贵人：<b id="outBaziNoble" style="color:#991b1b;">-</b> | ✦ 避忌煞星：<b id="outBaziAvoid">-</b>
-        </div>
-        <div style="position:absolute; bottom:10px; right:12px; width:56px; height:56px; border:2px solid #b91c1c; color:#b91c1c; font-size:11px; font-weight:800; display:grid; place-items:center; border-radius:6px; transform:rotate(-12deg); opacity:0.85;">钦天监<br>猫命帖</div>
-      </div>
-
-      <div style="display:flex; gap:10px; margin-top:16px;">
-        <button id="btnSaveBaziCanvas" class="btn-modal-action primary" style="display:none; flex:1; justify-content:center; background:#b45309;" type="button">📥 保存命帖海报</button>
-        <button id="btnCloseBaziModal" class="btn-modal-action" style="flex:1; justify-content:center;" type="button">关闭</button>
-      </div>
-    </div>
-  </div>
-  <canvas id="baziCustomCanvas" style="display:none;"></canvas>
-  /* 小猫算命（古典宣纸命帖）专属样式 */
-.bazi-modal-box {
-  max-width: 520px;
-  width: 94vw;
-  background: #181411;
-  border: 2px solid #b45309;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(245, 158, 11, 0.2);
-  padding: 24px 20px 24px;
-  color: #fef3c7;
-  display: flex;
-  flex-direction: column;
-}
-.bazi-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 14px;
-  text-align: left;
-}
-.bazi-label { font-size: 12px; font-weight: 700; color: #fbbf24; }
-.bazi-input, .bazi-select {
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid #b45309;
-  color: #fef3c7;
-  border-radius: 8px;
-  padding: 9px 12px;
-  font-size: 13px;
-  outline: none;
-}
-.bazi-result-card {
-  display: none;
-  background: #fef3c7;
-  color: #451a03;
-  border-radius: 12px;
-  border: 4px double #78350f;
-  padding: 18px 16px;
-  margin-top: 14px;
-  text-align: left;
-  font-family: "PingFang SC", "Songti SC", "SimSun", serif;
-  position: relative;
-}
-.bazi-seal {
-  position: absolute;
-  bottom: 12px;
-  right: 14px;
-  width: 60px;
-  height: 60px;
-  border: 2px solid #b91c1c;
-  color: #b91c1c;
-  font-size: 11px;
-  font-weight: 800;
-  display: grid;
-  place-items: center;
-  border-radius: 6px;
-  transform: rotate(-12deg);
-  user-select: none;
-  opacity: 0.85;
-}
 </body>
 </html>
