@@ -80,10 +80,10 @@
       letter-spacing: -0.5px;
     }
 
-    /* 顶部主导航 Tab */
+    /* 顶部主导航 Tab：实时直播 | 投喂榜单 | 关于我们 */
     .nav-tabs-bar {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       background: rgba(255, 255, 255, 0.04);
       padding: 4px;
       border-radius: 12px;
@@ -269,11 +269,7 @@
       text-align: left;
     }
 
-    .room-btn:hover {
-      background: rgba(255, 255, 255, 0.06);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-
+    .room-btn:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.2); }
     .room-btn.active {
       background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(5, 150, 105, 0.24));
       border-color: rgba(16, 185, 129, 0.5);
@@ -289,7 +285,6 @@
       color: var(--text-sub);
       font-weight: 500;
     }
-
     .room-btn.active .status-indicator { color: var(--accent-green); }
 
     .player-container {
@@ -310,54 +305,23 @@
       -webkit-user-select: none;
     }
 
-    #ezuikitPlayer {
-      width: 100%;
-      height: 100%;
-      background: #000;
+    #ezuikitPlayer { width: 100%; height: 100%; background: #000; }
+    #ezuikitPlayer video, #ezuikitPlayer canvas, #mainVideo {
+      width: 100% !important; height: 100% !important; object-fit: contain !important; display: block !important;
     }
 
-    #ezuikitPlayer video,
-    #ezuikitPlayer canvas,
-    #mainVideo {
-      width: 100% !important;
-      height: 100% !important;
-      object-fit: contain !important;
-      display: block !important;
-    }
-
-    .danmaku-container {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 8;
-    }
-
+    .danmaku-container { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 8; }
     .danmaku-item {
-      position: absolute;
-      white-space: nowrap;
-      color: #ffffff;
-      font-size: 16px;
-      font-weight: 600;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
-      animation: danmaku-move 7s linear forwards;
+      position: absolute; white-space: nowrap; color: #ffffff; font-size: 16px; font-weight: 600;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7); animation: danmaku-move 7s linear forwards;
     }
-
     .danmaku-item.is-me {
-      color: #34d399;
-      background: rgba(16, 185, 129, 0.2);
-      border: 1px solid rgba(16, 185, 129, 0.55);
-      border-radius: 99px;
-      padding: 3px 12px;
-      font-weight: 700;
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+      color: #34d399; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.55);
+      border-radius: 99px; padding: 3px 12px; font-weight: 700; box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
     }
-
     .danmaku-item.tier-gold {
-      color: #fbbf24;
-      background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
-      border: 1px solid rgba(245, 158, 11, 0.6);
-      box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+      color: #fbbf24; background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
+      border: 1px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
     }
 
     @keyframes danmaku-move {
@@ -366,17 +330,10 @@
     }
 
     .gongde-pop {
-      position: absolute;
-      font-size: 15px;
-      font-weight: 800;
-      color: #fbbf24;
+      position: absolute; font-size: 15px; font-weight: 800; color: #fbbf24;
       text-shadow: 0 0 8px rgba(245, 158, 11, 0.6), 0 2px 4px rgba(0,0,0,0.8);
-      pointer-events: none;
-      z-index: 13;
-      white-space: nowrap;
-      animation: float-gongde 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      pointer-events: none; z-index: 13; white-space: nowrap; animation: float-gongde 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-
     @keyframes float-gongde {
       0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
       20% { transform: translate(-50%, -70px) scale(1.15); opacity: 1; }
@@ -384,14 +341,9 @@
     }
 
     .tap-heart {
-      position: absolute;
-      font-size: 32px;
-      pointer-events: none;
-      z-index: 12;
-      animation: float-up-fade 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+      position: absolute; font-size: 32px; pointer-events: none; z-index: 12;
+      animation: float-up-fade 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
     }
-
     @keyframes float-up-fade {
       0% { transform: translate(-50%, -50%) scale(0.6) rotate(0deg); opacity: 0; }
       20% { transform: translate(-50%, -50%) scale(1.3) rotate(-8deg); opacity: 1; }
@@ -399,139 +351,82 @@
     }
 
     .controls-overlay {
-      position: absolute;
-      bottom: 16px;
-      right: 16px;
-      z-index: 10;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      gap: 8px;
+      position: absolute; bottom: 16px; right: 16px; z-index: 10; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px;
     }
-
     .player-ctrl-btn {
-      background: rgba(0, 0, 0, 0.65);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(8px);
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
+      background: rgba(0, 0, 0, 0.65); border: 1px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(8px);
+      color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s;
     }
-
-    .player-ctrl-btn:hover:not(:disabled) {
-      background: rgba(0, 0, 0, 0.85);
-      border-color: rgba(255, 255, 255, 0.3);
+    .player-ctrl-btn:hover:not(:disabled) { background: rgba(0, 0, 0, 0.85); border-color: rgba(255, 255, 255, 0.3); }
+    .player-ctrl-btn:disabled { opacity: 0.65; cursor: not-allowed; filter: grayscale(0.5); }
+    .player-ctrl-btn.active {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
+      border-color: rgba(16, 185, 129, 0.5); color: #fff;
     }
-
-    .player-ctrl-btn:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
-      filter: grayscale(0.5);
-    }
-
     .player-ctrl-btn.btn-fortune {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
-      border-color: rgba(245, 158, 11, 0.5);
-      font-weight: 600;
+      border-color: rgba(245, 158, 11, 0.5); font-weight: 600;
     }
 
     .card-empty {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      padding: 20px;
-      text-align: center;
-      color: var(--text-main);
-      background: rgba(9, 10, 15, 0.88);
-      backdrop-filter: blur(4px);
-      z-index: 5;
+      position: absolute; inset: 0; display: grid; place-items: center; padding: 20px; text-align: center;
+      color: var(--text-main); background: rgba(9, 10, 15, 0.88); backdrop-filter: blur(4px); z-index: 5;
     }
-
     .empty-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
     .empty-copy { font-size: 13px; color: var(--text-sub); }
 
     .player-bar {
-      padding: 14px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(255, 255, 255, 0.01);
-      border-top: 1px solid var(--card-border);
+      padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;
+      background: rgba(255, 255, 255, 0.01); border-top: 1px solid var(--card-border);
     }
-
     .current-room-name { font-size: 15px; font-weight: 700; color: var(--text-main); }
 
     .btn-mobile-choose-room {
-      display: none;
-      align-items: center;
-      gap: 6px;
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      color: #34d399;
-      padding: 6px 14px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
+      display: none; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; padding: 6px 14px; border-radius: 99px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
     }
 
     .chat-section {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 24px;
-      backdrop-filter: blur(12px);
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius);
+      padding: 20px; margin-bottom: 24px; backdrop-filter: blur(12px);
     }
-
     .chat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+      padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
-
     .chat-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
-    .chat-messages {
-      height: 180px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      padding-right: 6px;
-      margin-bottom: 14px;
-      scroll-behavior: smooth;
+    .honor-badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 99px;
+      font-size: 12px; font-weight: 700; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-sub); cursor: pointer; transition: all 0.2s ease; user-select: none;
     }
+    .honor-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .honor-badge.tier-1 { color: #93c5fd; border-color: rgba(147, 197, 253, 0.4); background: rgba(147, 197, 253, 0.12); }
+    .honor-badge.tier-2 { color: #6ee7b7; border-color: rgba(110, 231, 183, 0.4); background: rgba(110, 231, 183, 0.12); }
+    .honor-badge.tier-3 { color: #34d399; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.12); }
+    .honor-badge.tier-4 { color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.12); }
+    .honor-badge.tier-5 { color: #818cf8; border-color: rgba(129, 140, 248, 0.4); background: rgba(129, 140, 248, 0.12); }
+    .honor-badge.tier-6 { color: #c084fc; border-color: rgba(192, 132, 252, 0.4); background: rgba(192, 132, 252, 0.12); }
+    .honor-badge.tier-7 { color: #f472b6; border-color: rgba(244, 114, 182, 0.4); background: rgba(244, 114, 182, 0.12); }
+    .honor-badge.tier-8 { color: #fb923c; border-color: rgba(251, 146, 60, 0.4); background: rgba(251, 146, 60, 0.12); }
+    .honor-badge.tier-9 { color: #facc15; border-color: rgba(250, 204, 21, 0.5); background: rgba(250, 204, 21, 0.18); box-shadow: 0 0 10px rgba(250, 204, 21, 0.25); }
+    .honor-badge.tier-10 { color: #fbbf24; border-color: rgba(251, 191, 36, 0.6); background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3)); box-shadow: 0 0 14px rgba(245, 158, 11, 0.4); }
 
+    .chat-messages {
+      height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 6px;
+      margin-bottom: 14px; scroll-behavior: smooth;
+    }
     .chat-messages::-webkit-scrollbar { width: 4px; }
     .chat-messages::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
 
-    .message-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      line-height: 1.5;
-      padding: 5px 8px;
-      border-radius: 8px;
-    }
-
+    .message-item { display: flex; align-items: center; gap: 8px; font-size: 13px; line-height: 1.5; padding: 5px 8px; border-radius: 8px; }
     .message-item.is-me { background: rgba(16, 185, 129, 0.09); border: 1px solid rgba(16, 185, 129, 0.15); }
-
     .msg-avatar {
-      width: 26px; height: 26px; min-width: 26px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08); display: grid; place-items: center; font-size: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      width: 26px; height: 26px; min-width: 26px; border-radius: 50%; background: rgba(255, 255, 255, 0.08);
+      display: grid; place-items: center; font-size: 14px; border: 1px solid rgba(255, 255, 255, 0.12);
     }
-
     .msg-content-wrapper { display: flex; align-items: baseline; gap: 6px; flex: 1; flex-wrap: wrap; }
     .msg-user { color: var(--accent-green); font-weight: 600; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
     .msg-badge-me { background: var(--accent-green); color: #090a0f; font-size: 10px; font-weight: 800; padding: 0 4px; border-radius: 4px; }
@@ -540,7 +435,6 @@
 
     .quick-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 4px; scrollbar-width: none; }
     .quick-chips::-webkit-scrollbar { display: none; }
-
     .chip-btn {
       background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border); color: var(--text-sub);
       padding: 5px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; transition: all 0.2s;
@@ -549,9 +443,8 @@
 
     .chat-input-bar { display: flex; gap: 10px; position: relative; align-items: center; }
     .avatar-picker-btn {
-      width: 40px; height: 40px; min-width: 40px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.06); border: 1px solid var(--card-border); font-size: 20px;
-      display: grid; place-items: center; cursor: pointer; transition: all 0.2s ease;
+      width: 40px; height: 40px; min-width: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border); font-size: 20px; display: grid; place-items: center; cursor: pointer; transition: all 0.2s ease;
     }
     .chat-input {
       width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border);
@@ -559,7 +452,6 @@
     }
     .chat-input:focus { border-color: var(--accent-green); background: rgba(255, 255, 255, 0.07); }
     .input-text { flex: 1; }
-
     .btn-send {
       background: var(--accent-green); color: #090a0f; border: none; padding: 0 18px;
       border-radius: 10px; font-weight: 700; font-size: 13px; height: 40px; cursor: pointer; white-space: nowrap;
@@ -567,67 +459,32 @@
     .btn-send:hover:not(:disabled) { background: var(--accent-green-hover); }
     .btn-send:disabled { background: rgba(255, 255, 255, 0.1); color: var(--text-sub); cursor: not-allowed; }
 
-    /* =========================================================================
-       投喂排行榜单页样式
-       ========================================================================= */
-    .rankings-wrapper {
-      max-width: 860px;
-      margin: 0 auto;
-      position: relative;
-      padding-bottom: 90px;
-    }
-
+    /* ================= 投喂排行榜模块样式 ================= */
+    .rankings-wrapper { max-width: 860px; margin: 0 auto; position: relative; padding-bottom: 90px; }
     .rankings-header-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      padding: 24px;
-      text-align: center;
-      margin-bottom: 16px;
-      backdrop-filter: blur(12px);
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius);
+      padding: 24px; text-align: center; margin-bottom: 16px; backdrop-filter: blur(12px);
     }
-
     .rank-filter-tabs {
-      display: inline-flex;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
-      padding: 4px;
-      border-radius: 99px;
-      gap: 6px;
-      margin-top: 14px;
+      display: inline-flex; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border);
+      padding: 4px; border-radius: 99px; gap: 6px; margin-top: 14px;
     }
-
     .rank-filter-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-sub);
-      padding: 8px 18px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
+      background: transparent; border: none; color: var(--text-sub); padding: 8px 18px;
+      border-radius: 99px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s;
     }
     .rank-filter-btn:hover { color: #fff; }
     .rank-filter-btn.active {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
-      border: 1px solid rgba(245, 158, 11, 0.6);
-      color: #fbbf24;
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.3);
+      border: 1px solid rgba(245, 158, 11, 0.6); color: #fbbf24; box-shadow: 0 0 14px rgba(245, 158, 11, 0.3);
     }
-
     .rank-list-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      backdrop-filter: blur(12px);
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius);
+      overflow: hidden; backdrop-filter: blur(12px);
     }
-
     .rank-table { width: 100%; border-collapse: collapse; text-align: left; }
     .rank-table th {
-      background: rgba(255, 255, 255, 0.02);
-      border-bottom: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.02); border-bottom: 1px solid var(--card-border);
       padding: 14px 20px; font-size: 12px; font-weight: 700; color: var(--text-sub); text-transform: uppercase;
     }
     .rank-table td {
@@ -635,16 +492,13 @@
     }
     .rank-row { transition: background 0.2s ease; }
     .rank-row:hover { background: rgba(255, 255, 255, 0.03); }
-
     .rank-num-badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.05);
-      color: var(--text-sub); font-size: 13px; font-weight: 800;
+      display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px;
+      border-radius: 8px; background: rgba(255, 255, 255, 0.05); color: var(--text-sub); font-size: 13px; font-weight: 800;
     }
     .rank-row.top-1 .rank-num-badge { background: linear-gradient(135deg, #f59e0b, #d97706); color: #090a0f; box-shadow: 0 0 14px rgba(245, 158, 11, 0.5); }
     .rank-row.top-2 .rank-num-badge { background: linear-gradient(135deg, #94a3b8, #64748b); color: #090a0f; box-shadow: 0 0 12px rgba(148, 163, 184, 0.4); }
     .rank-row.top-3 .rank-num-badge { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; box-shadow: 0 0 12px rgba(217, 119, 6, 0.35); }
-
     .rank-user-profile { display: flex; align-items: center; gap: 12px; }
     .rank-user-avatar {
       width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, 0.08);
@@ -654,12 +508,11 @@
     .rank-count-val { font-size: 18px; font-weight: 800; color: #fbbf24; font-family: monospace; }
     .rank-loading-trigger { padding: 20px; text-align: center; font-size: 13px; color: var(--text-sub); }
 
-    /* 底部常驻条：我的排名 */
     .sticky-my-rank-bar {
       position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      width: min(860px, calc(100vw - 32px)); background: rgba(22, 27, 34, 0.94);
-      backdrop-filter: blur(16px); border: 1px solid rgba(16, 185, 129, 0.4);
-      border-radius: 16px; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;
+      width: min(860px, calc(100vw - 32px)); background: rgba(22, 27, 34, 0.94); backdrop-filter: blur(16px);
+      border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 16px; padding: 12px 20px;
+      display: flex; align-items: center; justify-content: space-between;
       box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(16, 185, 129, 0.2); z-index: 100;
     }
     .my-rank-left { display: flex; align-items: center; gap: 12px; }
@@ -669,6 +522,47 @@
     }
     .btn-login-to-rank {
       background: #10b981; border: none; color: #090a0f; padding: 7px 16px; border-radius: 99px; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+
+    /* ================= 关于我们模块样式（卡片式 + 手风琴 FAQ） ================= */
+    .about-wrapper { max-width: 860px; margin: 0 auto; }
+    .about-card {
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius);
+      padding: 28px; margin-bottom: 20px; backdrop-filter: blur(12px);
+    }
+    .about-banner {
+      background: rgba(16, 185, 129, 0.1); border: 1px dashed rgba(16, 185, 129, 0.4);
+      border-radius: 12px; padding: 14px 18px; font-size: 14px; color: #34d399; margin-bottom: 20px; line-height: 1.6;
+    }
+    .about-article { font-size: 14px; line-height: 1.8; color: var(--text-main); }
+    .about-article p { margin-bottom: 14px; }
+    .about-social-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+    .about-link-pill {
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border); border-radius: 99px; color: #38bdf8; text-decoration: none; font-size: 13px; font-weight: 600;
+      transition: all 0.2s;
+    }
+    .about-link-pill:hover { background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); transform: translateY(-1px); }
+
+    .faq-title { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 16px; text-align: center; }
+    .faq-accordion { display: flex; flex-direction: column; gap: 10px; }
+    .faq-item {
+      background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border); border-radius: 12px;
+      overflow: hidden; transition: all 0.25s ease;
+    }
+    .faq-question {
+      padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; font-size: 14px; font-weight: 700; color: #fff; user-select: none;
+    }
+    .faq-question:hover { background: rgba(255, 255, 255, 0.03); }
+    .faq-arrow { transition: transform 0.3s ease; color: var(--accent-green); }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .faq-answer {
+      max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease;
+      padding: 0 20px; font-size: 13px; line-height: 1.7; color: var(--text-sub); border-top: 1px solid transparent;
+    }
+    .faq-item.open .faq-answer {
+      max-height: 200px; padding: 14px 20px 18px; border-top-color: rgba(255, 255, 255, 0.04);
     }
 
     .footer-box {
@@ -692,7 +586,7 @@
       border-radius: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); overflow: hidden;
       animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    @keyframes pop-in { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    @keyframes pop-in { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); } }
     .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
     .btn-modal-action {
       background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff;
@@ -807,10 +701,11 @@
         <div class="logo-text">MeowHub <span style="font-weight: 300; opacity: 0.5;">Live</span></div>
       </div>
 
-      <!-- 顶部单页导航 Tab：实时直播 vs 投喂榜单 -->
+      <!-- 顶部主导航 Tab：实时直播 | 投喂榜单 | 关于我们 -->
       <nav class="nav-tabs-bar">
         <button class="nav-tab-btn active" id="tabNavLive" type="button">📹 实时直播</button>
         <button class="nav-tab-btn" id="tabNavRankings" type="button">🏆 投喂榜单</button>
+        <button class="nav-tab-btn" id="tabNavAbout" type="button">ℹ️ 关于我们</button>
       </nav>
 
       <div class="header-right">
@@ -953,6 +848,83 @@
           </div>
           <div id="myBarRight">
             <button class="btn-login-to-rank" id="btnRankLoginNow" type="button">立即登录</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 视图 3：关于我们 (About Us & FAQ) ================= -->
+    <div class="view-container" id="viewAbout">
+      <div class="about-wrapper">
+        <div class="about-card">
+          <div class="about-banner">
+            🐾 欢迎来到毛毛星球！我们致力于用物联网与云原生技术，让每一位爱猫人士跨越时空守护毛孩子。别让你家毛孩子再成为留守儿童了。
+          </div>
+          <div class="about-article">
+            <p>
+              毛毛星球（MeowHub）的灵感源于对城市流浪动物救助与智慧养宠的真诚思考。起初，我们打造这套实时云喂养设备，是为了在外出工作或差旅时，依然能够全天候照看、远程定时投喂流浪猫岛上的毛孩子。
+            </p>
+            <p>
+              后来，我们将摄像头视频流与自研智能硬件控制向全网公开，引入了实时互动弹幕、多点位机位切换以及透明公开的投喂功德榜，希望让更多猫友能够随时随地“赛博云吸猫”，并在猫咪饥饿时亲手送上一顿温饱。
+            </p>
+            <p>
+              目前，团队正在积极拓展更多救助基地与流浪猫定点投喂站的智能化升级。如果您有场地合作意向、硬件改进建议或任何救助反馈，欢迎随时与我们建立联系！
+            </p>
+          </div>
+
+          <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--card-border);">
+            <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 8px;">📬 官方交流与反馈渠道：</div>
+            <div class="about-social-links">
+              <a href="https://agreement.meowhub.cn/live_room_share.html" target="_blank" rel="noopener noreferrer" class="about-link-pill">📱 下载毛毛星球 App</a>
+              <span class="about-link-pill" style="color: #10b981; cursor: default;">💬 官方微信公众号：毛毛星球</span>
+              <span class="about-link-pill" style="color: #fbbf24; cursor: default;">💌 合作邮箱：support@meowhub.cn</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 常见问题解答 FAQ (手风琴) -->
+        <div class="about-card">
+          <h2 class="faq-title">🐾 常见问题解答 (FAQ)</h2>
+          <div class="faq-accordion">
+            <div class="faq-item">
+              <div class="faq-question">
+                <span>1. 猫咪们去哪儿了？为什么有时镜头前看不到它们？</span>
+                <span class="faq-arrow">▼</span>
+              </div>
+              <div class="faq-answer">
+                猫咪生性警觉且多喜在晨昏活动。白天光照充足或气温较高时，它们通常在舒适温暖的猫窝或隐蔽角落小憩。每当听到投喂器运转出粮的清脆响声，或者到了傍晚饭点，它们就会成群结队跑来干饭啦！
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <span>2. 大家都点击投喂，猫咪会不会被撑坏或浪费粮食？</span>
+                <span class="faq-arrow">▼</span>
+              </div>
+              <div class="faq-answer">
+                不会的！平台底层搭载了“机位全局防过饱冷却锁”（全网共享冷却时长）。只要任意用户投喂成功一次，该机位将立即锁定进入倒计时保护，冷却期间全网所有人都无法再次下发指令，科学保障定时定量。
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <span>3. 为什么点击投喂成功后，画面没有马上看到猫粮掉落？</span>
+                <span class="faq-arrow">▼</span>
+              </div>
+              <div class="faq-answer">
+                现场摄像头采用多码流自适应加密推流，从现场真实画面采集、视频转码到浏览器解码播放，存在约 3 到 6 秒的客观传输物理延迟。现场投喂器在点击的 1 秒内就已经精准出粮了，稍等数秒即可在画面中看到。
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <span>4. 投喂功德排行榜是如何排名的？</span>
+                <span class="faq-arrow">▼</span>
+              </div>
+              <div class="faq-answer">
+                排行榜基于全网登录用户的有效投喂次数自动统计，分为“全部时间”、“最近 30 天”与“最近 7 天”三个时间维度。若多名猫友投喂次数相同，系统采用标准并列算法（Dense Rank），让同贡献的猫友享有并列殊荣！
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1262,30 +1234,37 @@
     });
 
     // =========================================================================
-    // 顶部单页 Tab 导航切换（直播间 vs 投喂榜单）
+    // 顶部三栏 Tab 导航无缝切换
     // =========================================================================
     const tabNavLive = document.getElementById("tabNavLive");
     const tabNavRankings = document.getElementById("tabNavRankings");
+    const tabNavAbout = document.getElementById("tabNavAbout");
+
     const viewLive = document.getElementById("viewLive");
     const viewRankings = document.getElementById("viewRankings");
+    const viewAbout = document.getElementById("viewAbout");
 
-    tabNavLive.addEventListener("click", () => {
-      tabNavLive.classList.add("active");
-      tabNavRankings.classList.remove("active");
-      viewLive.classList.add("active");
-      viewRankings.classList.remove("active");
-    });
+    function switchView(targetTab, targetView) {
+      [tabNavLive, tabNavRankings, tabNavAbout].forEach(tab => tab.classList.remove("active"));
+      [viewLive, viewRankings, viewAbout].forEach(v => v.classList.remove("active"));
 
+      targetTab.classList.add("active");
+      targetView.classList.add("active");
+    }
+
+    tabNavLive.addEventListener("click", () => switchView(tabNavLive, viewLive));
     tabNavRankings.addEventListener("click", () => {
-      tabNavRankings.classList.add("active");
-      tabNavLive.classList.remove("active");
-      viewRankings.classList.add("active");
-      viewLive.classList.remove("active");
+      switchView(tabNavRankings, viewRankings);
+      if (rankState.list.length === 0) resetAndLoadRankings();
+    });
+    tabNavAbout.addEventListener("click", () => switchView(tabNavAbout, viewAbout));
 
-      // 初次切换到榜单时，自动拉取第一页数据
-      if (rankState.list.length === 0) {
-        resetAndLoadRankings();
-      }
+    // FAQ 手风琴点击折叠逻辑
+    document.querySelectorAll(".faq-question").forEach(q => {
+      q.addEventListener("click", () => {
+        const item = q.parentElement;
+        item.classList.toggle("open");
+      });
     });
 
     // =========================================================================
@@ -1432,7 +1411,7 @@
       });
     });
 
-    // 触底分页无限滚动
+    // 触底自动滚动懒加载 20 条
     window.addEventListener("scroll", () => {
       if (!viewRankings.classList.contains("active")) return;
       const scrollHeight = document.documentElement.scrollHeight;
