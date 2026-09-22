@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>毛毛星球 MeowHub | 智能养宠</title>
   
-  <!-- Clerk 官方 SDK -->
+  <!-- 官方带有预制 UI 模态框的标准版 SDK -->
   <script
     async
     crossorigin="anonymous"
@@ -30,17 +30,15 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      width: 100%;
-      min-height: 100vh;
+    body {
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
       background-color: var(--bg);
       color: var(--text-main);
+      min-height: 100vh;
       background-image: 
         radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12), transparent 40%),
         radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.08), transparent 30%);
       -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
     }
 
     .container {
@@ -83,7 +81,7 @@
       letter-spacing: -0.5px;
     }
 
-    /* 顶部导航 Tab */
+    /* 顶部主导航 Tab：实时直播 | 投喂榜单 | 关于我们 */
     .nav-tabs-bar {
       display: flex;
       gap: 6px;
@@ -206,7 +204,8 @@
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-    .view-container { display: none; width: 100%; }
+    /* 视图切换容器 */
+    .view-container { display: none; }
     .view-container.active { display: block; animation: fadeIn 0.3s ease; }
 
     .hero-title {
@@ -321,10 +320,35 @@
       color: #34d399; background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.55);
       border-radius: 99px; padding: 3px 12px; font-weight: 700; box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
     }
+    .danmaku-item.tier-gold {
+      color: #fbbf24; background: linear-gradient(90deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
+      border: 1px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+    }
 
     @keyframes danmaku-move {
       from { transform: translateX(100vw); }
       to { transform: translateX(-100%); }
+    }
+
+    .gongde-pop {
+      position: absolute; font-size: 15px; font-weight: 800; color: #fbbf24;
+      text-shadow: 0 0 8px rgba(245, 158, 11, 0.6), 0 2px 4px rgba(0,0,0,0.8);
+      pointer-events: none; z-index: 13; white-space: nowrap; animation: float-gongde 1.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes float-gongde {
+      0% { transform: translate(-50%, -50%) scale(0.7); opacity: 0; }
+      20% { transform: translate(-50%, -70px) scale(1.15); opacity: 1; }
+      100% { transform: translate(-50%, -150px) scale(1); opacity: 0; }
+    }
+
+    .tap-heart {
+      position: absolute; font-size: 32px; pointer-events: none; z-index: 12;
+      animation: float-up-fade 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+    }
+    @keyframes float-up-fade {
+      0% { transform: translate(-50%, -50%) scale(0.6) rotate(0deg); opacity: 0; }
+      20% { transform: translate(-50%, -50%) scale(1.3) rotate(-8deg); opacity: 1; }
+      100% { transform: translate(-50%, -130px) scale(1) rotate(12deg); opacity: 0; }
     }
 
     .controls-overlay {
@@ -337,6 +361,7 @@
     .player-ctrl-btn:hover:not(:disabled) { background: rgba(0, 0, 0, 0.85); border-color: rgba(255, 255, 255, 0.3); }
     .player-ctrl-btn:disabled { opacity: 0.65; cursor: not-allowed; filter: grayscale(0.5); }
     
+    /* 塔罗按钮专属神秘感渐变 */
     .player-ctrl-btn.btn-tarot {
       background: linear-gradient(135deg, rgba(168, 85, 247, 0.85), rgba(126, 34, 206, 0.9));
       border-color: rgba(168, 85, 247, 0.6);
@@ -373,6 +398,23 @@
       padding-bottom: 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     .chat-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+    .honor-badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 99px;
+      font-size: 12px; font-weight: 700; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-sub); cursor: pointer; transition: all 0.2s ease; user-select: none;
+    }
+    .honor-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .honor-badge.tier-1 { color: #93c5fd; border-color: rgba(147, 197, 253, 0.4); background: rgba(147, 197, 253, 0.12); }
+    .honor-badge.tier-2 { color: #6ee7b7; border-color: rgba(110, 231, 183, 0.4); background: rgba(110, 231, 183, 0.12); }
+    .honor-badge.tier-3 { color: #34d399; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.12); }
+    .honor-badge.tier-4 { color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.12); }
+    .honor-badge.tier-5 { color: #818cf8; border-color: rgba(129, 140, 248, 0.4); background: rgba(129, 140, 248, 0.12); }
+    .honor-badge.tier-6 { color: #c084fc; border-color: rgba(192, 132, 252, 0.4); background: rgba(192, 132, 252, 0.12); }
+    .honor-badge.tier-7 { color: #f472b6; border-color: rgba(244, 114, 182, 0.4); background: rgba(244, 114, 182, 0.12); }
+    .honor-badge.tier-8 { color: #fb923c; border-color: rgba(251, 146, 60, 0.4); background: rgba(251, 146, 60, 0.12); }
+    .honor-badge.tier-9 { color: #facc15; border-color: rgba(250, 204, 21, 0.5); background: rgba(250, 204, 21, 0.18); box-shadow: 0 0 10px rgba(250, 204, 21, 0.25); }
+    .honor-badge.tier-10 { color: #fbbf24; border-color: rgba(251, 191, 36, 0.6); background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3)); box-shadow: 0 0 14px rgba(245, 158, 11, 0.4); }
 
     .chat-messages {
       height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 6px;
@@ -525,38 +567,16 @@
       max-height: 200px; padding: 14px 20px 18px; border-top-color: rgba(255, 255, 255, 0.04);
     }
 
-    /* ================= 核心修复：弹窗体系（默认完全隐藏与防穿透） ================= */
+    /* ================= 核心弹窗通用样式 ================= */
     .app-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(10px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 2500;
-      padding: 20px;
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity 0.25s ease, visibility 0.25s ease;
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2500;
+      padding: 20px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.25s ease, visibility 0.25s ease;
     }
-
-    .app-modal.show {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-
+    .app-modal.show { opacity: 1; visibility: visible; pointer-events: auto; }
     .modal-card-box {
-      max-width: 440px;
-      width: 92vw;
-      background: #161b22;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 16px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-      overflow: hidden;
+      max-width: 440px; width: 92vw; background: #161b22; border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); overflow: hidden;
       animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     @keyframes pop-in { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
@@ -811,7 +831,7 @@
       .tarot-action-bar { flex-direction: column; gap: 8px; }
     }
 
-    /* 通用弹窗组件 */
+    /* 拍立得与打卡操作条 */
     .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
     .btn-modal-action {
       background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff;
@@ -1088,7 +1108,7 @@
           </div>
         </div>
 
-        <!-- 常见问题解答 FAQ (手风琴折叠) -->
+        <!-- 常见问题解答 FAQ (手风琴) -->
         <div class="about-card">
           <h2 class="faq-title">🐾 常见问题解答 (FAQ)</h2>
           <div class="faq-accordion">
@@ -1318,18 +1338,19 @@
   <canvas id="tarotCanvas" style="display: none;"></canvas>
   <canvas id="certCanvas" style="display: none;"></canvas>
 
-  <!-- 核心修复：引入稳定可用的 Hls.js，并将 EZUIKit 替换为兼容性最佳地址 -->
+  <!-- 严格保持原始可正常播放的稳定 SDK 依赖 -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
-  <script src="https://open.ys7.com/sdk/js/1.4/ezuikit.js"></script>
+  <script src="https://open.ys7.com/sdk/js/2.0/ezuikit.js"></script>
 
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
+    // 强声明全局机位与冷却状态变量（与原版保持一致，杜绝 ReferenceError）
     let currentRoom = null;
     let activeDeviceImei = "";
     let activeCooldownInterval = null;
 
-    // Clerk 身份中心
+    // 1. Clerk 全局认证管理中心
     const ClerkAuth = {
       isLoggedIn: () => Boolean(window.Clerk && window.Clerk.user),
       getUser: () => {
@@ -1365,14 +1386,24 @@
         await new Promise(r => setTimeout(r, 100));
         waitCount++;
       }
-      if (!window.Clerk) return;
+
+      if (!window.Clerk) {
+        alert("认证服务正在连接，请稍等刷新重试！");
+        return;
+      }
+
       try {
-        if (!window.Clerk.loaded) await window.Clerk.load();
+        if (!window.Clerk.loaded) {
+          await window.Clerk.load();
+        }
         window.Clerk.openSignIn({
           afterSignInUrl: window.location.href,
           afterSignUpUrl: window.location.href
         });
-      } catch (err) {}
+      } catch (err) {
+        console.error("呼起登录失败:", err);
+        alert("登录窗口呼起失败: " + err.message);
+      }
     }
 
     function requireAuth(actionCallback) {
@@ -1386,7 +1417,10 @@
 
     const btnClerkSignIn = document.getElementById("btnClerkSignIn");
     const clerkUserAvatarSlot = document.getElementById("clerk-user-avatar-slot");
-    if (btnClerkSignIn) btnClerkSignIn.addEventListener("click", openClerkSignInModal);
+
+    if (btnClerkSignIn) {
+      btnClerkSignIn.addEventListener("click", openClerkSignInModal);
+    }
 
     async function syncClerkUserToBackend(user) {
       if (!user) return;
@@ -1399,25 +1433,33 @@
       } catch (e) {}
     }
 
+    // 初始化加载 Clerk SDK 并安全挂载 UserButton（避免 removeChild 错误）
     window.addEventListener("load", async () => {
       let retryCount = 0;
       while (!window.Clerk && retryCount < 60) {
         await new Promise(r => setTimeout(r, 100));
         retryCount++;
       }
-      if (!window.Clerk) return;
+
+      if (!window.Clerk) {
+        console.warn("Clerk 脚本还在后台加载...");
+        return;
+      }
 
       try {
         await window.Clerk.load();
+
         function refreshAuthUI() {
           if (window.Clerk.user) {
             if (btnClerkSignIn) btnClerkSignIn.style.display = "none";
             if (clerkUserAvatarSlot && !clerkUserAvatarSlot.hasChildNodes()) {
               window.Clerk.mountUserButton(clerkUserAvatarSlot);
             }
+
             const u = ClerkAuth.getUser();
             syncClerkUserToBackend(u);
             updateMyRankStickyBar();
+
             if (pendingAction) {
               const act = pendingAction;
               pendingAction = null;
@@ -1429,9 +1471,13 @@
             updateMyRankStickyBar();
           }
         }
+
         refreshAuthUI();
         window.Clerk.addListener(refreshAuthUI);
-      } catch (err) {}
+        console.log("✓ Clerk 认证系统加载完成");
+      } catch (err) {
+        console.warn("Clerk 加载异常:", err);
+      }
     });
 
     // =========================================================================
@@ -1460,7 +1506,7 @@
     });
     tabNavAbout?.addEventListener("click", () => switchView(tabNavAbout, viewAbout));
 
-    // FAQ 手风琴折叠交互
+    // FAQ 手风琴点击折叠逻辑
     document.querySelectorAll(".faq-question").forEach(q => {
       q.addEventListener("click", () => {
         const item = q.parentElement;
@@ -1828,13 +1874,28 @@
       }
     });
 
-    // 播放器、弹幕与房间调度
-    let roomList = [];
-    let danmakuEnabled = true;
-    let seenCommentIds = new Set();
-    let latestCommentId = "";
-    let pollTimer = null;
-    let cooldownTimer = null;
+    // =========================================================================
+    // 2. 页面核心逻辑 (播放器、打卡、段位、弹幕)
+    // =========================================================================
+    let currentRoomId = "1";
+    let currentRoomName = "苏州猫岛";
+    let ezPlayer = null;
+    let ezAccessToken = "";
+    let hls = null;
+
+    function trackEvent(type, extra = {}) {
+      try {
+        const payload = JSON.stringify({ type, ...extra });
+        fetch(`${API_ENDPOINT}/api/track`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+          keepalive: true
+        }).catch(() => {});
+      } catch (e) {}
+    }
+
+    trackEvent("pv");
 
     const video = document.getElementById("mainVideo");
     const videoWrapper = document.getElementById("videoWrapper");
@@ -1851,6 +1912,7 @@
     const emptyCopy = document.getElementById("emptyCopy");
     const currentRoomTitle = document.getElementById("currentRoomTitle");
     const roomButtonList = document.getElementById("roomButtonList");
+    const btnDownloadApp = document.getElementById("btnDownloadApp");
     const noticeBar = document.getElementById("noticeBar");
     const noticeContent = document.getElementById("noticeContent");
     const myHonorBadge = document.getElementById("myHonorBadge");
@@ -1862,206 +1924,742 @@
     const mobileRoomBadge = document.getElementById("mobileRoomBadge");
     const drawerTotalCount = document.getElementById("drawerTotalCount");
 
-    btnOpenRoomDrawer?.addEventListener("click", () => roomDrawerModal?.classList.add("show"));
-    closeDrawerBtn?.addEventListener("click", () => roomDrawerModal?.classList.remove("show"));
+    btnOpenRoomDrawer?.addEventListener("click", () => {
+      roomDrawerModal?.classList.add("show");
+    });
+    closeDrawerBtn?.addEventListener("click", () => {
+      roomDrawerModal?.classList.remove("show");
+    });
     roomDrawerModal?.addEventListener("click", (e) => {
-      if (e.target === roomDrawerModal) roomDrawerModal?.classList.remove("show");
+      if (e.target === roomDrawerModal) {
+        roomDrawerModal?.classList.remove("show");
+      }
     });
 
-    const btnFeedPet = document.getElementById("btnFeedPet");
+    let activePlayingSeconds = 0;
 
-    function startBtnCooldown(seconds) {
-      if (activeCooldownInterval) clearInterval(activeCooldownInterval);
-      let remain = parseInt(seconds, 10);
-      if (remain <= 0) {
-        if (btnFeedPet) {
-          btnFeedPet.disabled = false;
-          btnFeedPet.textContent = "🍗 立即投喂";
-        }
-        return;
-      }
-
-      if (btnFeedPet) {
-        btnFeedPet.disabled = true;
-        btnFeedPet.textContent = `全网冷却中 (${remain}s)`;
-      }
-
-      activeCooldownInterval = setInterval(() => {
-        remain--;
-        if (remain <= 0) {
-          clearInterval(activeCooldownInterval);
-          activeCooldownInterval = null;
-          if (btnFeedPet) {
-            btnFeedPet.disabled = false;
-            btnFeedPet.textContent = "🍗 立即投喂";
-          }
-        } else {
-          if (btnFeedPet) btnFeedPet.textContent = `全网冷却中 (${remain}s)`;
-        }
-      }, 1000);
+    function flushRoomDuration() {
+      if (activePlayingSeconds <= 0 || !currentRoomId) return;
+      const secToReport = activePlayingSeconds;
+      activePlayingSeconds = 0;
+      trackEvent("room_duration", { roomId: String(currentRoomId), seconds: secToReport });
     }
 
-    async function syncRoomCooldownStatus(roomId, imei) {
-      try {
-        const queryImei = imei || activeDeviceImei || "";
-        const res = await fetch(`${API_ENDPOINT}/api/feeder/status?room=${encodeURIComponent(roomId)}&imei=${encodeURIComponent(queryImei)}`);
-        const json = await res.json();
-        if (json && json.code === 200) {
-          if (json.inCooldown && json.remainingSec > 0) {
-            startBtnCooldown(json.remainingSec);
-          } else {
-            if (activeCooldownInterval) clearInterval(activeCooldownInterval);
-            if (btnFeedPet) {
-              btnFeedPet.disabled = false;
-              btnFeedPet.textContent = "🍗 立即投喂";
-            }
+    setInterval(flushRoomDuration, 30000);
+    window.addEventListener("pagehide", flushRoomDuration);
+    window.addEventListener("beforeunload", flushRoomDuration);
+
+    const btnChooseAvatar = document.getElementById("btnChooseAvatar");
+    const avatarModal = document.getElementById("avatarModal");
+    const avatarGrid = document.getElementById("avatarGrid");
+    const closeAvatarBtn = document.getElementById("closeAvatarBtn");
+
+    const AVATAR_LIST = ["🐱", "😸", "😻", "😽", "😼", "🦁", "🐯", "🦊", "🐼", "🐨", "🐶", "🐾"];
+    
+    function getUserAvatar() {
+      let av = localStorage.getItem("meow_user_avatar");
+      if (!av) {
+        av = AVATAR_LIST[Math.floor(Math.random() * AVATAR_LIST.length)];
+        localStorage.setItem("meow_user_avatar", av);
+      }
+      return av;
+    }
+
+    function setUserAvatar(av) {
+      localStorage.setItem("meow_user_avatar", av);
+      if (btnChooseAvatar) btnChooseAvatar.textContent = av;
+    }
+
+    if (btnChooseAvatar) btnChooseAvatar.textContent = getUserAvatar();
+
+    function renderAvatarGrid() {
+      if (!avatarGrid) return;
+      avatarGrid.innerHTML = "";
+      const cur = getUserAvatar();
+      AVATAR_LIST.forEach(av => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `avatar-option-btn ${av === cur ? 'selected' : ''}`;
+        btn.textContent = av;
+        btn.addEventListener("click", () => {
+          setUserAvatar(av);
+          renderAvatarGrid();
+          avatarModal?.classList.remove("show");
+        });
+        avatarGrid.appendChild(btn);
+      });
+    }
+
+    btnChooseAvatar?.addEventListener("click", () => {
+      requireAuth(() => {
+        renderAvatarGrid();
+        avatarModal?.classList.add("show");
+      });
+    });
+    closeAvatarBtn?.addEventListener("click", () => avatarModal?.classList.remove("show"));
+    avatarModal?.addEventListener("click", (e) => { if (e.target === avatarModal) avatarModal?.classList.remove("show"); });
+
+    const btnOpenCheckin = document.getElementById("btnOpenCheckin");
+    const checkinStreakCount = document.getElementById("checkinStreakCount");
+    const checkinModal = document.getElementById("checkinModal");
+    const closeCheckinBtn = document.getElementById("closeCheckinBtn");
+    const btnDoCheckin = document.getElementById("btnDoCheckin");
+    const modalStreakDays = document.getElementById("modalStreakDays");
+    const modalTotalDays = document.getElementById("modalTotalDays");
+    const stampProgressText = document.getElementById("stampProgressText");
+    const weekCalendarGrid = document.getElementById("weekCalendarGrid");
+
+    const polaroidModal = document.getElementById("polaroidModal");
+    const polaroidImg = document.getElementById("polaroidImg");
+    const downloadPolaroidBtn = document.getElementById("downloadPolaroidBtn");
+    const closePolaroidBtn = document.getElementById("closePolaroidBtn");
+    const snapshotCanvas = document.getElementById("snapshotCanvas");
+
+    const honorModal = document.getElementById("honorModal");
+    const modalHonorTitle = document.getElementById("modalHonorTitle");
+    const modalStayTimeText = document.getElementById("modalStayTimeText");
+    const modalProgressFill = document.getElementById("modalProgressFill");
+    const modalNextTierTip = document.getElementById("modalNextTierTip");
+    const honorListContainer = document.getElementById("honorListContainer");
+    const closeHonorBtn = document.getElementById("closeHonorBtn");
+    const modalCrownCount = document.getElementById("modalCrownCount");
+    const modalSeasonLabel = document.getElementById("modalSeasonLabel");
+
+    const levelUpModal = document.getElementById("levelUpModal");
+    const levelUpIcon = document.getElementById("levelUpIcon");
+    const levelUpTitle = document.getElementById("levelUpTitle");
+    const levelUpDesc = document.getElementById("levelUpDesc");
+    const btnGenerateCert = document.getElementById("btnGenerateCert");
+    const closeLevelUpBtn = document.getElementById("closeLevelUpBtn");
+    const certCanvas = document.getElementById("certCanvas");
+    const confettiCanvas = document.getElementById("confettiCanvas");
+    const danmakuFxCanvas = document.getElementById("danmakuFxCanvas");
+
+    let roomList = [];
+    let danmakuEnabled = true;
+    let seenCommentIds = new Set();
+    let latestCommentId = "";
+    let pollTimer = null;
+    let cooldownTimer = null;
+
+    const fxCtx = danmakuFxCanvas ? danmakuFxCanvas.getContext("2d") : null;
+    let fxParticles = [];
+    let fxAnimId = null;
+
+    function resizeFxCanvas() {
+      if (!danmakuFxCanvas) return;
+      danmakuFxCanvas.width = window.innerWidth;
+      danmakuFxCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeFxCanvas);
+    resizeFxCanvas();
+
+    function triggerDanmakuEasterEgg(type) {
+      if (!fxCtx) return;
+      if (fxAnimId) cancelAnimationFrame(fxAnimId);
+      fxParticles = [];
+
+      const count = type === "rain" ? 70 : 35;
+      for (let i = 0; i < count; i++) {
+        let p = {
+          x: Math.random() * window.innerWidth,
+          y: type === "balloon" ? window.innerHeight + Math.random() * 200 : -50 - Math.random() * 300,
+          vx: (Math.random() - 0.5) * 2,
+          vy: 0,
+          size: 24,
+          icon: "🍗",
+          alpha: 1,
+          rot: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 6
+        };
+
+        if (type === "food") {
+          const foods = ["🍗", "🥫", "🥩", "🥓", "🍲"];
+          p.icon = foods[Math.floor(Math.random() * foods.length)];
+          p.vy = Math.random() * 4 + 3;
+          p.size = Math.random() * 12 + 24;
+        } else if (type === "fish") {
+          const fishes = ["🐟", "🐠", "🐡", "✨"];
+          p.icon = fishes[Math.floor(Math.random() * fishes.length)];
+          p.x = window.innerWidth + Math.random() * 200;
+          p.y = Math.random() * window.innerHeight * 0.8;
+          p.vx = -(Math.random() * 6 + 4);
+          p.vy = Math.sin(i) * 1.5;
+          p.size = Math.random() * 10 + 26;
+        } else if (type === "balloon") {
+          const items = ["🎈", "🎉", "💐", "💖", "🌸"];
+          p.icon = items[Math.floor(Math.random() * items.length)];
+          p.vy = -(Math.random() * 3 + 2.5);
+          p.size = Math.random() * 14 + 26;
+        } else if (type === "rain") {
+          p.icon = "💧";
+          p.vy = Math.random() * 9 + 8;
+          p.vx = -1.5;
+          p.size = Math.random() * 8 + 14;
+        }
+
+        fxParticles.push(p);
+      }
+
+      function renderFx() {
+        fxCtx.clearRect(0, 0, danmakuFxCanvas.width, danmakuFxCanvas.height);
+        let alive = false;
+
+        fxParticles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.rotSpeed;
+
+          let isVisible = false;
+          if (type === "fish") isVisible = p.x > -100;
+          else if (type === "balloon") isVisible = p.y > -100;
+          else isVisible = p.y < window.innerHeight + 100;
+
+          if (isVisible) {
+            alive = true;
+            fxCtx.save();
+            fxCtx.translate(p.x, p.y);
+            fxCtx.rotate((p.rot * Math.PI) / 180);
+            fxCtx.font = `${p.size}px sans-serif`;
+            fxCtx.textAlign = "center";
+            fxCtx.textBaseline = "middle";
+            fxCtx.fillText(p.icon, 0, 0);
+            fxCtx.restore();
           }
+        });
+
+        if (alive) {
+          fxAnimId = requestAnimationFrame(renderFx);
+        } else {
+          fxCtx.clearRect(0, 0, danmakuFxCanvas.width, danmakuFxCanvas.height);
+        }
+      }
+      renderFx();
+    }
+
+    function checkEasterEgg(text) {
+      if (!text) return;
+      if (/开饭|加餐|干饭|猫条|罐头/.test(text)) triggerDanmakuEasterEgg("food");
+      else if (/鱼干|抓鱼|小鱼|摸鱼|鱼缸/.test(text)) triggerDanmakuEasterEgg("fish");
+      else if (/撒花|恭喜|庆祝|好棒|快乐/.test(text)) triggerDanmakuEasterEgg("balloon");
+      else if (/下雨|打雷|淅淅沥沥|雨天/.test(text)) triggerDanmakuEasterEgg("rain");
+    }
+
+    function getTodayString() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function loadCheckinData() {
+      const defaultData = {
+        lastCheckinDate: "",
+        streakDays: 0,
+        totalDays: 0,
+        historyDates: []
+      };
+      try {
+        const raw = localStorage.getItem("meow_checkin_data");
+        return raw ? JSON.parse(raw) : defaultData;
+      } catch (e) {
+        return defaultData;
+      }
+    }
+
+    function saveCheckinData(data) {
+      localStorage.setItem("meow_checkin_data", JSON.stringify(data));
+    }
+
+    let checkinData = loadCheckinData();
+
+    function updateCheckinHeaderUI() {
+      if (checkinStreakCount) checkinStreakCount.textContent = checkinData.streakDays || 0;
+    }
+    updateCheckinHeaderUI();
+
+    function renderCheckinModal() {
+      if (modalStreakDays) modalStreakDays.textContent = checkinData.streakDays;
+      if (modalTotalDays) modalTotalDays.textContent = checkinData.totalDays;
+
+      const stampsCount = Math.min(Math.floor(checkinData.streakDays / 7), 4);
+      if (stampProgressText) stampProgressText.textContent = `${stampsCount} / 4 印章`;
+
+      for (let i = 1; i <= 4; i++) {
+        const card = document.getElementById(`stampCard${i}`);
+        if (card) {
+          if (i <= stampsCount) card.classList.add("stamped");
+          else card.classList.remove("stamped");
+        }
+      }
+
+      if (weekCalendarGrid) {
+        weekCalendarGrid.innerHTML = "";
+        const todayStr = getTodayString();
+        const now = new Date();
+
+        for (let i = 6; i >= 0; i--) {
+          const target = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+          const dateStr = `${target.getFullYear()}-${String(target.getMonth() + 1).padStart(2, '0')}-${String(target.getDate()).padStart(2, '0')}`;
+          const isChecked = checkinData.historyDates.includes(dateStr);
+          const isToday = (dateStr === todayStr);
+
+          const cell = document.createElement("div");
+          cell.className = `cal-day-cell ${isChecked ? 'active-day' : ''} ${isToday ? 'today-cell' : ''}`;
+          
+          const weekNames = ["日", "一", "二", "三", "四", "五", "六"];
+          cell.innerHTML = `
+            <span>周${weekNames[target.getDay()]}</span>
+            <span style="font-size: 13px; margin: 2px 0;">${isChecked ? '🐾' : target.getDate()}</span>
+          `;
+          weekCalendarGrid.appendChild(cell);
+        }
+      }
+
+      const isTodayChecked = (checkinData.lastCheckinDate === todayStr);
+      if (btnDoCheckin) {
+        if (isTodayChecked) {
+          btnDoCheckin.textContent = "今日已打卡 ✓";
+          btnDoCheckin.disabled = true;
+          btnDoCheckin.style.opacity = "0.6";
+        } else {
+          btnDoCheckin.textContent = "✨ 立即打卡盖章";
+          btnDoCheckin.disabled = false;
+          btnDoCheckin.style.opacity = "1";
+        }
+      }
+    }
+
+    btnOpenCheckin?.addEventListener("click", () => {
+      requireAuth(() => {
+        renderCheckinModal();
+        checkinModal?.classList.add("show");
+      });
+    });
+    closeCheckinBtn?.addEventListener("click", () => checkinModal?.classList.remove("show"));
+    checkinModal?.addEventListener("click", (e) => { if (e.target === checkinModal) checkinModal?.classList.remove("show"); });
+
+    btnDoCheckin?.addEventListener("click", () => {
+      const todayStr = getTodayString();
+      if (checkinData.lastCheckinDate === todayStr) return;
+
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const yestStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+
+      if (checkinData.lastCheckinDate === yestStr) {
+        checkinData.streakDays += 1;
+      } else {
+        checkinData.streakDays = 1;
+      }
+
+      checkinData.totalDays += 1;
+      checkinData.lastCheckinDate = todayStr;
+      if (!checkinData.historyDates.includes(todayStr)) {
+        checkinData.historyDates.push(todayStr);
+      }
+      saveCheckinData(checkinData);
+
+      updateCheckinHeaderUI();
+      renderCheckinModal();
+      fireConfetti();
+      triggerDanmakuEasterEgg("balloon");
+    });
+
+    function getWeekKey() {
+      const now = new Date();
+      const oneJan = new Date(now.getFullYear(), 0, 1);
+      const numberOfDays = Math.floor((now - oneJan) / (24 * 60 * 60 * 1000));
+      const weekNum = Math.ceil((now.getDay() + 1 + numberOfDays) / 7);
+      return `${now.getFullYear()}_W${weekNum}`;
+    }
+
+    const currentSeasonKey = getWeekKey();
+    const savedSeasonKey = localStorage.getItem("meow_current_season_key");
+    let crownStamps = parseInt(localStorage.getItem("meow_crown_stamps") || "0", 10);
+
+    if (savedSeasonKey && savedSeasonKey !== currentSeasonKey) {
+      const lastWeekSec = parseInt(localStorage.getItem("meow_weekly_stay_sec") || "0", 10);
+      if (lastWeekSec >= 7200) {
+        crownStamps += 1;
+        localStorage.setItem("meow_crown_stamps", String(crownStamps));
+      }
+      localStorage.setItem("meow_weekly_stay_sec", "0");
+      localStorage.setItem("meow_celebrated_tiers", "[]");
+    }
+    localStorage.setItem("meow_current_season_key", currentSeasonKey);
+
+    let staySeconds = parseInt(localStorage.getItem("meow_weekly_stay_sec") || "0", 10);
+    let celebratedTiers = JSON.parse(localStorage.getItem("meow_celebrated_tiers") || "[]");
+
+    const HONOR_TIERS = [
+      { level: 0, minSec: 0, title: "🌱 路过猫奴", icon: "🌱", desc: "初来乍到，与毛毛星球结缘", class: "" },
+      { level: 1, minSec: 60, title: "🐾 初级铲屎官", icon: "🐾", desc: "本周累计陪伴满 1 分钟", class: "tier-1" },
+      { level: 2, minSec: 180, title: "🍗 猫条投喂员", icon: "🍗", desc: "本周累计陪伴满 3 分钟", class: "tier-2" },
+      { level: 3, minSec: 360, title: "🐟 干饭引路人", icon: "🐟", desc: "本周累计陪伴满 6 分钟", class: "tier-3" },
+      { level: 4, minSec: 600, title: "🧸 金牌陪玩师", icon: "🧸", desc: "本周累计陪伴满 10 分钟", class: "tier-4" },
+      { level: 5, minSec: 900, title: "🏡 资深云爸妈", icon: "🏡", desc: "本周累计陪伴满 15 分钟", class: "tier-5" },
+      { level: 6, minSec: 1500, title: "🩺 喵星健康官", icon: "🩺", desc: "本周累计陪伴满 25 分钟", class: "tier-6" },
+      { level: 7, minSec: 2400, title: "🛡️ 巡逻队长", icon: "🛡️", desc: "本周累计陪伴满 40 分钟", class: "tier-7" },
+      { level: 8, minSec: 3600, title: "⭐ 护喵大使", icon: "⭐", desc: "本周累计陪伴满 60 分钟", class: "tier-8" },
+      { level: 9, minSec: 5400, title: "🏰 星球领主", icon: "🏰", desc: "本周累计陪伴满 90 分钟", class: "tier-9" },
+      { level: 10, minSec: 7200, title: "👑 猫岛守护神", icon: "👑", desc: "本周累计陪伴满 120 分钟", class: "tier-10" }
+    ];
+
+    function getCurrentHonor() {
+      let current = HONOR_TIERS[0];
+      for (let i = HONOR_TIERS.length - 1; i >= 0; i--) {
+        if (staySeconds >= HONOR_TIERS[i].minSec) {
+          current = HONOR_TIERS[i];
+          break;
+        }
+      }
+      return current;
+    }
+
+    function updateHonorUI() {
+      const honor = getCurrentHonor();
+      const mins = Math.floor(staySeconds / 60);
+      const starStr = crownStamps > 0 ? ` [★×${crownStamps}]` : "";
+      if (myHonorBadge) {
+        myHonorBadge.textContent = `${honor.title}${starStr} (${mins}m) ⓘ`;
+        myHonorBadge.className = `honor-badge ${honor.class}`;
+      }
+    }
+
+    updateHonorUI();
+
+    let confettiCtx = confettiCanvas ? confettiCanvas.getContext("2d") : null;
+    let confettiParticles = [];
+    let confettiAnimationId = null;
+
+    function resizeConfetti() {
+      if (!confettiCanvas) return;
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeConfetti);
+    resizeFxCanvas && resizeConfetti();
+
+    function fireConfetti() {
+      if (!confettiCtx) return;
+      confettiParticles = [];
+      const colors = ["#10b981", "#f59e0b", "#3b82f6", "#ec4899", "#8b5cf6", "#ffffff"];
+      for (let i = 0; i < 120; i++) {
+        confettiParticles.push({
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          vx: (Math.random() - 0.5) * 16,
+          vy: (Math.random() - 0.7) * 18,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotationSpeed: (Math.random() - 0.5) * 10,
+          opacity: 1
+        });
+      }
+
+      if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+
+      function render() {
+        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        let alive = false;
+        confettiParticles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35;
+          p.rotation += p.rotationSpeed;
+          p.opacity -= 0.008;
+
+          if (p.opacity > 0) {
+            alive = true;
+            confettiCtx.save();
+            confettiCtx.translate(p.x, p.y);
+            confettiCtx.rotate((p.rotation * Math.PI) / 180);
+            confettiCtx.globalAlpha = p.opacity;
+            confettiCtx.fillStyle = p.color;
+            confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+            confettiCtx.restore();
+          }
+        });
+
+        if (alive) {
+          confettiAnimationId = requestAnimationFrame(render);
+        } else {
+          confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        }
+      }
+      render();
+    }
+
+    let latestUnlockedTier = null;
+    function triggerLevelUpCelebration(tier) {
+      latestUnlockedTier = tier;
+      if (levelUpIcon) levelUpIcon.textContent = tier.icon;
+      if (levelUpTitle) levelUpTitle.textContent = `晋升受封：${tier.title}！`;
+      if (levelUpDesc) levelUpDesc.textContent = `恭喜达成【${tier.desc}】！已点亮本周专属身份勋章。`;
+      levelUpModal?.classList.add("show");
+      fireConfetti();
+    }
+
+    btnGenerateCert?.addEventListener("click", () => {
+      const tier = latestUnlockedTier || getCurrentHonor();
+      const canvas = certCanvas;
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      canvas.width = 600;
+      canvas.height = 800;
+
+      const grad = ctx.createLinearGradient(0, 0, 600, 800);
+      grad.addColorStop(0, "#1c1917");
+      grad.addColorStop(1, "#0c0a09");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 600, 800);
+
+      ctx.strokeStyle = "#f59e0b";
+      ctx.lineWidth = 6;
+      ctx.strokeRect(24, 24, 552, 752);
+
+      ctx.strokeStyle = "rgba(245, 158, 11, 0.4)";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(34, 34, 532, 732);
+
+      ctx.font = "60px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(tier.icon, 300, 120);
+
+      ctx.fillStyle = "#f59e0b";
+      ctx.font = "bold 26px -apple-system, sans-serif";
+      ctx.fillText("毛毛星球 · 周赛季受封证书", 300, 180);
+
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "13px sans-serif";
+      ctx.fillText(`SEASON: ${currentSeasonKey} · HONORARY GUARDIAN`, 300, 205);
+
+      const userNick = getUserFixedNickname();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 28px -apple-system, sans-serif";
+      ctx.fillText(`兹授予：${userNick}`, 300, 290);
+
+      ctx.fillStyle = "#34d399";
+      ctx.font = "bold 34px -apple-system, sans-serif";
+      ctx.fillText(`【 ${tier.title} 】`, 300, 360);
+
+      ctx.fillStyle = "#d1d5db";
+      ctx.font = "15px sans-serif";
+      ctx.fillText("感谢您在毛毛星球本赛季的温情守护与不离陪伴。", 300, 430);
+      ctx.fillText("特授予此赛季荣誉称号，愿爱与善意常伴每一只流浪生灵！", 300, 460);
+
+      const mins = Math.floor(staySeconds / 60);
+      const nowStr = new Date().toLocaleDateString('zh-CN');
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "14px monospace";
+      ctx.fillText(`本周陪伴时长：${mins} 分钟 (${staySeconds} 秒)`, 300, 530);
+      ctx.fillText(`受封认证日期：${nowStr}`, 300, 560);
+
+      ctx.fillStyle = "#ef4444";
+      ctx.beginPath();
+      ctx.arc(300, 650, 42, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 13px sans-serif";
+      ctx.fillText("毛毛星球", 300, 645);
+      ctx.fillText("官方印鉴", 300, 663);
+
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "11px sans-serif";
+      ctx.fillText("别让你家毛孩子再成为留守儿童了", 300, 735);
+
+      const dataUrl = canvas.toDataURL("image/png");
+      if (polaroidImg) polaroidImg.src = dataUrl;
+      if (downloadPolaroidBtn) {
+        downloadPolaroidBtn.href = dataUrl;
+        downloadPolaroidBtn.download = `meow_cert_${tier.title}_${Date.now()}.png`;
+      }
+      levelUpModal?.classList.remove("show");
+      polaroidModal?.classList.add("show");
+    });
+
+    closeLevelUpBtn?.addEventListener("click", () => levelUpModal?.classList.remove("show"));
+    levelUpModal?.addEventListener("click", (e) => { if (e.target === levelUpModal) levelUpModal?.classList.remove("show"); });
+
+    setInterval(() => {
+      const isVideoPlaying = (video && !video.paused && video.readyState >= 2);
+      const isEzPlaying = (ezPlayer !== null);
+      if (!document.hidden && (isVideoPlaying || isEzPlaying)) {
+        activePlayingSeconds++;
+        staySeconds++;
+        updateHonorUI();
+
+        HONOR_TIERS.forEach(tier => {
+          if (tier.level > 0 && staySeconds >= tier.minSec && !celebratedTiers.includes(tier.level)) {
+            celebratedTiers.push(tier.level);
+            localStorage.setItem("meow_celebrated_tiers", JSON.stringify(celebratedTiers));
+            triggerLevelUpCelebration(tier);
+          }
+        });
+
+        if (staySeconds % 5 === 0) {
+          localStorage.setItem("meow_weekly_stay_sec", String(staySeconds));
+        }
+      }
+    }, 1000);
+
+    function openHonorModal() {
+      const current = getCurrentHonor();
+      const currentIdx = HONOR_TIERS.findIndex(h => h.level === current.level);
+      const mins = Math.floor(staySeconds / 60);
+
+      if (modalSeasonLabel) modalSeasonLabel.textContent = `📅 当前赛季：${currentSeasonKey} (每周一重置)`;
+      if (modalHonorTitle) modalHonorTitle.textContent = current.title;
+      if (modalStayTimeText) modalStayTimeText.textContent = `${mins} 分钟 (${staySeconds} 秒)`;
+      if (modalCrownCount) modalCrownCount.textContent = `${crownStamps} 枚`;
+
+      if (currentIdx < HONOR_TIERS.length - 1) {
+        const next = HONOR_TIERS[currentIdx + 1];
+        const prevSec = current.minSec;
+        const totalGap = next.minSec - prevSec;
+        const curGap = staySeconds - prevSec;
+        const pct = Math.min(Math.max((curGap / totalGap) * 100, 0), 100);
+
+        if (modalProgressFill) modalProgressFill.style.width = `${pct}%`;
+        const needMins = Math.ceil((next.minSec - staySeconds) / 60);
+        if (modalNextTierTip) modalNextTierTip.textContent = `距解锁【${next.title}】还需约 ${needMins} 分钟`;
+      } else {
+        if (modalProgressFill) modalProgressFill.style.width = "100%";
+        if (modalNextTierTip) modalNextTierTip.textContent = "已达成最高殿堂荣耀！赛季结算将斩获守护神星标 👑";
+      }
+
+      if (honorListContainer) {
+        honorListContainer.innerHTML = "";
+        HONOR_TIERS.forEach((tier) => {
+          const isUnlocked = staySeconds >= tier.minSec;
+          const row = document.createElement("div");
+          row.className = `honor-item ${isUnlocked ? 'unlocked' : ''}`;
+
+          row.innerHTML = `
+            <div class="honor-item-left">
+              <div class="honor-item-icon">${tier.icon}</div>
+              <div>
+                <div class="honor-item-name">Lv.${tier.level} ${tier.title}</div>
+                <div class="honor-item-req">${tier.desc}</div>
+              </div>
+            </div>
+            <div class="honor-item-status">${isUnlocked ? '已达成 ✓' : '未解锁 🔒'}</div>
+          `;
+          honorListContainer.appendChild(row);
+        });
+      }
+
+      honorModal?.classList.add("show");
+    }
+
+    myHonorBadge?.addEventListener("click", () => {
+      requireAuth(() => {
+        openHonorModal();
+      });
+    });
+    closeHonorBtn?.addEventListener("click", () => honorModal?.classList.remove("show"));
+    honorModal?.addEventListener("click", (e) => { if (e.target === honorModal) honorModal?.classList.remove("show"); });
+
+    const GONGDE_TEXTS = ["功德+1 ✨", "猫粮+5g 🍗", "毛量+100 🐾", "治愈值+1 💖", "寒冬抵御+1 ☀️", "吸猫快乐+999 😻"];
+    const ICONS = ["💖", "🐾", "✨", "😻", "🍗", "🐟"];
+
+    videoWrapper?.addEventListener("dblclick", (e) => {
+      requireAuth(() => {
+        const rect = videoWrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const heart = document.createElement("div");
+        heart.className = "tap-heart";
+        heart.textContent = ICONS[Math.floor(Math.random() * ICONS.length)];
+        heart.style.left = `${x}px`;
+        heart.style.top = `${y}px`;
+        videoWrapper.appendChild(heart);
+        heart.addEventListener("animationend", () => heart.remove());
+
+        const gongde = document.createElement("div");
+        gongde.className = "gongde-pop";
+        gongde.textContent = GONGDE_TEXTS[Math.floor(Math.random() * GONGDE_TEXTS.length)];
+        gongde.style.left = `${x}px`;
+        gongde.style.top = `${y}px`;
+        videoWrapper.appendChild(gongde);
+        gongde.addEventListener("animationend", () => gongde.remove());
+      });
+    });
+
+    async function fetchNotice() {
+      try {
+        const res = await fetch(`${API_ENDPOINT}/api/notice`);
+        const data = await res.json();
+        if (data && data.notice && data.notice.trim()) {
+          if (noticeContent) noticeContent.textContent = data.notice.trim();
+          if (noticeBar) noticeBar.style.display = "flex";
         }
       } catch (e) {}
     }
+    fetchNotice();
 
-    function playStream(roomIndex) {
-      flushRoomDuration();
+    const BOT_NAMES = [
+      "猫猫教信徒", "吸猫专业户", "橘猫大军团长", "三花天下第一", "今天也要摸猫",
+      "赛博铲屎官", "罐头赞助商", "喵呜星人", "佛系云养猫", "工位偷猫选手",
+      "大橘为重", "毛茸茸爱好者", "软萌收割机", "猫尾巴摇摇", "小鱼干采购员"
+    ];
 
-      const room = roomList[roomIndex];
-      if (!room) return;
+    const BOT_MESSAGES = [
+      "咪咪快来吃好吃的~ 🍗",
+      "今天天气不错，小猫都在晒太阳呢 ☀️",
+      "这只小猫好萌呀，想抱走！",
+      "吸猫打卡+1 🐾",
+      "大橘为重，多吃点长大个！",
+      "又是被小猫治愈的一天 🥰",
+      "好想隔着屏幕伸手摸摸它",
+      "在工位偷偷云吸猫被发现了 🤣",
+      "看猫咪干饭真的好解压",
+      "给直播间各位猫友打个招呼 👋",
+      "定点喂养真的太有爱心了！",
+      "蹲一个三花出镜 👀",
+      "猫猫的警惕性还挺高呢",
+      "赛博云投喂，快乐翻倍 🐟",
+      "刚刚跑过去的是哪只呀？"
+    ];
 
-      currentRoom = room;
-      currentRoomId = String(room.id || (roomIndex + 1));
-      currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
-      if (currentRoomTitle) currentRoomTitle.textContent = currentRoomName;
-      activeDeviceImei = String(room.imei || "").trim();
+    let botTimer = null;
 
-      syncRoomCooldownStatus(currentRoomId, activeDeviceImei);
+    function triggerBotComment() {
+      const randomName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
+      const randomText = BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)];
+      const randomAvatar = AVATAR_LIST[Math.floor(Math.random() * AVATAR_LIST.length)];
+      const botMsg = {
+        id: "bot_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
+        name: randomName,
+        text: randomText,
+        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        avatar: randomAvatar,
+        isBot: true
+      };
 
-      if (roomButtonList) {
-        const allButtons = roomButtonList.querySelectorAll(".room-btn");
-        allButtons.forEach((btn, idx) => btn.classList.toggle("active", idx === roomIndex));
-      }
+      renderComments([botMsg], false);
+      shootDanmaku(`${randomName}: ${randomText}`, false);
 
-      if (drawerRoomList) {
-        const allDrawerItems = drawerRoomList.querySelectorAll(".drawer-room-item");
-        allDrawerItems.forEach((item, idx) => item.classList.toggle("active", idx === roomIndex));
-      }
-
-      seenCommentIds.clear();
-      latestCommentId = "";
-      if (chatList) {
-        chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>';
-      }
-      
-      fetchComments(true);
-      startAtmosphereBot();
-
-      if (pollTimer) clearInterval(pollTimer);
-      pollTimer = setInterval(() => {
-        if (document.visibilityState === "visible") fetchComments(false);
-      }, 8000);
-
-      if (playerEmpty) {
-        playerEmpty.style.display = "grid";
-        if (emptyTitle) emptyTitle.textContent = `正在连接 ${currentRoomName}...`;
-      }
-
-      if (ezPlayer) {
-        try { ezPlayer.stop(); ezPlayer.destroy(); } catch(e) {}
-        ezPlayer = null;
-      }
-      if (hls) {
-        try { hls.stopLoad(); hls.detachMedia(); hls.destroy(); } catch(e) {}
-        hls = null;
-      }
-
-      if (video) {
-        video.pause();
-        video.src = "";
-        video.load();
-      }
-
-      const ezBox = document.getElementById("ezuikitPlayer");
-      if (ezBox) ezBox.innerHTML = "";
-
-      const rawSerial = (room.deviceSerial || "").trim();
-      let ezUrl = room.ezopenUrl || "";
-      const hlsUrl = room.hlsUrl || room.url || "";
-
-      if (!ezUrl && rawSerial) {
-        if (rawSerial.includes(":")) {
-          const [parentSerial, gbChannel] = rawSerial.split(":");
-          ezUrl = `ezopen://open.ys7.com/${parentSerial}/${gbChannel}.live`;
-        } else {
-          ezUrl = `ezopen://open.ys7.com/${rawSerial}/${room.channelNo || 1}.live`;
-        }
-      }
-      
-      // 核心修复：防御性调用 window.EZUIKit，绝不在未定义时抛出 Uncaught 崩溃
-      if (typeof window.EZUIKit !== "undefined" && ezUrl && ezAccessToken && ezBox) {
-        try {
-          ezBox.style.display = "block";
-          if (video) video.style.display = "none";
-
-          ezPlayer = new EZUIKit.EZUIPlayer({
-            id: "ezuikitPlayer",
-            autoplay: true,
-            url: ezUrl,
-            accessToken: ezAccessToken,
-            decoderPath: "https://open.ys7.com/sdk/js/1.4",
-            width: ezBox.clientWidth || 800,
-            height: ezBox.clientHeight || 450,
-            splitBasis: 1,
-            audio: 0,
-            handleSuccess: () => { 
-              if (playerEmpty) playerEmpty.style.display = "none"; 
-            },
-            handleError: () => {
-              fallbackHlsPlay(hlsUrl);
-            }
-          });
-          return;
-        } catch(e) {
-          console.warn("EZUIKit 启动失败，降级 HLS 播放:", e);
-        }
-      }
-
-      // 降级为 Hls.js 模式
-      fallbackHlsPlay(hlsUrl);
+      const nextDelay = Math.floor(Math.random() * 20000) + 15000;
+      botTimer = setTimeout(triggerBotComment, nextDelay);
     }
 
-    function fallbackHlsPlay(hlsUrl) {
-      const ezBox = document.getElementById("ezuikitPlayer");
-      if (ezBox) ezBox.style.display = "none";
-      if (video) video.style.display = "block";
-
-      if (!hlsUrl) {
-        if (emptyTitle) emptyTitle.textContent = `${currentRoomName} 待机中`;
-        if (emptyCopy) emptyCopy.textContent = "暂无可用视频流，请切换其他机位";
-        return;
-      }
-
-      if (window.Hls && window.Hls.isSupported() && video) {
-        hls = new window.Hls({ enableWorker: true, lowLatencyMode: true });
-        hls.loadSource(hlsUrl);
-        hls.attachMedia(video);
-        hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
-          video.muted = true;
-          video.play().then(() => {
-            if (playerEmpty) playerEmpty.style.display = "none";
-          }).catch(() => {});
-        });
-        hls.on(window.Hls.Events.ERROR, () => {
-          if (emptyTitle) emptyTitle.textContent = `${currentRoomName} 画面重试中`;
-          if (emptyCopy) emptyCopy.textContent = "正在调取自适应流，请稍候...";
-        });
-      } else if (video && video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = hlsUrl;
-        video.play().then(() => {
-          if (playerEmpty) playerEmpty.style.display = "none";
-        }).catch(() => {});
-      }
+    function startAtmosphereBot() {
+      if (botTimer) clearTimeout(botTimer);
+      botTimer = setTimeout(triggerBotComment, 6000);
     }
 
-    video?.addEventListener("timeupdate", () => { if (video.currentTime > 0 && playerEmpty) playerEmpty.style.display = "none"; });
-    video?.addEventListener("playing", () => { if (playerEmpty) playerEmpty.style.display = "none"; });
+    document.querySelectorAll(".chip-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        requireAuth(() => {
+          if (textInput) {
+            textInput.value = btn.textContent.trim();
+            textInput.focus();
+          }
+        });
+      });
+    });
 
     audioBtn?.addEventListener("click", () => {
       requireAuth(() => {
@@ -2193,13 +2791,21 @@
           }
           polaroidModal?.classList.add("show");
         } catch (e) {
-          alert("截屏生成失败，请直接使用手机截屏~");
+          alert("截屏生成失败，可能是浏览器权限限制，请直接使用手机截屏哦~");
         }
       });
     });
 
     closePolaroidBtn?.addEventListener("click", () => polaroidModal?.classList.remove("show"));
     polaroidModal?.addEventListener("click", (e) => { if (e.target === polaroidModal) polaroidModal?.classList.remove("show"); });
+
+    video?.addEventListener("timeupdate", () => {
+      if (video.currentTime > 0 && playerEmpty) playerEmpty.style.display = "none";
+    });
+
+    video?.addEventListener("playing", () => {
+      if (playerEmpty) playerEmpty.style.display = "none";
+    });
 
     function shootDanmaku(text, isMe = false) {
       if (!danmakuEnabled || !danmakuBox) return;
@@ -2210,7 +2816,8 @@
 
       el.className = `danmaku-item ${isMe ? 'is-me' : ''} ${isGold ? 'tier-gold' : ''}`;
       el.textContent = text;
-      el.style.top = `${Math.floor(Math.random() * 60) + 15}%`;
+      const topPos = Math.floor(Math.random() * 60) + 15;
+      el.style.top = `${topPos}%`;
       danmakuBox.appendChild(el);
       el.addEventListener("animationend", () => el.remove());
     }
@@ -2229,50 +2836,159 @@
         chatList.innerHTML = "";
         seenCommentIds.clear();
       }
-      if (!comments || comments.length === 0) return;
+
+      if (!comments || comments.length === 0) {
+        if (chatList.children.length === 0) {
+          chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
+        }
+        return;
+      }
+
+      const placeholder = chatList.querySelector('div[style*="text-align: center"]');
+      if (placeholder) placeholder.remove();
 
       const myCurrentName = getUserFixedNickname();
+      const isAtBottom = chatList.scrollHeight - chatList.scrollTop - chatList.clientHeight < 50;
+
       comments.forEach(c => {
         if (seenCommentIds.has(c.id)) return;
         seenCommentIds.add(c.id);
-        latestCommentId = c.id;
+        if (!c.isBot) latestCommentId = c.id;
 
-        const isMe = (myCurrentName && c.name === myCurrentName);
+        const isMe = Boolean(c.isLocal) || (myCurrentName && c.name === myCurrentName);
+
         const row = document.createElement("div");
+        row.id = `msg_${c.id}`;
         row.className = `message-item ${isMe ? 'is-me' : ''}`;
-        row.innerHTML = `
-          <div class="msg-avatar">${isMe ? getUserAvatar() : (c.avatar || '🐱')}</div>
-          <div class="msg-content-wrapper">
-            <span class="msg-user">${c.name || '热心猫友'}:${isMe ? '<span class="msg-badge-me">我</span>' : ''}</span>
-            <span class="msg-text">${c.text || ''}</span>
-            <span class="msg-time">${c.time || ''}</span>
-          </div>
-        `;
+
+        const avatarDiv = document.createElement("div");
+        avatarDiv.className = "msg-avatar";
+        avatarDiv.textContent = isMe ? getUserAvatar() : (c.avatar || getAvatarByName(c.name));
+
+        const contentWrapper = document.createElement("div");
+        contentWrapper.className = "msg-content-wrapper";
+
+        const userSpan = document.createElement("span");
+        userSpan.className = "msg-user";
+        userSpan.textContent = `${c.name || '热心猫友'}:`;
+
+        if (isMe) {
+          const badge = document.createElement("span");
+          badge.className = "msg-badge-me";
+          badge.textContent = "我";
+          userSpan.appendChild(badge);
+        }
+
+        const textSpan = document.createElement("span");
+        textSpan.className = "msg-text";
+        textSpan.textContent = ` ${c.text || ''}`;
+
+        const timeSpan = document.createElement("span");
+        timeSpan.className = "msg-time";
+        timeSpan.textContent = c.time || '';
+
+        contentWrapper.appendChild(userSpan);
+        contentWrapper.appendChild(textSpan);
+        contentWrapper.appendChild(timeSpan);
+
+        row.appendChild(avatarDiv);
+        row.appendChild(contentWrapper);
+
         chatList.appendChild(row);
-        if (!isInitial) shootDanmaku(`${c.name}: ${c.text}`, isMe);
+
+        if (!isInitial && !c.isLocal && !c.isBot) {
+          shootDanmaku(`${c.name}: ${c.text}`, isMe);
+          checkEasterEgg(c.text);
+        }
       });
-      chatList.scrollTo({ top: chatList.scrollHeight, behavior: 'smooth' });
+
+      if (isInitial && comments.length > 0) {
+        const historyList = comments.slice(-6);
+        historyList.forEach((item, index) => {
+          setTimeout(() => {
+            const isMe = (myCurrentName && item.name === myCurrentName);
+            shootDanmaku(`${item.name}: ${item.text}`, isMe);
+          }, index * 600 + 300);
+        });
+      }
+
+      if (isAtBottom || isInitial) {
+        chatList.scrollTo({ top: chatList.scrollHeight, behavior: 'smooth' });
+      }
     }
 
     async function fetchComments(isInitial = false) {
       if (!currentRoomId) return;
       try {
-        let q = `${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}`;
-        if (!isInitial && latestCommentId) q += `&since=${encodeURIComponent(latestCommentId)}`;
-        const res = await fetch(q);
+        let query = `${API_ENDPOINT}/api/comments?room=${encodeURIComponent(currentRoomId)}`;
+        if (!isInitial && latestCommentId) {
+          query += `&since=${encodeURIComponent(latestCommentId)}`;
+        }
+
+        const res = await fetch(query, { method: "GET" });
         const data = await res.json();
-        if (data && Array.isArray(data.comments)) renderComments(data.comments, isInitial);
-      } catch (e) {}
+        if (data && Array.isArray(data.comments)) {
+          renderComments(data.comments, isInitial);
+        } else {
+          renderComments([], isInitial);
+        }
+      } catch (e) {
+        if (isInitial) renderComments([], isInitial);
+      }
+    }
+
+    function startCooldown() {
+      let timeLeft = 3;
+      if (btnSend) {
+        btnSend.disabled = true;
+        btnSend.textContent = `${timeLeft}s`;
+      }
+
+      cooldownTimer = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+          clearInterval(cooldownTimer);
+          if (btnSend) {
+            btnSend.disabled = false;
+            btnSend.textContent = "发送";
+          }
+        } else {
+          if (btnSend) btnSend.textContent = `${timeLeft}s`;
+        }
+      }, 1000);
     }
 
     chatForm?.addEventListener("submit", async (e) => {
       e.preventDefault();
       requireAuth(async () => {
         if (btnSend && btnSend.disabled) return;
+
         const text = textInput ? textInput.value.trim() : "";
         if (!text) return;
+        if (text.length > 60) {
+          alert("弹幕字数不能超过 60 个字符~");
+          return;
+        }
+
         const name = getUserFixedNickname();
+        const myAvatar = getUserAvatar();
+
         if (textInput) textInput.value = "";
+        startCooldown();
+
+        const localId = "loc_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
+        const localMsg = {
+          id: localId,
+          name: name,
+          text: text,
+          time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+          avatar: myAvatar,
+          isLocal: true
+        };
+        
+        renderComments([localMsg], false);
+        shootDanmaku(`${name}: ${text}`, true);
+        checkEasterEgg(text);
 
         try {
           const res = await fetch(`${API_ENDPOINT}/api/comments`, {
@@ -2281,13 +2997,352 @@
             body: JSON.stringify({ roomId: String(currentRoomId), name, text })
           });
           const json = await res.json();
-          if (json.code === 200) {
-            renderComments([{ id: json.data.id, name, text, time: json.data.time }], false);
+          
+          if (!res.ok || json.code !== 200) {
+            const el = document.getElementById(`msg_${localId}`);
+            if (el) el.remove();
+            alert(json.msg || "发送失败，请稍后再试~");
+            return;
           }
-        } catch (err) {}
+
+          if (json && json.data) {
+            seenCommentIds.add(json.data.id);
+            latestCommentId = json.data.id;
+          }
+        } catch (err) {
+          const el = document.getElementById(`msg_${localId}`);
+          if (el) el.remove();
+          alert("网络连接异常，弹幕发送失败");
+        }
       });
     });
 
+    // 核心：全网共享倒计时控制器（防止刷新跳过）
+    const btnFeedPet = document.getElementById("btnFeedPet");
+
+    function startBtnCooldown(seconds) {
+      if (activeCooldownInterval) clearInterval(activeCooldownInterval);
+      
+      let remain = parseInt(seconds, 10);
+      if (remain <= 0) {
+        if (btnFeedPet) {
+          btnFeedPet.disabled = false;
+          btnFeedPet.textContent = "🍗 立即投喂";
+        }
+        return;
+      }
+
+      if (btnFeedPet) {
+        btnFeedPet.disabled = true;
+        btnFeedPet.textContent = `全网冷却中 (${remain}s)`;
+      }
+
+      activeCooldownInterval = setInterval(() => {
+        remain--;
+        if (remain <= 0) {
+          clearInterval(activeCooldownInterval);
+          activeCooldownInterval = null;
+          if (btnFeedPet) {
+            btnFeedPet.disabled = false;
+            btnFeedPet.textContent = "🍗 立即投喂";
+          }
+        } else {
+          if (btnFeedPet) btnFeedPet.textContent = `全网冷却中 (${remain}s)`;
+        }
+      }, 1000);
+    }
+
+    async function syncRoomCooldownStatus(roomId, imei) {
+      try {
+        const queryImei = imei || activeDeviceImei || "";
+        const res = await fetch(`${API_ENDPOINT}/api/feeder/status?room=${encodeURIComponent(roomId)}&imei=${encodeURIComponent(queryImei)}`);
+        const json = await res.json();
+        if (json && json.code === 200) {
+          if (json.inCooldown && json.remainingSec > 0) {
+            startBtnCooldown(json.remainingSec);
+          } else {
+            if (activeCooldownInterval) clearInterval(activeCooldownInterval);
+            if (btnFeedPet) {
+              btnFeedPet.disabled = false;
+              btnFeedPet.textContent = "🍗 立即投喂";
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    function playStream(roomIndex) {
+      flushRoomDuration();
+
+      const room = roomList[roomIndex];
+      if (!room) return;
+
+      // 锁定当前全局机位变量（彻底防错位）
+      currentRoom = room;
+      currentRoomId = String(room.id || (roomIndex + 1));
+      currentRoomName = room.name || `直播间 ${roomIndex + 1}`;
+      if (currentRoomTitle) currentRoomTitle.textContent = currentRoomName;
+      activeDeviceImei = String(room.imei || "").trim();
+
+      // 核心：每次选台或刷新初始化，立即向后端拉取全网剩余冷却时间
+      syncRoomCooldownStatus(currentRoomId, activeDeviceImei);
+
+      if (roomButtonList) {
+        const allButtons = roomButtonList.querySelectorAll(".room-btn");
+        allButtons.forEach((btn, idx) => {
+          btn.classList.toggle("active", idx === roomIndex);
+        });
+      }
+
+      if (drawerRoomList) {
+        const allDrawerItems = drawerRoomList.querySelectorAll(".drawer-room-item");
+        allDrawerItems.forEach((item, idx) => {
+          item.classList.toggle("active", idx === roomIndex);
+        });
+      }
+
+      seenCommentIds.clear();
+      latestCommentId = "";
+      if (chatList) {
+        chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>';
+      }
+      
+      fetchComments(true);
+      startAtmosphereBot();
+
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = setInterval(() => {
+        if (document.visibilityState === "visible") {
+          fetchComments(false);
+        }
+      }, 8000);
+
+      if (playerEmpty) {
+        playerEmpty.style.display = "grid";
+        if (emptyTitle) emptyTitle.textContent = `正在连接 ${currentRoomName}...`;
+      }
+
+      if (ezPlayer) {
+        try {
+          ezPlayer.stop();
+          ezPlayer.destroy();
+        } catch(e) {}
+        ezPlayer = null;
+      }
+
+      if (hls) {
+        try {
+          hls.stopLoad();
+          hls.detachMedia();
+          hls.destroy();
+        } catch(e) {}
+        hls = null;
+      }
+
+      if (video) {
+        video.pause();
+        video.src = "";
+        video.load();
+      }
+
+      const ezBox = document.getElementById("ezuikitPlayer");
+      if (ezBox) ezBox.innerHTML = "";
+
+      const rawSerial = (room.deviceSerial || "").trim();
+      let ezUrl = room.ezopenUrl || "";
+      const hlsUrl = room.hlsUrl || room.url || "";
+
+      if (!ezUrl && rawSerial) {
+        if (rawSerial.includes(":")) {
+          const [parentSerial, gbChannel] = rawSerial.split(":");
+          ezUrl = `ezopen://open.ys7.com/${parentSerial}/${gbChannel}.live`;
+        } else {
+          ezUrl = `ezopen://open.ys7.com/${rawSerial}/${room.channelNo || 1}.live`;
+        }
+      }
+      
+      if (window.EZUIKit && ezUrl && ezAccessToken && ezBox) {
+        try {
+          ezBox.style.display = "block";
+          if (video) video.style.display = "none";
+
+          ezPlayer = new EZUIKit.EZUIPlayer({
+            id: "ezuikitPlayer",
+            autoplay: true,
+            url: ezUrl,
+            accessToken: ezAccessToken,
+            decoderPath: "https://open.ys7.com/sdk/js/2.0",
+            width: ezBox.clientWidth || 800,
+            height: ezBox.clientHeight || 450,
+            splitBasis: 1,
+            audio: 0,
+            handleSuccess: () => {
+              if (playerEmpty) playerEmpty.style.display = "none";
+            },
+            handleError: (err) => {
+              console.warn("EZUIKit 播放提示:", err);
+              if (emptyTitle) emptyTitle.textContent = `${currentRoomName} 画面加载中`;
+              if (emptyCopy) emptyCopy.textContent = "正在调用软解内核，请稍候...";
+            }
+          });
+          return;
+        } catch(e) {
+          console.warn("EZUIPlayer 初始化异常:", e);
+        }
+      }
+
+      fallbackHlsPlay(hlsUrl);
+    }
+
+    function fallbackHlsPlay(hlsUrl) {
+      const ezBox = document.getElementById("ezuikitPlayer");
+      if (ezBox) ezBox.style.display = "none";
+      if (video) video.style.display = "block";
+
+      if (!hlsUrl) {
+        if (emptyTitle) emptyTitle.textContent = `${currentRoomName} 待机中`;
+        if (emptyCopy) emptyCopy.textContent = "暂无可用视频流，请切换其他机位";
+        return;
+      }
+
+      if (window.Hls && window.Hls.isSupported() && video) {
+        hls = new window.Hls({
+          enableWorker: true,
+          lowLatencyMode: true,
+          backBufferLength: 0,
+          maxBufferLength: 3,
+          maxMaxBufferLength: 6,
+          liveSyncDurationCount: 1,
+          liveMaxLatencyDurationCount: 2.5,
+          maxLiveSyncPlaybackRate: 1.15,
+          liveDurationInfinity: true,
+          manifestLoadingTimeOut: 10000,
+          fragLoadingTimeOut: 15000
+        });
+
+        hls.loadSource(hlsUrl);
+        hls.attachMedia(video);
+
+        hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
+          video.muted = true;
+          video.play().catch(() => {});
+        });
+
+        hls.on(window.Hls.Events.ERROR, (_event, data) => {
+          if (data && data.fatal) {
+            switch (data.type) {
+              case window.Hls.ErrorTypes.NETWORK_ERROR:
+                hls.startLoad();
+                break;
+              case window.Hls.ErrorTypes.MEDIA_ERROR:
+                hls.recoverMediaError();
+                break;
+              default:
+                break;
+            }
+          }
+        });
+      } else if (video && video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = hlsUrl;
+        video.play().catch(() => {});
+      }
+    }
+
+    async function initPage() {
+      try {
+        const response = await fetch(`${API_ENDPOINT}/api/rooms`);
+        const data = await response.json();
+        let rawRooms = data.rooms || [];
+
+        if (rawRooms.length === 0) {
+          if (emptyTitle) emptyTitle.textContent = "暂无在线直播间";
+          if (emptyCopy) emptyCopy.textContent = "请稍后再试";
+          return;
+        }
+
+        ezAccessToken = data.accessToken || "";
+        roomList = rawRooms;
+
+        const onlineCountEl = document.getElementById("onlineCount");
+        if (onlineCountEl) onlineCountEl.textContent = `${roomList.length} 直播间在线`;
+        if (mobileRoomBadge) mobileRoomBadge.textContent = `(${roomList.length}台) ▾`;
+        if (drawerTotalCount) drawerTotalCount.textContent = `(共${roomList.length}个机位)`;
+
+        if (roomButtonList) {
+          roomButtonList.innerHTML = "";
+          roomList.forEach((room, idx) => {
+            const btn = document.createElement("button");
+            btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
+            btn.innerHTML = `
+              <span>${String(room.name || `直播间 ${idx + 1}`)}</span>
+              <span class="status-indicator"><span class="pulse-dot"></span> LIVE</span>
+            `;
+            btn.addEventListener("click", (e) => {
+              e.preventDefault();
+              playStream(idx);
+            });
+            roomButtonList.appendChild(btn);
+          });
+        }
+
+        if (drawerRoomList) {
+          drawerRoomList.innerHTML = "";
+          roomList.forEach((room, idx) => {
+            const item = document.createElement("div");
+            item.className = `drawer-room-item ${idx === 0 ? 'active' : ''}`;
+            item.innerHTML = `
+              <div class="drawer-room-left">
+                <span class="drawer-room-idx">${idx + 1}</span>
+                <span>${String(room.name || `直播间 ${idx + 1}`)}</span>
+              </div>
+              <span class="status-indicator" style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--accent-green); font-weight: 700;">
+                <span class="pulse-dot"></span> LIVE
+              </span>
+            `;
+            item.addEventListener("click", (e) => {
+              e.preventDefault();
+              roomDrawerModal?.classList.remove("show");
+              playStream(idx);
+            });
+            drawerRoomList.appendChild(item);
+          });
+        }
+
+        playStream(0);
+      } catch (err) {
+        if (emptyTitle) emptyTitle.textContent = "服务连接异常";
+        if (emptyCopy) emptyCopy.textContent = "请检查网络或稍后刷新重试";
+      }
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        flushRoomDuration();
+        if (pollTimer) {
+          clearInterval(pollTimer);
+          pollTimer = null;
+        }
+      } else {
+        fetchComments(false);
+        if (!pollTimer) {
+          pollTimer = setInterval(() => {
+            if (document.visibilityState === "visible") fetchComments(false);
+          }, 8000);
+        }
+
+        if (hls && hls.liveSyncPosition && video) {
+          const latency = hls.liveSyncPosition - video.currentTime;
+          if (latency > 2) {
+            video.currentTime = hls.liveSyncPosition;
+          }
+          video.play().catch(() => {});
+        } else if (video && video.paused && !ezPlayer) {
+          video.play().catch(() => {});
+        }
+      }
+    });
+
+    // 远程投喂：带上用户信息写入排行榜流水
     if (btnFeedPet) {
       btnFeedPet.addEventListener("click", () => {
         requireAuth(async () => {
@@ -2328,13 +3383,16 @@
               triggerDanmakuEasterEgg("food");
               shootDanmaku(`🎉 感谢猫友【${userNick}】为现场毛孩子投喂了猫粮！`, true);
 
+              // 启动本地全网倒计时
               const cdTime = json.cooldownSec || activeRoom.cooldownSec || 30;
               startBtnCooldown(cdTime);
 
+              // 如果已在排行榜页面，投喂成功后自动重拉榜单数据
               if (viewRankings && viewRankings.classList.contains("active")) {
                 resetAndLoadRankings();
               }
             } else if (json.code === 429) {
+              // 全网共享拦截：提示他人还在吃，并同步剩余秒数倒计时
               alert(json.msg);
               const remain = json.remainingCooldown || 15;
               startBtnCooldown(remain);
@@ -2350,55 +3408,6 @@
           }
         });
       });
-    }
-
-    async function initPage() {
-      try {
-        const response = await fetch(`${API_ENDPOINT}/api/rooms`);
-        const data = await response.json();
-        roomList = data.rooms || [];
-
-        if (roomList.length === 0) {
-          if (emptyTitle) emptyTitle.textContent = "暂无在线直播间";
-          return;
-        }
-
-        ezAccessToken = data.accessToken || "";
-        const onlineEl = document.getElementById("onlineCount");
-        if (onlineEl) onlineEl.textContent = `${roomList.length} 直播间在线`;
-
-        if (roomButtonList) roomButtonList.innerHTML = "";
-        if (drawerRoomList) drawerRoomList.innerHTML = "";
-
-        roomList.forEach((room, idx) => {
-          const btn = document.createElement("button");
-          btn.className = `room-btn ${idx === 0 ? 'active' : ''}`;
-          btn.innerHTML = `
-            <span>${String(room.name || `直播间 ${idx + 1}`)}</span>
-            <span class="status-indicator"><span class="pulse-dot"></span> LIVE</span>
-          `;
-          btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            playStream(idx);
-          });
-          roomButtonList?.appendChild(btn);
-
-          const item = document.createElement("div");
-          item.className = `drawer-room-item ${idx === 0 ? 'active' : ''}`;
-          item.innerHTML = `<span>${String(room.name || `直播间 ${idx + 1}`)}</span><span style="color: var(--accent-green); font-size: 11px;">LIVE</span>`;
-          item.addEventListener("click", (e) => {
-            e.preventDefault();
-            roomDrawerModal?.classList.remove("show");
-            playStream(idx);
-          });
-          drawerRoomList?.appendChild(item);
-        });
-
-        // 默认播放第一路
-        playStream(0);
-      } catch (err) {
-        if (emptyTitle) emptyTitle.textContent = "服务连接异常";
-      }
     }
 
     initPage();
