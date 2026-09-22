@@ -43,14 +43,14 @@
     .container {
       max-width: 1240px;
       margin: 0 auto;
-      padding: 32px 24px 48px;
+      padding: 24px 24px 48px;
     }
 
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 24px;
+      padding-bottom: 20px;
       border-bottom: 1px solid var(--card-border);
       margin-bottom: 20px;
       flex-wrap: wrap;
@@ -78,6 +78,39 @@
       font-size: 18px;
       font-weight: 700;
       letter-spacing: -0.5px;
+    }
+
+    /* 顶部主导航 Tab */
+    .nav-tabs-bar {
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-tab-btn:hover { color: #fff; }
+
+    .nav-tab-btn.active {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34d399;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
     }
 
     .header-right {
@@ -164,11 +197,15 @@
       border-radius: 12px;
       font-size: 13px;
       color: #34d399;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       animation: fadeIn 0.4s ease;
     }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* 视图切换容器 */
+    .view-container { display: none; }
+    .view-container.active { display: block; animation: fadeIn 0.3s ease; }
 
     .hero-title {
       font-size: 26px;
@@ -183,7 +220,7 @@
     .hero-desc {
       color: var(--text-sub);
       font-size: 13px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .live-layout {
@@ -396,12 +433,6 @@
       filter: grayscale(0.5);
     }
 
-    .player-ctrl-btn.active {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.8), rgba(5, 150, 105, 0.9));
-      border-color: rgba(16, 185, 129, 0.5);
-      color: #fff;
-    }
-
     .player-ctrl-btn.btn-fortune {
       background: linear-gradient(135deg, rgba(245, 158, 11, 0.8), rgba(217, 119, 6, 0.9));
       border-color: rgba(245, 158, 11, 0.5);
@@ -421,16 +452,8 @@
       z-index: 5;
     }
 
-    .empty-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .empty-copy {
-      font-size: 13px;
-      color: var(--text-sub);
-    }
+    .empty-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .empty-copy { font-size: 13px; color: var(--text-sub); }
 
     .player-bar {
       padding: 14px 20px;
@@ -441,11 +464,7 @@
       border-top: 1px solid var(--card-border);
     }
 
-    .current-room-name {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
+    .current-room-name { font-size: 15px; font-weight: 700; color: var(--text-main); }
 
     .btn-mobile-choose-room {
       display: none;
@@ -459,7 +478,6 @@
       font-size: 13px;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s;
     }
 
     .chat-section {
@@ -480,45 +498,7 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .chat-title {
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .honor-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      border-radius: 99px;
-      font-size: 12px;
-      font-weight: 700;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: var(--text-sub);
-      cursor: pointer;
-      transition: all 0.2s ease;
-      user-select: none;
-    }
-
-    .honor-badge:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-
-    .honor-badge.tier-1 { color: #93c5fd; border-color: rgba(147, 197, 253, 0.4); background: rgba(147, 197, 253, 0.12); }
-    .honor-badge.tier-2 { color: #6ee7b7; border-color: rgba(110, 231, 183, 0.4); background: rgba(110, 231, 183, 0.12); }
-    .honor-badge.tier-3 { color: #34d399; border-color: rgba(52, 211, 153, 0.4); background: rgba(52, 211, 153, 0.12); }
-    .honor-badge.tier-4 { color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.12); }
-    .honor-badge.tier-5 { color: #818cf8; border-color: rgba(129, 140, 248, 0.4); background: rgba(129, 140, 248, 0.12); }
-    .honor-badge.tier-6 { color: #c084fc; border-color: rgba(192, 132, 252, 0.4); background: rgba(192, 132, 252, 0.12); }
-    .honor-badge.tier-7 { color: #f472b6; border-color: rgba(244, 114, 182, 0.4); background: rgba(244, 114, 182, 0.12); }
-    .honor-badge.tier-8 { color: #fb923c; border-color: rgba(251, 146, 60, 0.4); background: rgba(251, 146, 60, 0.12); }
-    .honor-badge.tier-9 { color: #facc15; border-color: rgba(250, 204, 21, 0.5); background: rgba(250, 204, 21, 0.18); box-shadow: 0 0 10px rgba(250, 204, 21, 0.25); }
-    .honor-badge.tier-10 { color: #fbbf24; border-color: rgba(251, 191, 36, 0.6); background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.3)); box-shadow: 0 0 14px rgba(245, 158, 11, 0.4); }
+    .chat-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
 
     .chat-messages {
       height: 180px;
@@ -532,10 +512,7 @@
     }
 
     .chat-messages::-webkit-scrollbar { width: 4px; }
-    .chat-messages::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
-    }
+    .chat-messages::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
 
     .message-item {
       display: flex;
@@ -545,691 +522,277 @@
       line-height: 1.5;
       padding: 5px 8px;
       border-radius: 8px;
-      transition: background 0.2s;
     }
 
-    .message-item.is-me {
-      background: rgba(16, 185, 129, 0.09);
-      border: 1px solid rgba(16, 185, 129, 0.15);
-    }
+    .message-item.is-me { background: rgba(16, 185, 129, 0.09); border: 1px solid rgba(16, 185, 129, 0.15); }
 
     .msg-avatar {
-      width: 26px;
-      height: 26px;
-      min-width: 26px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
-      display: grid;
-      place-items: center;
-      font-size: 14px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      width: 26px; height: 26px; min-width: 26px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08); display: grid; place-items: center; font-size: 14px;
       border: 1px solid rgba(255, 255, 255, 0.12);
     }
 
-    .message-item.is-me .msg-avatar {
-      background: rgba(16, 185, 129, 0.2);
-      border-color: rgba(16, 185, 129, 0.5);
-    }
-
-    .msg-content-wrapper {
-      display: flex;
-      align-items: baseline;
-      gap: 6px;
-      flex: 1;
-      flex-wrap: wrap;
-    }
-
-    .msg-user {
-      color: var(--accent-green);
-      font-weight: 600;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .msg-badge-me {
-      background: var(--accent-green);
-      color: #090a0f;
-      font-size: 10px;
-      font-weight: 800;
-      padding: 0 4px;
-      border-radius: 4px;
-      line-height: 14px;
-    }
-
-    .msg-time {
-      color: var(--text-sub);
-      font-size: 11px;
-      margin-left: auto;
-      white-space: nowrap;
-    }
-
+    .msg-content-wrapper { display: flex; align-items: baseline; gap: 6px; flex: 1; flex-wrap: wrap; }
+    .msg-user { color: var(--accent-green); font-weight: 600; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+    .msg-badge-me { background: var(--accent-green); color: #090a0f; font-size: 10px; font-weight: 800; padding: 0 4px; border-radius: 4px; }
+    .msg-time { color: var(--text-sub); font-size: 11px; margin-left: auto; white-space: nowrap; }
     .msg-text { color: var(--text-main); word-break: break-all; }
 
-    .quick-chips {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      margin-bottom: 4px;
-      scrollbar-width: none;
-    }
+    .quick-chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 4px; scrollbar-width: none; }
     .quick-chips::-webkit-scrollbar { display: none; }
 
     .chip-btn {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
-      color: var(--text-sub);
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border); color: var(--text-sub);
+      padding: 5px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap; transition: all 0.2s;
     }
+    .chip-btn:hover { background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); color: #fff; }
 
-    .chip-btn:hover {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: rgba(16, 185, 129, 0.3);
-      color: #fff;
-    }
-
-    .chat-input-bar {
-      display: flex;
-      gap: 10px;
-      position: relative;
-      align-items: center;
-    }
-
+    .chat-input-bar { display: flex; gap: 10px; position: relative; align-items: center; }
     .avatar-picker-btn {
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--card-border);
-      font-size: 20px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      width: 40px; height: 40px; min-width: 40px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06); border: 1px solid var(--card-border); font-size: 20px;
+      display: grid; place-items: center; cursor: pointer; transition: all 0.2s ease;
     }
-
-    .avatar-picker-btn:hover {
-      background: rgba(16, 185, 129, 0.15);
-      border-color: var(--accent-green);
-      transform: scale(1.06);
-    }
-
     .chat-input {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: #fff;
-      font-size: 13px;
-      outline: none;
-      transition: all 0.2s;
+      width: 100%; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border);
+      border-radius: 10px; padding: 10px 14px; color: #fff; font-size: 13px; outline: none;
     }
-
-    .chat-input:focus {
-      border-color: var(--accent-green);
-      background: rgba(255, 255, 255, 0.07);
-    }
-
+    .chat-input:focus { border-color: var(--accent-green); background: rgba(255, 255, 255, 0.07); }
     .input-text { flex: 1; }
 
     .btn-send {
-      background: var(--accent-green);
-      color: #090a0f;
-      border: none;
-      padding: 0 18px;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 13px;
-      height: 40px;
-      cursor: pointer;
-      transition: all 0.2s;
-      white-space: nowrap;
-      min-width: 65px;
+      background: var(--accent-green); color: #090a0f; border: none; padding: 0 18px;
+      border-radius: 10px; font-weight: 700; font-size: 13px; height: 40px; cursor: pointer; white-space: nowrap;
     }
-
     .btn-send:hover:not(:disabled) { background: var(--accent-green-hover); }
+    .btn-send:disabled { background: rgba(255, 255, 255, 0.1); color: var(--text-sub); cursor: not-allowed; }
 
-    .btn-send:disabled {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-sub);
-      cursor: not-allowed;
+    /* =========================================================================
+       投喂排行榜单页样式
+       ========================================================================= */
+    .rankings-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      position: relative;
+      padding-bottom: 90px;
     }
 
-    .footer-box {
+    .rankings-header-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: var(--radius);
-      padding: 20px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      backdrop-filter: blur(12px);
-      margin-bottom: 16px;
-    }
-
-    @media (max-width: 640px) {
-      .footer-box {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-      }
-    }
-
-    .btn-main {
-      background: linear-gradient(135deg, #ffffff, #e5e7eb);
-      color: #090a0f;
-      padding: 10px 22px;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 14px;
-      text-decoration: none;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .btn-main:hover { background: #ffffff; transform: translateY(-1px); }
-
-    footer {
-      margin-top: 32px;
+      padding: 24px;
       text-align: center;
-      font-size: 12px;
-      color: var(--text-sub);
+      margin-bottom: 16px;
+      backdrop-filter: blur(12px);
     }
 
+    .rank-filter-tabs {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      padding: 4px;
+      border-radius: 99px;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .rank-filter-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-sub);
+      padding: 8px 18px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .rank-filter-btn:hover { color: #fff; }
+    .rank-filter-btn.active {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(217, 119, 6, 0.35));
+      border: 1px solid rgba(245, 158, 11, 0.6);
+      color: #fbbf24;
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.3);
+    }
+
+    .rank-list-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .rank-table { width: 100%; border-collapse: collapse; text-align: left; }
+    .rank-table th {
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--card-border);
+      padding: 14px 20px; font-size: 12px; font-weight: 700; color: var(--text-sub); text-transform: uppercase;
+    }
+    .rank-table td {
+      padding: 14px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 14px; color: var(--text-main); vertical-align: middle;
+    }
+    .rank-row { transition: background 0.2s ease; }
+    .rank-row:hover { background: rgba(255, 255, 255, 0.03); }
+
+    .rank-num-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 255, 255, 0.05);
+      color: var(--text-sub); font-size: 13px; font-weight: 800;
+    }
+    .rank-row.top-1 .rank-num-badge { background: linear-gradient(135deg, #f59e0b, #d97706); color: #090a0f; box-shadow: 0 0 14px rgba(245, 158, 11, 0.5); }
+    .rank-row.top-2 .rank-num-badge { background: linear-gradient(135deg, #94a3b8, #64748b); color: #090a0f; box-shadow: 0 0 12px rgba(148, 163, 184, 0.4); }
+    .rank-row.top-3 .rank-num-badge { background: linear-gradient(135deg, #d97706, #b45309); color: #fff; box-shadow: 0 0 12px rgba(217, 119, 6, 0.35); }
+
+    .rank-user-profile { display: flex; align-items: center; gap: 12px; }
+    .rank-user-avatar {
+      width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12); display: grid; place-items: center; font-size: 20px; object-fit: cover;
+    }
+    .rank-user-name { font-weight: 700; color: #fff; }
+    .rank-count-val { font-size: 18px; font-weight: 800; color: #fbbf24; font-family: monospace; }
+    .rank-loading-trigger { padding: 20px; text-align: center; font-size: 13px; color: var(--text-sub); }
+
+    /* 底部常驻条：我的排名 */
+    .sticky-my-rank-bar {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      width: min(860px, calc(100vw - 32px)); background: rgba(22, 27, 34, 0.94);
+      backdrop-filter: blur(16px); border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 16px; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 20px rgba(16, 185, 129, 0.2); z-index: 100;
+    }
+    .my-rank-left { display: flex; align-items: center; gap: 12px; }
+    .my-rank-avatar {
+      width: 38px; height: 38px; border-radius: 50%; background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5); display: grid; place-items: center; font-size: 20px; object-fit: cover;
+    }
+    .btn-login-to-rank {
+      background: #10b981; border: none; color: #090a0f; padding: 7px 16px; border-radius: 99px; font-size: 13px; font-weight: 700; cursor: pointer;
+    }
+
+    .footer-box {
+      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius);
+      padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; backdrop-filter: blur(12px);
+      margin-top: 24px; margin-bottom: 16px;
+    }
+
+    footer { margin-top: 32px; text-align: center; font-size: 12px; color: var(--text-sub); }
     footer a { color: var(--text-sub); text-decoration: none; }
 
+    /* 原有弹窗体系保持完全一致 */
     .app-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(10px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 2500;
-      padding: 20px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 2500;
+      padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
     }
-
     .app-modal.show { opacity: 1; pointer-events: auto; }
-
     .modal-card-box {
-      max-width: 440px;
-      width: 92vw;
-      background: #161b22;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 16px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-      overflow: hidden;
+      max-width: 440px; width: 92vw; background: #161b22; border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); overflow: hidden;
       animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-
-    @keyframes pop-in {
-      from { transform: scale(0.85) translateY(20px); opacity: 0; }
-      to { transform: scale(1) translateY(0); opacity: 1; }
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
+    @keyframes pop-in { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+    .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
     .btn-modal-action {
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      color: #fff;
-      padding: 10px 20px;
-      border-radius: 99px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); color: #fff;
+      padding: 10px 20px; border-radius: 99px; font-size: 14px; font-weight: 600; cursor: pointer;
+      backdrop-filter: blur(8px); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
     }
-
     .btn-modal-action:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-1px); }
-
-    .btn-modal-action.primary {
-      background: #10b981;
-      border-color: #10b981;
-      color: #090a0f;
-    }
-
-    .btn-modal-action.fortune-color {
-      background: #f59e0b;
-      border-color: #f59e0b;
-      color: #090a0f;
-    }
+    .btn-modal-action.primary { background: #10b981; border-color: #10b981; color: #090a0f; }
+    .btn-modal-action.fortune-color { background: #f59e0b; border-color: #f59e0b; color: #090a0f; }
 
     .honor-modal-header {
-      padding: 24px 20px 16px;
-      background: linear-gradient(180deg, rgba(16, 185, 129, 0.12), transparent);
-      text-align: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 24px 20px 16px; background: linear-gradient(180deg, rgba(16, 185, 129, 0.12), transparent);
+      text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
-
-    .honor-current-title {
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 6px;
-    }
-
-    .honor-stay-stat {
-      font-size: 13px;
-      color: var(--text-sub);
-    }
-
-    .honor-progress-wrapper {
-      margin: 14px auto 4px;
-      max-width: 280px;
-    }
-
-    .honor-progress-bar {
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 99px;
-      overflow: hidden;
-      margin-bottom: 6px;
-    }
-
-    .honor-progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #10b981, #34d399);
-      border-radius: 99px;
-      transition: width 0.3s ease;
-    }
-
+    .honor-current-title { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .honor-stay-stat { font-size: 13px; color: var(--text-sub); }
+    .honor-progress-wrapper { margin: 14px auto 4px; max-width: 280px; }
+    .honor-progress-bar { height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+    .honor-progress-fill { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 99px; transition: width 0.3s ease; }
     .crown-stamp-box {
-      margin: 10px 20px 0;
-      padding: 10px 14px;
-      background: rgba(245, 158, 11, 0.08);
-      border: 1px solid rgba(245, 158, 11, 0.25);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 12px;
+      margin: 10px 20px 0; padding: 10px 14px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 10px; display: flex; align-items: center; justify-content: space-between; font-size: 12px;
     }
-
-    .honor-list {
-      padding: 16px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 320px;
-      overflow-y: auto;
-    }
-
+    .honor-list { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; }
     .honor-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.06);
-      border-radius: 12px;
-      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: space-between; padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; transition: all 0.2s;
     }
-
-    .honor-item.unlocked {
-      background: rgba(16, 185, 129, 0.06);
-      border-color: rgba(16, 185, 129, 0.25);
-    }
-
-    .honor-item-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .honor-item.unlocked { background: rgba(16, 185, 129, 0.06); border-color: rgba(16, 185, 129, 0.25); }
+    .honor-item-left { display: flex; align-items: center; gap: 10px; }
     .honor-item-icon { font-size: 22px; }
     .honor-item-name { font-size: 14px; font-weight: 700; color: #fff; }
     .honor-item-req { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+    .honor-item-status { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: rgba(255, 255, 255, 0.06); color: var(--text-sub); }
+    .honor-item.unlocked .honor-item-status { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 
-    .honor-item-status {
-      font-size: 11px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-sub);
-    }
+    #confettiCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 2000; }
+    .levelup-card { text-align: center; padding: 30px 24px; background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.18), #161b22 75%); }
+    .levelup-icon-glow { font-size: 56px; margin-bottom: 12px; animation: bounce-scale 1s infinite alternate ease-in-out; display: inline-block; }
+    @keyframes bounce-scale { from { transform: scale(1) translateY(0); } to { transform: scale(1.12) translateY(-6px); } }
+    .levelup-title { font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px; }
+    .levelup-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 20px; }
 
-    .honor-item.unlocked .honor-item-status {
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-    }
-
-    #confettiCanvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 2000;
-    }
-
-    .levelup-card {
-      text-align: center;
-      padding: 30px 24px;
-      background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.18), #161b22 75%);
-    }
-
-    .levelup-icon-glow {
-      font-size: 56px;
-      margin-bottom: 12px;
-      animation: bounce-scale 1s infinite alternate ease-in-out;
-      display: inline-block;
-    }
-
-    @keyframes bounce-scale {
-      from { transform: scale(1) translateY(0); filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.5)); }
-      to { transform: scale(1.12) translateY(-6px); filter: drop-shadow(0 0 25px rgba(245, 158, 11, 0.9)); }
-    }
-
-    .levelup-title {
-      font-size: 22px;
-      font-weight: 800;
-      color: #fbbf24;
-      margin-bottom: 6px;
-    }
-
-    .levelup-desc {
-      font-size: 13px;
-      color: var(--text-sub);
-      margin-bottom: 20px;
-    }
-
-    .stamp-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      padding: 16px 20px;
-      background: rgba(0,0,0,0.2);
-    }
-
+    .stamp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 16px 20px; background: rgba(0,0,0,0.2); }
     .stamp-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px dashed rgba(255,255,255,0.15);
-      border-radius: 12px;
-      padding: 12px 6px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.3s;
+      background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15); border-radius: 12px;
+      padding: 12px 6px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.3s;
     }
+    .stamp-card.stamped { border: 1px solid rgba(245, 158, 11, 0.5); background: rgba(245, 158, 11, 0.08); box-shadow: inset 0 0 12px rgba(245, 158, 11, 0.15); }
+    .stamp-icon { font-size: 26px; filter: grayscale(1) opacity(0.3); transition: all 0.3s; }
+    .stamp-card.stamped .stamp-icon { filter: grayscale(0) opacity(1); transform: scale(1.1) rotate(-8deg); }
+    .stamp-text { font-size: 11px; color: var(--text-sub); font-weight: 600; }
+    .stamp-card.stamped .stamp-text { color: #fbbf24; }
 
-    .stamp-card.stamped {
-      border: 1px solid rgba(245, 158, 11, 0.5);
-      background: rgba(245, 158, 11, 0.08);
-      box-shadow: inset 0 0 12px rgba(245, 158, 11, 0.15);
-    }
-
-    .stamp-icon {
-      font-size: 26px;
-      filter: grayscale(1) opacity(0.3);
-      transition: all 0.3s;
-    }
-
-    .stamp-card.stamped .stamp-icon {
-      filter: grayscale(0) opacity(1);
-      transform: scale(1.1) rotate(-8deg);
-      text-shadow: 0 0 10px rgba(245, 158, 11, 0.6);
-    }
-
-    .stamp-text {
-      font-size: 11px;
-      color: var(--text-sub);
-      font-weight: 600;
-    }
-
-    .stamp-card.stamped .stamp-text {
-      color: #fbbf24;
-    }
-
-    .calendar-days-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      padding: 12px 20px 16px;
-    }
-
+    .calendar-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding: 12px 20px 16px; }
     .cal-day-cell {
-      aspect-ratio: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-      font-size: 11px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.05);
-      color: var(--text-sub);
+      aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      border-radius: 8px; font-size: 11px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); color: var(--text-sub);
     }
+    .cal-day-cell.active-day { background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.5); color: #34d399; font-weight: 700; }
+    .cal-day-cell.today-cell { border-color: #fbbf24; box-shadow: 0 0 6px rgba(251, 191, 36, 0.4); }
 
-    .cal-day-cell.active-day {
-      background: rgba(16, 185, 129, 0.15);
-      border-color: rgba(16, 185, 129, 0.5);
-      color: #34d399;
-      font-weight: 700;
-    }
-
-    .cal-day-cell.today-cell {
-      border-color: #fbbf24;
-      box-shadow: 0 0 6px rgba(251, 191, 36, 0.4);
-    }
-
-    #danmakuFxCanvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1500;
-    }
-
-    .avatar-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      padding: 20px;
-    }
-
+    #danmakuFxCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 1500; }
+    .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 20px; }
     .avatar-option-btn {
-      aspect-ratio: 1;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--card-border);
-      font-size: 28px;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      transition: all 0.2s;
+      aspect-ratio: 1; border-radius: 14px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border);
+      font-size: 28px; display: grid; place-items: center; cursor: pointer; transition: all 0.2s;
     }
-
-    .avatar-option-btn:hover {
-      background: rgba(16, 185, 129, 0.15);
-      border-color: var(--accent-green);
-      transform: scale(1.1);
-    }
-
-    .avatar-option-btn.selected {
-      background: rgba(16, 185, 129, 0.25);
-      border-color: var(--accent-green);
-      box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
-    }
+    .avatar-option-btn:hover { background: rgba(16, 185, 129, 0.15); border-color: var(--accent-green); transform: scale(1.1); }
+    .avatar-option-btn.selected { background: rgba(16, 185, 129, 0.25); border-color: var(--accent-green); box-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
 
     .drawer-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(6px);
-      z-index: 1200;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(6px); z-index: 1200;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease; display: flex; flex-direction: column; justify-content: flex-end;
     }
-
-    .drawer-modal.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
+    .drawer-modal.show { opacity: 1; pointer-events: auto; }
     .drawer-panel {
-      background: #161b22;
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 20px 20px 0 0;
-      padding: 16px 20px 36px;
-      max-height: 70vh;
-      display: flex;
-      flex-direction: column;
-      transform: translateY(100%);
+      background: #161b22; border-top: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px 20px 0 0;
+      padding: 16px 20px 36px; max-height: 70vh; display: flex; flex-direction: column; transform: translateY(100%);
       transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.6);
     }
-
-    .drawer-modal.show .drawer-panel {
-      transform: translateY(0);
-    }
-
-    .drawer-handle-bar {
-      width: 40px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 99px;
-      margin: 0 auto 14px;
-    }
-
-    .drawer-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      margin-bottom: 12px;
-    }
-
-    .drawer-title {
-      font-size: 16px;
-      font-weight: 800;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .drawer-close {
-      background: rgba(255, 255, 255, 0.08);
-      border: none;
-      color: #9ca3af;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: grid;
-      place-items: center;
-      font-size: 14px;
-    }
-
-    .drawer-room-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
+    .drawer-modal.show .drawer-panel { transform: translateY(0); }
+    .drawer-handle-bar { width: 40px; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 99px; margin: 0 auto 14px; }
+    .drawer-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 12px; }
+    .drawer-title { font-size: 16px; font-weight: 800; color: #fff; }
+    .drawer-close { background: rgba(255, 255, 255, 0.08); border: none; color: #9ca3af; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; }
+    .drawer-room-list { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
     .drawer-room-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 16px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
-      color: #f3f4f6;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      display: flex; align-items: center; justify-content: space-between; padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px;
+      color: #f3f4f6; font-size: 14px; font-weight: 600; cursor: pointer;
     }
-
-    .drawer-room-item:hover {
-      background: rgba(255, 255, 255, 0.06);
-    }
-
-    .drawer-room-item.active {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(5, 150, 105, 0.25));
-      border-color: rgba(16, 185, 129, 0.6);
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);
-    }
-
-    .drawer-room-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .drawer-room-idx {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 22px;
-      height: 22px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.08);
-      font-size: 11px;
-      font-weight: 700;
-      color: #9ca3af;
-    }
-
-    .drawer-room-item.active .drawer-room-idx {
-      background: var(--accent-green);
-      color: #090a0f;
-    }
+    .drawer-room-item.active { background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(5, 150, 105, 0.25)); border-color: rgba(16, 185, 129, 0.6); color: #fff; }
 
     @media (max-width: 860px) {
-      .container {
-        padding: 16px 12px 32px;
-      }
-      .hero-title {
-        font-size: 20px;
-        margin-bottom: 2px;
-      }
-      .hero-desc {
-        font-size: 12px;
-        margin-bottom: 14px;
-      }
-      .live-layout {
-        display: block;
-        margin-bottom: 16px;
-      }
-      .room-sidebar {
-        display: none !important;
-      }
-      .btn-mobile-choose-room {
-        display: inline-flex;
-      }
+      .container { padding: 16px 12px 32px; }
+      .hero-title { font-size: 20px; }
+      .live-layout { display: block; margin-bottom: 16px; }
+      .room-sidebar { display: none !important; }
+      .btn-mobile-choose-room { display: inline-flex; }
     }
   </style>
 </head>
@@ -1243,6 +806,13 @@
         <div class="logo-icon">🐾</div>
         <div class="logo-text">MeowHub <span style="font-weight: 300; opacity: 0.5;">Live</span></div>
       </div>
+
+      <!-- 顶部单页导航 Tab：实时直播 vs 投喂榜单 -->
+      <nav class="nav-tabs-bar">
+        <button class="nav-tab-btn active" id="tabNavLive" type="button">📹 实时直播</button>
+        <button class="nav-tab-btn" id="tabNavRankings" type="button">🏆 投喂榜单</button>
+      </nav>
+
       <div class="header-right">
         <!-- Clerk 登录与个人身份控制器 -->
         <div id="auth-box">
@@ -1264,78 +834,128 @@
       <span id="noticeContent"></span>
     </div>
 
-    <h1 class="hero-title">毛毛星球 MeowHub | 智能养宠</h1>
-    <p class="hero-desc">别让你家毛孩子再成为留守儿童了</p>
+    <!-- ================= 视图 1：实时直播间 ================= -->
+    <div class="view-container active" id="viewLive">
+      <h1 class="hero-title">毛毛星球 MeowHub | 智能养宠</h1>
+      <p class="hero-desc">别让你家毛孩子再成为留守儿童了</p>
 
-    <div class="live-layout">
-      <div class="room-sidebar">
-        <div class="sidebar-title">切换直播间</div>
-        <div id="roomButtonList" style="display: flex; flex-direction: column; gap: 8px;"></div>
-      </div>
+      <div class="live-layout">
+        <div class="room-sidebar">
+          <div class="sidebar-title">切换直播间</div>
+          <div id="roomButtonList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </div>
 
-      <div class="player-container">
-        <div class="video-wrapper" id="videoWrapper">
-          <div id="ezuikitPlayer"></div>
-          <video id="mainVideo" autoplay muted playsinline crossorigin="anonymous" controlsList="nodownload" style="display:none;"></video>
-          
-          <div class="danmaku-container" id="danmakuBox"></div>
-          
-          <div class="controls-overlay">
-            <button class="player-ctrl-btn" id="btnFeedPet" style="background: linear-gradient(135deg, #10b981, #059669); font-weight: 700;" type="button">🍗 立即投喂</button>
-            <button class="player-ctrl-btn btn-fortune" id="fortuneBtn" type="button">🥠 猫生运势</button>
-            <button class="player-ctrl-btn" id="snapshotBtn" type="button">📷 拍立得</button>
-            <button class="player-ctrl-btn" id="danmakuToggleBtn" type="button">💬 弹幕: 开</button>
-            <button class="player-ctrl-btn" id="audioBtn" type="button">🔇 开启声音</button>
-          </div>
+        <div class="player-container">
+          <div class="video-wrapper" id="videoWrapper">
+            <div id="ezuikitPlayer"></div>
+            <video id="mainVideo" autoplay muted playsinline crossorigin="anonymous" controlsList="nodownload" style="display:none;"></video>
+            
+            <div class="danmaku-container" id="danmakuBox"></div>
+            
+            <div class="controls-overlay">
+              <button class="player-ctrl-btn" id="btnFeedPet" style="background: linear-gradient(135deg, #10b981, #059669); font-weight: 700;" type="button">🍗 立即投喂</button>
+              <button class="player-ctrl-btn btn-fortune" id="fortuneBtn" type="button">🥠 猫生运势</button>
+              <button class="player-ctrl-btn" id="snapshotBtn" type="button">📷 拍立得</button>
+              <button class="player-ctrl-btn" id="danmakuToggleBtn" type="button">💬 弹幕: 开</button>
+              <button class="player-ctrl-btn" id="audioBtn" type="button">🔇 开启声音</button>
+            </div>
 
-          <div class="card-empty" id="playerEmpty">
-            <div>
-              <div class="empty-title" id="emptyTitle">正在连线设备...</div>
-              <p class="empty-copy" id="emptyCopy">调取自适应码流中，请稍候...</p>
+            <div class="card-empty" id="playerEmpty">
+              <div>
+                <div class="empty-title" id="emptyTitle">正在连线设备...</div>
+                <p class="empty-copy" id="emptyCopy">调取自适应码流中，请稍候...</p>
+              </div>
             </div>
           </div>
+
+          <div class="player-bar">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="current-room-name" id="currentRoomTitle">加载中...</span>
+              <button class="btn-mobile-choose-room" id="btnOpenRoomDrawer" type="button">
+                <span>📹 选机位</span>
+                <span id="mobileRoomBadge" style="opacity: 0.8; font-size: 11px;">(4台) ▾</span>
+              </button>
+            </div>
+            <span class="badge-live">
+              <div class="pulse-dot"></div>
+              <span>LIVE 实时直连</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-section">
+        <div class="chat-header">
+          <div class="chat-title">💬 实时猫友互动区</div>
+          <div style="font-size: 12px; color: var(--text-sub);">双击视频画面攒功德 · 发送【开饭/鱼干/撒花/下雨】触发彩蛋 🐾</div>
         </div>
 
-        <div class="player-bar">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <span class="current-room-name" id="currentRoomTitle">加载中...</span>
-            <button class="btn-mobile-choose-room" id="btnOpenRoomDrawer" type="button">
-              <span>📹 选机位</span>
-              <span id="mobileRoomBadge" style="opacity: 0.8; font-size: 11px;">(4台) ▾</span>
-            </button>
-          </div>
-          <span class="badge-live">
-            <div class="pulse-dot"></div>
-            <span>LIVE 实时直连</span>
-          </span>
+        <div class="chat-messages" id="chatList">
+          <div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>
         </div>
+
+        <div class="quick-chips">
+          <button class="chip-btn" type="button">🍗 加餐加餐</button>
+          <button class="chip-btn" type="button">🐟 赛博云喂猫</button>
+          <button class="chip-btn" type="button">🎉 恭喜撒花</button>
+          <button class="chip-btn" type="button">🐱 咪咪好乖</button>
+          <button class="chip-btn" type="button">👀 正在暗中观察</button>
+          <button class="chip-btn" type="button">❤️ 来看小可爱啦</button>
+        </div>
+
+        <form class="chat-input-bar" id="chatForm">
+          <button type="button" class="avatar-picker-btn" id="btnChooseAvatar" title="点击更换猫咪头像">🐱</button>
+          <input type="text" class="chat-input input-text" id="textInput" placeholder="说点什么吧，按回车发送弹幕..." maxlength="60" required />
+          <button type="submit" class="btn-send" id="btnSend">发送</button>
+        </form>
       </div>
     </div>
 
-    <div class="chat-section">
-      <div class="chat-header">
-        <div class="chat-title">💬 实时猫友互动区</div>
-        <div style="font-size: 12px; color: var(--text-sub);">双击视频画面攒功德 · 发送【开饭/鱼干/撒花/下雨】触发彩蛋 🐾</div>
-      </div>
+    <!-- ================= 视图 2：投喂排行榜 ================= -->
+    <div class="view-container" id="viewRankings">
+      <div class="rankings-wrapper">
+        <div class="rankings-header-card">
+          <h1 class="hero-title" style="margin-bottom: 4px;">🏆 投喂功德排行榜</h1>
+          <p class="hero-desc" style="margin-bottom: 0;">点滴善意汇聚成光 · 感谢每一位守护流浪生灵的爱心猫友</p>
 
-      <div class="chat-messages" id="chatList">
-        <div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>
-      </div>
+          <div class="rank-filter-tabs">
+            <button class="rank-filter-btn active" data-range="all" type="button">全部时间</button>
+            <button class="rank-filter-btn" data-range="30d" type="button">最近 30 天</button>
+            <button class="rank-filter-btn" data-range="7d" type="button">最近 7 天</button>
+          </div>
+        </div>
 
-      <div class="quick-chips">
-        <button class="chip-btn" type="button">🍗 加餐加餐</button>
-        <button class="chip-btn" type="button">🐟 赛博云喂猫</button>
-        <button class="chip-btn" type="button">🎉 恭喜撒花</button>
-        <button class="chip-btn" type="button">🐱 咪咪好乖</button>
-        <button class="chip-btn" type="button">👀 正在暗中观察</button>
-        <button class="chip-btn" type="button">❤️ 来看小可爱啦</button>
-      </div>
+        <div class="rank-list-card">
+          <table class="rank-table">
+            <thead>
+              <tr>
+                <th style="width: 80px;">名次</th>
+                <th>猫友</th>
+                <th style="text-align: right; width: 130px;">累计投喂</th>
+              </tr>
+            </thead>
+            <tbody id="rankTableBody">
+              <!-- 动态追加行 -->
+            </tbody>
+          </table>
 
-      <form class="chat-input-bar" id="chatForm">
-        <button type="button" class="avatar-picker-btn" id="btnChooseAvatar" title="点击更换猫咪头像">🐱</button>
-        <input type="text" class="chat-input input-text" id="textInput" placeholder="说点什么吧，按回车发送弹幕..." maxlength="60" required />
-        <button type="submit" class="btn-send" id="btnSend">发送</button>
-      </form>
+          <div class="rank-loading-trigger" id="rankLoadingTrigger">正在载入功德英雄榜...</div>
+        </div>
+
+        <!-- 底部常驻条：我的专属战绩 -->
+        <div class="sticky-my-rank-bar" id="myRankStickyBar">
+          <div class="my-rank-left">
+            <div class="my-rank-avatar" id="myBarAvatar">🐾</div>
+            <div>
+              <div style="font-weight: 700; color: #fff; font-size: 14px;" id="myBarName">未登录猫友</div>
+              <div style="font-size: 12px; color: var(--text-sub);" id="myBarRankTip">登录后可查看我的专属战绩</div>
+            </div>
+          </div>
+          <div id="myBarRight">
+            <button class="btn-login-to-rank" id="btnRankLoginNow" type="button">立即登录</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="footer-box">
@@ -1354,7 +974,7 @@
     </footer>
   </div>
 
-  <!-- 底部向上滑动抽屉选台组件 -->
+  <!-- 手机端抽屉选台组件 -->
   <div class="drawer-modal" id="roomDrawerModal">
     <div class="drawer-panel">
       <div class="drawer-handle-bar"></div>
@@ -1619,6 +1239,8 @@
 
             const u = ClerkAuth.getUser();
             syncClerkUserToBackend(u);
+            updateMyRankStickyBar();
+
             if (pendingAction) {
               const act = pendingAction;
               pendingAction = null;
@@ -1627,6 +1249,7 @@
           } else {
             if (btnClerkSignIn) btnClerkSignIn.style.display = "inline-flex";
             if (clerkUserAvatarSlot) clerkUserAvatarSlot.innerHTML = "";
+            updateMyRankStickyBar();
           }
         }
 
@@ -1635,6 +1258,189 @@
         console.log("✓ Clerk 认证系统加载完成");
       } catch (err) {
         console.warn("Clerk 加载异常:", err);
+      }
+    });
+
+    // =========================================================================
+    // 顶部单页 Tab 导航切换（直播间 vs 投喂榜单）
+    // =========================================================================
+    const tabNavLive = document.getElementById("tabNavLive");
+    const tabNavRankings = document.getElementById("tabNavRankings");
+    const viewLive = document.getElementById("viewLive");
+    const viewRankings = document.getElementById("viewRankings");
+
+    tabNavLive.addEventListener("click", () => {
+      tabNavLive.classList.add("active");
+      tabNavRankings.classList.remove("active");
+      viewLive.classList.add("active");
+      viewRankings.classList.remove("active");
+    });
+
+    tabNavRankings.addEventListener("click", () => {
+      tabNavRankings.classList.add("active");
+      tabNavLive.classList.remove("active");
+      viewRankings.classList.add("active");
+      viewLive.classList.remove("active");
+
+      // 初次切换到榜单时，自动拉取第一页数据
+      if (rankState.list.length === 0) {
+        resetAndLoadRankings();
+      }
+    });
+
+    // =========================================================================
+    // 排行榜前端核心逻辑（并列名次 + 20条滚动分页懒加载 + 底部常驻卡片）
+    // =========================================================================
+    const rankTableBody = document.getElementById("rankTableBody");
+    const rankLoadingTrigger = document.getElementById("rankLoadingTrigger");
+    const rankFilterBtns = document.querySelectorAll(".rank-filter-btn");
+
+    const myBarAvatar = document.getElementById("myBarAvatar");
+    const myBarName = document.getElementById("myBarName");
+    const myBarRankTip = document.getElementById("myBarRankTip");
+    const myBarRight = document.getElementById("myBarRight");
+    const btnRankLoginNow = document.getElementById("btnRankLoginNow");
+    btnRankLoginNow.addEventListener("click", openClerkSignInModal);
+
+    let rankState = {
+      range: "all",
+      page: 1,
+      limit: 20,
+      hasMore: true,
+      isLoading: false,
+      list: [],
+      myRankData: null
+    };
+
+    function updateMyRankStickyBar() {
+      const u = ClerkAuth.getUser();
+      if (!u) {
+        myBarAvatar.textContent = "🐾";
+        myBarName.textContent = "未登录猫友";
+        myBarRankTip.textContent = "登录后可查看我的专属战绩";
+        myBarRight.innerHTML = '<button class="btn-login-to-rank" onclick="openClerkSignInModal()">立即登录</button>';
+        return;
+      }
+
+      if (u.avatar && u.avatar.startsWith("http")) {
+        myBarAvatar.innerHTML = `<img src="${u.avatar}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />`;
+      } else {
+        myBarAvatar.textContent = u.avatar || "🐱";
+      }
+      myBarName.textContent = u.nickname;
+
+      if (rankState.myRankData) {
+        myBarRankTip.innerHTML = `当前全站并列第 <b style="color: #fbbf24; font-size: 14px;">${rankState.myRankData.rank}</b> 名`;
+        myBarRight.innerHTML = `
+          <div style="text-align: right;">
+            <span style="font-size: 18px; font-weight: 800; color: #10b981; font-family: monospace;">${rankState.myRankData.feedCount}</span>
+            <span style="font-size: 12px; color: var(--text-sub);"> 次投喂</span>
+          </div>
+        `;
+      } else {
+        myBarRankTip.textContent = "暂未上榜，快去直播间为毛孩子加餐吧！";
+        myBarRight.innerHTML = '<button class="btn-login-to-rank" onclick="document.getElementById(\'tabNavLive\').click()">去投喂</button>';
+      }
+    }
+
+    function renderRankRows(items) {
+      items.forEach((item) => {
+        const tr = document.createElement("tr");
+        const topClass = item.rank === 1 ? "top-1" : (item.rank === 2 ? "top-2" : (item.rank === 3 ? "top-3" : ""));
+        tr.className = `rank-row ${topClass}`;
+
+        let avatarHtml = "";
+        if (item.avatar && item.avatar.startsWith("http")) {
+          avatarHtml = `<img src="${item.avatar}" class="rank-user-avatar" alt="avatar" />`;
+        } else {
+          avatarHtml = `<div class="rank-user-avatar">${item.avatar || '🐱'}</div>`;
+        }
+
+        tr.innerHTML = `
+          <td><span class="rank-num-badge">${item.rank}</span></td>
+          <td>
+            <div class="rank-user-profile">
+              ${avatarHtml}
+              <span class="rank-user-name">${item.nickname}</span>
+            </div>
+          </td>
+          <td style="text-align: right;">
+            <span class="rank-count-val">${item.feedCount}</span>
+            <span style="font-size: 12px; color: var(--text-sub); margin-left: 2px;">次</span>
+          </td>
+        `;
+        rankTableBody.appendChild(tr);
+      });
+    }
+
+    async function fetchRankingsPage() {
+      if (rankState.isLoading || !rankState.hasMore) return;
+      rankState.isLoading = true;
+      rankLoadingTrigger.textContent = "正在加载更多猫友...";
+
+      const u = ClerkAuth.getUser();
+      const currentUid = u ? u.id : "";
+
+      try {
+        const query = `${API_ENDPOINT}/api/leaderboard?range=${rankState.range}&page=${rankState.page}&limit=${rankState.limit}&userId=${encodeURIComponent(currentUid)}`;
+        const res = await fetch(query);
+        const data = await res.json();
+
+        if (data.code === 200) {
+          const fetchedItems = data.rankings || [];
+          rankState.list.push(...fetchedItems);
+          rankState.hasMore = data.hasMore;
+          rankState.myRankData = data.myRank || null;
+
+          if (rankState.page === 1 && fetchedItems.length === 0) {
+            rankTableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--text-sub); padding: 40px 0;">该时间段内暂无投喂数据，快来拿下榜一吧！🐾</td></tr>';
+            rankLoadingTrigger.style.display = "none";
+          } else {
+            renderRankRows(fetchedItems);
+            rankState.page++;
+
+            if (!rankState.hasMore) {
+              rankLoadingTrigger.textContent = "— 已展示全部上榜猫友 —";
+            } else {
+              rankLoadingTrigger.textContent = "下拉自动加载更多...";
+            }
+          }
+          updateMyRankStickyBar();
+        }
+      } catch (e) {
+        rankLoadingTrigger.textContent = "加载失败，请重试";
+      } finally {
+        rankState.isLoading = false;
+      }
+    }
+
+    function resetAndLoadRankings() {
+      rankState.page = 1;
+      rankState.hasMore = true;
+      rankState.list = [];
+      rankTableBody.innerHTML = "";
+      rankLoadingTrigger.style.display = "block";
+      fetchRankingsPage();
+    }
+
+    rankFilterBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        rankFilterBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        rankState.range = btn.dataset.range;
+        resetAndLoadRankings();
+      });
+    });
+
+    // 触底分页无限滚动
+    window.addEventListener("scroll", () => {
+      if (!viewRankings.classList.contains("active")) return;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const clientHeight = window.innerHeight;
+
+      if (scrollTop + clientHeight >= scrollHeight - 120) {
+        fetchRankingsPage();
       }
     });
 
@@ -3160,7 +2966,7 @@
       }
     });
 
-    // 远程投喂：全网联动与全局 CD 倒计时
+    // 远程投喂：带上用户信息写入排行榜流水
     if (btnFeedPet) {
       btnFeedPet.addEventListener("click", () => {
         requireAuth(async () => {
@@ -3175,6 +2981,8 @@
 
           const u = ClerkAuth.getUser();
           const userId = u ? u.id : "";
+          const userNick = getUserFixedNickname();
+          const userAvatar = u?.avatar || getUserAvatar();
 
           btnFeedPet.disabled = true;
           btnFeedPet.textContent = "出粮中...";
@@ -3187,6 +2995,8 @@
                 roomId: currentRoomId, 
                 imei: sendImei,
                 userId: userId,
+                nickname: userNick,
+                avatar: userAvatar,
                 seconds: 2 
               })
             });
@@ -3195,14 +3005,17 @@
             if (json.code === 200) {
               alert("投喂成功！");
               triggerDanmakuEasterEgg("food");
-              const nick = getUserFixedNickname();
-              shootDanmaku(`🎉 感谢猫友【${nick}】为现场毛孩子投喂了猫粮！`, true);
+              shootDanmaku(`🎉 感谢猫友【${userNick}】为现场毛孩子投喂了猫粮！`, true);
 
               // 启动本地全网倒计时
               const cdTime = json.cooldownSec || activeRoom.cooldownSec || 30;
               startBtnCooldown(cdTime);
+
+              // 如果已在排行榜页面，投喂成功后自动重拉榜单数据
+              if (viewRankings.classList.contains("active")) {
+                resetAndLoadRankings();
+              }
             } else if (json.code === 429) {
-              // 全网共享拦截：提示他人还在吃，并同步剩余秒数倒计时
               alert(json.msg);
               const remain = json.remainingCooldown || 15;
               startBtnCooldown(remain);
