@@ -1003,12 +1003,20 @@
       position: absolute; width: 62px; height: 98px; border-radius: 8px; cursor: pointer;
       background: linear-gradient(135deg, #1e1b4b, #0f172a); border: 1.5px solid #a855f7;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5); transform-origin: center bottom;
-      transition: transform 0.25s ease, border-color 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.2s, box-shadow 0.2s;
       display: flex; align-items: center; justify-content: center; user-select: none;
+      animation: none !important; /* 彻底禁用会导致跳动的全局浮动帧动画 */
+      will-change: transform;
     }
-    .fan-card::before { content: '🐾'; font-size: 20px; filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.8)); }
-    .fan-card:hover { transform: translateY(-20px) scale(1.15) !important; z-index: 50 !important; border-color: #fbbf24; box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4); }
-
+    .fan-card::before { content: '🐾'; font-size: 20px; filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.8)); pointer-events: none; }
+    
+    /* 采用平稳抬升：保留旋转角度，仅在法线方向平滑拔高，绝不脱离鼠标命中区 */
+    .fan-card:hover { 
+      z-index: 100 !important; 
+      border-color: #fbbf24; 
+      box-shadow: 0 10px 24px rgba(251, 191, 36, 0.5); 
+      filter: brightness(1.2);
+    }
     .tarot-synthesis-box {
       background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.4);
       border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; text-align: left; width: 100%; box-sizing: border-box;
@@ -1851,6 +1859,12 @@
         const angle = startAngle + idx * angleStep;
         const xOffset = (idx - (total - 1) / 2) * 11;
         cardEl.style.transform = `translateX(${xOffset}px) rotate(${angle}deg)`;
+        cardEl.onmouseenter = () => {
+          cardEl.style.transform = `translateX(${xOffset}px) translateY(-18px) rotate(${angle}deg) scale(1.12)`;
+        };
+        cardEl.onmouseleave = () => {
+          cardEl.style.transform = `translateX(${xOffset}px) rotate(${angle}deg)`;
+        };
         cardEl.style.zIndex = idx + 1;
 
         cardEl.addEventListener("click", () => {
