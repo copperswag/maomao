@@ -3299,6 +3299,7 @@
           ezBox.style.display = "block";
           if (video) video.style.display = "none";
 
+          let ezSuccess = false;
           ezPlayer = new EZUIKit.EZUIPlayer({
             id: "ezuikitPlayer",
             autoplay: true,
@@ -3310,14 +3311,25 @@
             splitBasis: 1,
             audio: 0,
             handleSuccess: () => {
+              ezSuccess = true;
               if (playerEmpty) playerEmpty.style.display = "none";
             },
             handleError: (err) => {
-              console.warn("EZUIKit 播放提示:", err);
-              if (emptyTitle) emptyTitle.textContent = `${currentRoomName} 画面加载中`;
-              if (emptyCopy) emptyCopy.textContent = "正在调用软解内核，请稍候...";
+              console.warn("EZUIKit 播放提示，自动降级至 HLS:", err);
+              try { if (ezPlayer) { ezPlayer.stop(); ezPlayer = null; } } catch(e){}
+              fallbackHlsPlay(hlsUrl);
             }
           });
+
+          // 兜底机制：若 EZUIKit 5 秒内未能成功解码出流，强制转入 HLS 播放
+          setTimeout(() => {
+            if (!ezSuccess && currentRoomId === String(room.id || (roomIndex + 1))) {
+              console.warn("EZUIKit 加载超时，启动 HLS 兜底解码");
+              try { if (ezPlayer) { ezPlayer.stop(); ezPlayer = null; } } catch(e){}
+              fallbackHlsPlay(hlsUrl);
+            }
+          }, 5000);
+
           return;
         } catch(e) {
           console.warn("EZUIPlayer 初始化异常:", e);
@@ -3358,7 +3370,9 @@
 
         hls.on(window.Hls.Events.MANIFEST_PARSED, () => {
           video.muted = true;
-          video.play().catch(() => {});
+          video.play().catch((e) => {
+            console.warn("自动播放被拦截，需要交互:", e);
+          });
         });
 
         hls.on(window.Hls.Events.ERROR, (_event, data) => {
