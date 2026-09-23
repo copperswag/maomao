@@ -1083,10 +1083,38 @@
       border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 12px;
     }
     .scale-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--text-sub); }
-    .scale-track { flex: 1; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 99px; position: relative; }
+    ..scale-row { 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      gap: 12px; 
+      color: var(--text-sub); 
+      margin: 4px 0;
+    }
+    .scale-row > span {
+      width: 85px; /* 固定两端文字宽度，防止文字长短导致滑轨不居中 */
+      font-size: 11px;
+    }
+    .scale-row > span:first-child { text-align: left; }
+    .scale-row > span:last-child { text-align: right; }
+
+    .scale-track { 
+      flex: 1; 
+      height: 8px; /* 增加轨道厚度 */
+      background: rgba(255, 255, 255, 0.12); /* 确保背景可见 */
+      border-radius: 99px; 
+      position: relative; 
+    }
     .scale-dot {
-      position: absolute; top: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px;
-      border-radius: 50%; background: #ec4899; box-shadow: 0 0 8px #ec4899;
+      position: absolute; 
+      top: 50%; 
+      transform: translate(-50%, -50%); 
+      width: 14px; 
+      height: 14px;
+      border-radius: 50%; 
+      background: #ec4899; 
+      box-shadow: 0 0 10px #ec4899;
+      transition: left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .mbti-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
@@ -4335,10 +4363,19 @@
       document.getElementById("resMbtiHuman").textContent = data.human;
 
       // 调整 4 维标尺游标位置
-      document.getElementById("dotEI").style.left = `${(eCount / 5) * 100}%`;
-      document.getElementById("dotSN").style.left = `${(sCount / 5) * 100}%`;
-      document.getElementById("dotTF").style.left = `${(tCount / 5) * 100}%`;
-      document.getElementById("dotJP").style.left = `${(jCount / 5) * 100}%`;
+      // 0~5分映射为 10%~90%（留边距防止圆点溢出两端）
+      // 选 I/N/F/P 时 (5 - count) 越大，越往右移动
+      const calcPos = (count) => {
+        // count 是左侧字母(E/S/T/J)的得分(0~5)
+        // 得分越低，说明越倾向右侧字母(I/N/F/P)，应该更靠右
+        const rightTendency = (5 - count) / 5; // 0 (极左) ~ 1 (极右)
+        return 10 + rightTendency * 80; // 限制在 10% 到 90% 之间，视觉最协调
+      };
+
+      document.getElementById("dotEI").style.left = `${calcPos(eCount)}%`;
+      document.getElementById("dotSN").style.left = `${calcPos(sCount)}%`;
+      document.getElementById("dotTF").style.left = `${calcPos(tCount)}%`;
+      document.getElementById("dotJP").style.left = `${calcPos(jCount)}%`;
 
       if (typeof fireConfetti === "function") fireConfetti();
     }, 1200);
