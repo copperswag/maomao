@@ -1030,6 +1030,74 @@
       border-radius: 10px; padding: 10px 12px; text-align: left;
     }
     .detail-card-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; margin-bottom: 4px; }
+
+    /* ================= 小猫 MBTI 测评专属样式 ================= */
+    .mbti-modal-box {
+      max-width: 520px; width: 94vw; background: radial-gradient(circle at 50% 10%, #2e1065, #090a0f 85%);
+      border: 1.5px solid rgba(236, 72, 153, 0.4); border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(236, 72, 153, 0.25);
+      padding: 24px 20px; color: #f3f4f6; text-align: center; position: relative;
+    }
+    .mbti-header-title { font-size: 20px; font-weight: 900; color: #fff; margin-bottom: 12px; }
+    .mbti-progress-wrapper { margin-bottom: 16px; }
+    .mbti-progress-bar { height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 99px; overflow: hidden; margin-bottom: 6px; }
+    .mbti-progress-fill { height: 100%; background: linear-gradient(90deg, #ec4899, #f43f5e); border-radius: 99px; transition: width 0.3s ease; }
+    .mbti-phase-text { font-size: 12px; color: #f472b6; font-weight: 700; }
+
+    .mbti-card-box {
+      background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px; padding: 20px 16px; margin-bottom: 14px; text-align: left;
+      animation: pop-in 0.25s ease-out;
+    }
+    .mbti-q-num { font-size: 13px; font-weight: 900; color: #f472b6; margin-bottom: 4px; }
+    .mbti-q-title { font-size: 16px; font-weight: 800; color: #fff; line-height: 1.5; margin-bottom: 16px; }
+
+    .mbti-options-col { display: flex; flex-direction: column; gap: 10px; }
+    .mbti-opt-btn {
+      width: 100%; text-align: left; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px; padding: 14px 16px; color: #f3f4f6; cursor: pointer; transition: all 0.2s ease;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .mbti-opt-btn:hover { background: rgba(236, 72, 153, 0.15); border-color: rgba(236, 72, 153, 0.5); transform: translateY(-1px); }
+    .mbti-opt-main { font-size: 14px; font-weight: 700; }
+    .mbti-opt-sub { font-size: 11px; color: var(--text-sub); }
+
+    .mbti-footer-nav { display: flex; justify-content: space-between; align-items: center; }
+    .btn-mbti-sub { background: none; border: none; color: var(--text-sub); font-size: 13px; cursor: pointer; padding: 4px 8px; }
+    .btn-mbti-sub:hover { color: #fff; }
+
+    .mbti-calc-cat { font-size: 52px; animation: bounce-scale 0.8s infinite alternate ease-in-out; }
+
+    /* 结果面板 */
+    .mbti-res-header { margin-bottom: 14px; }
+    .mbti-code-badge {
+      display: inline-block; font-size: 32px; font-weight: 900; color: #fff;
+      background: linear-gradient(135deg, #ec4899, #be185d); padding: 4px 20px; border-radius: 12px;
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.4); margin-bottom: 6px;
+    }
+    .mbti-title-text { font-size: 18px; font-weight: 800; color: #fbbf24; margin-bottom: 4px; }
+    .mbti-quote-text { font-size: 13px; color: var(--text-sub); font-style: italic; }
+
+    .mbti-scale-panel {
+      background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 12px;
+    }
+    .scale-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--text-sub); }
+    .scale-track { flex: 1; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 99px; position: relative; }
+    .scale-dot {
+      position: absolute; top: 50%; transform: translate(-50%, -50%); width: 12px; height: 12px;
+      border-radius: 50%; background: #ec4899; box-shadow: 0 0 8px #ec4899;
+    }
+
+    .mbti-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; text-align: left; }
+    .mbti-grid-item {
+      background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 4px;
+    }
+    .mbti-grid-icon { font-size: 11px; font-weight: 700; color: #f472b6; }
+    .mbti-grid-val { font-size: 12px; color: #f3f4f6; font-weight: 600; line-height: 1.4; }
+    
+    
   </style>
 </head>
 <body>
@@ -1093,6 +1161,7 @@
               <button class="player-ctrl-btn" id="btnFeedPet" style="background: linear-gradient(135deg, #10b981, #059669); font-weight: 700;" type="button">🍗 立即投喂</button>
               <button class="player-ctrl-btn btn-tarot" id="btnOpenTarot" type="button">🔮 喵星塔罗</button>
               <button class="player-ctrl-btn" id="btnOpenBazi" style="background: linear-gradient(135deg, #d97706, #92400e); color:#fff; font-weight:700;" type="button">📜 小猫算命</button>
+              <button class="player-ctrl-btn" id="btnOpenMbti" style="background: linear-gradient(135deg, #ec4899, #be185d); color:#fff; font-weight:700;" type="button">🐾 喵生MBTI</button>
               <button class="player-ctrl-btn" id="snapshotBtn" type="button">📷 拍立得</button>
               <button class="player-ctrl-btn" id="danmakuToggleBtn" type="button">💬 弹幕: 开</button>
               <button class="player-ctrl-btn" id="audioBtn" type="button">🔇 开启声音</button>
@@ -1520,6 +1589,108 @@
   </div>
   <canvas id="baziCustomCanvas" style="display:none;"></canvas>
 
+  <!-- ================= 弹窗集合：小猫 MBTI 专属测评弹窗 ================= -->
+  <div class="app-modal" id="mbtiModal">
+    <div class="mbti-modal-box">
+      <!-- 阶段 1：答题卡片流视图 -->
+      <div id="mbtiQuizView">
+        <div class="mbti-header-title">🐾 喵星性格潜能研究所 · MBTI</div>
+        <div class="mbti-progress-wrapper">
+          <div class="mbti-progress-bar"><div class="mbti-progress-fill" id="mbtiProgressFill" style="width: 5%;"></div></div>
+          <div class="mbti-phase-text" id="mbtiPhaseText">第 1/4 阶段：社交能量评估 (1/20)</div>
+        </div>
+
+        <div class="mbti-card-box">
+          <div class="mbti-q-num" id="mbtiQNum">Q1.</div>
+          <div class="mbti-q-title" id="mbtiQTitle">门铃突响，快递/外卖敲门时？</div>
+          
+          <div class="mbti-options-col">
+            <button class="mbti-opt-btn" id="mbtiOptA" type="button">
+              <span class="mbti-opt-main" id="mbtiOptAText">箭步冲向防盗门，嗅门缝甚至叫唤想接驾</span>
+              <span class="mbti-opt-sub">好奇心拉满 · 积极巡查</span>
+            </button>
+            <button class="mbti-opt-btn" id="mbtiOptB" type="button">
+              <span class="mbti-opt-main" id="mbtiOptBText">瞬间压低底盘潜行，光速溜进床底暗中观察</span>
+              <span class="mbti-opt-sub">安全至上 · 静观其变</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="mbti-footer-nav">
+          <button class="btn-mbti-sub" id="btnMbtiPrev" type="button" style="visibility: hidden;">↩ 上一题</button>
+          <button class="btn-mbti-sub" id="btnCloseMbtiQuiz" type="button">关闭</button>
+        </div>
+      </div>
+
+      <!-- 阶段 2：1.5秒喵星超算中心过渡动效 -->
+      <div id="mbtiCalcView" style="display:none; text-align:center; padding: 40px 10px;">
+        <div class="mbti-calc-cat">🐱💻</div>
+        <div style="font-size:18px; font-weight:800; color:#fbbf24; margin:16px 0 8px;">喵星超算中心正在聚合建模...</div>
+        <div style="font-size:13px; color:var(--text-sub);" id="mbtiCalcStatus">正在深度解构 4 大行为维度数据...</div>
+      </div>
+
+      <!-- 阶段 3：16型人格结果诊断大卡 -->
+      <div id="mbtiResultView" style="display:none;">
+        <div class="mbti-res-header">
+          <div class="mbti-code-badge" id="resMbtiCode">INTJ</div>
+          <div class="mbti-title-text" id="resMbtiTitle">幕后高冷军师猫</div>
+          <div class="mbti-quote-text" id="resMbtiQuote">“愚蠢的两脚兽，你的一举一动都在本座算计之中。”</div>
+        </div>
+
+        <!-- 4维比重比例条 -->
+        <div class="mbti-scale-panel">
+          <div class="scale-row">
+            <span>外向社牛 (E)</span>
+            <div class="scale-track"><div class="scale-dot" id="dotEI"></div></div>
+            <span>内向独处 (I)</span>
+          </div>
+          <div class="scale-row">
+            <span>实感吃货 (S)</span>
+            <div class="scale-track"><div class="scale-dot" id="dotSN"></div></div>
+            <span>直觉脑洞 (N)</span>
+          </div>
+          <div class="scale-row">
+            <span>原则理智 (T)</span>
+            <div class="scale-track"><div class="scale-dot" id="dotTF"></div></div>
+            <span>软萌共情 (F)</span>
+          </div>
+          <div class="scale-row">
+            <span>严谨规矩 (J)</span>
+            <div class="scale-track"><div class="scale-dot" id="dotJP"></div></div>
+            <span>随性跑酷 (P)</span>
+          </div>
+        </div>
+
+        <!-- 2x2 行为处方看板 -->
+        <div class="mbti-grid-2x2">
+          <div class="mbti-grid-item">
+            <span class="mbti-grid-icon">🍗 专属干粮：</span>
+            <span class="mbti-grid-val" id="resMbtiFood">原切冻干牛排</span>
+          </div>
+          <div class="mbti-grid-item">
+            <span class="mbti-grid-icon">💣 易炸毛雷区：</span>
+            <span class="mbti-grid-val" id="resMbtiAvoid">突然抱起强行吸肚子</span>
+          </div>
+          <div class="mbti-grid-item">
+            <span class="mbti-grid-icon">💤 猫生习惯：</span>
+            <span class="mbti-grid-val" id="resMbtiHabit">在柜顶俯瞰两脚兽日常</span>
+          </div>
+          <div class="mbti-grid-item">
+            <span class="mbti-grid-icon">🤝 天选铲屎官：</span>
+            <span class="mbti-grid-val" id="resMbtiHuman">ENFP 快乐小狗型主人</span>
+          </div>
+        </div>
+
+        <div class="tarot-action-bar" style="margin-top:16px;">
+          <button class="btn-tarot-action primary" id="btnSaveMbtiPoster" style="background: linear-gradient(135deg, #ec4899, #be185d);" type="button">📥 保存主子身份海报</button>
+          <button class="btn-tarot-action secondary" id="btnRestartMbti" type="button">🎲 重测一只</button>
+          <button class="btn-tarot-action secondary" id="btnCloseMbtiRes" type="button" style="flex:0.6;">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <canvas id="mbtiCanvas" style="display:none;"></canvas>
+  
   <script>
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
 
@@ -3996,6 +4167,296 @@
     }
   });
 })();
+// =========================================================================
+// 小猫 MBTI 专属体系：20题全场景 + 16型人格图鉴 + Canvas 海报引擎
+// =========================================================================
+(function() {
+  const MBTI_QUESTIONS = [
+    // 维度一：E vs I (1~5)
+    { q: "门铃突响，快递/外卖敲门时？", dim: "EI", a: "箭步冲向防盗门，嗅门缝甚至叫唤想接驾", aSub: "好奇心拉满 · 积极巡查", b: "瞬间压低底盘潜行，光速溜进床底暗中观察", bSub: "安全至上 · 静观其变" },
+    { q: "家里来了几位热情的两脚兽客人？", dim: "EI", a: "在客人脚边来回蹭蹭，大方亮肚皮巡场", aSub: "社交悍匪 · 见人就贴", b: "只要外人在场绝不现身，零食也引诱不出", bSub: "社恐自卫 · 拒绝社交" },
+    { q: "去宠物医院做常规体检时？", dim: "EI", a: "探头探脑打量诊室，试图与护士互动", aSub: "随遇而安 · 适应力强", b: "缩在猫包深处，抱出来就飞机耳浑身紧绷", bSub: "警惕抗拒 · 渴望回家" },
+    { q: "铲屎官在家看剧/办公时？", dim: "EI", a: "必须趴在键盘、大腿或胸口强刷存在感", aSub: "极度黏人 · 必须被爱", b: "呆在同房间但保持安全距离自顾自睡", bSub: "独立自主 · 默默守望" },
+    { q: "窗外飞来一只小鸟或路过流浪猫？", dim: "EI", a: "扒着玻璃激动得“咔咔咔”叫，尾巴狂甩", aSub: "情绪外显 · 急迫沟通", b: "伏低身体凝视良久，默默后退两步静观", bSub: "沉着内敛 · 暗中盘算" },
+
+    // 维度二：S vs N (6~10)
+    { q: "面对一个刚拆开的快递空纸箱？", dim: "SN", a: "只要能塞进去立刻钻入盘好，讲求实用", aSub: "务实体验 · 物理舒适", b: "对箱子兴趣一般，却对着胶带反光发呆", bSub: "脑洞发散 · 观察细节" },
+    { q: "平时最热衷的消遣娱乐？", dim: "SN", a: "明确抓实体逗猫棒、滚地乒乓球或老鼠", aSub: "眼见为实 · 实体捕猎", b: "自导自演抓空气中的隐形飞虫或凝视白墙", bSub: "赛博通灵 · 虚空构想" },
+    { q: "家里家具位置发生了明显挪动？", dim: "SN", a: "走路立刻绕开，并逐一去蹭角落标记", aSub: "感知具象 · 空间实证", b: "没注意家具变了，但莫名疑神疑鬼踱步", bSub: "气场敏感 · 直觉感知" },
+    { q: "探索新买的复杂猫爬架时？", dim: "SN", a: "一步一爪稳健攀爬，迅速理清路线跳台", aSub: "循序渐进 · 结构大师", b: "不走寻常路，从不可思议的缝隙倒挂借力", bSub: "打破常规 · 奇思妙想" },
+    { q: "尝试全新配方的新零食时？", dim: "SN", a: "深吸一口气精准挑食，不合口味立刻埋砂", aSub: "味蕾挑剔 · 专注口感", b: "闻半天不下嘴，像哲学家一样盯碗沉思", bSub: "审慎思索 · 充满怀疑" },
+
+    // 维度三：T vs F (11~15)
+    { q: "主人情绪低落坐在沙发叹气时？", dim: "TF", a: "面无表情路过，走到空碗旁敲碗催加饭", aSub: "理智务实 · 现实长工", b: "走过来闻眼泪，轻柔踩奶呼噜贴脸安慰", bSub: "高度共情 · 暖心天使" },
+    { q: "不小心推翻水杯被严肃呵斥了一声？", dim: "TF", a: "翻个白眼转头就走，过会儿当面再推一个", aSub: "桀骜不驯 · 坚持本我", b: "委屈得耳朵耷拉躲角落，甚至绝食抗议", bSub: "心思敏感 · 容易受伤" },
+    { q: "被伸手摸平时不给碰的后爪或肚皮？", dim: "TF", a: "绝无试探，一旦越界立刻精准出爪哈气", aSub: "原则清晰 · 底线分明", b: "哼唧抽走爪子，实在躲不过也只轻轻假咬", bSub: "心软顾念 · 舍不得伤" },
+    { q: "被抱进猫包准备出门时？", dim: "TF", a: "化身四脚支撑的液体，精确卡死猫包口", aSub: "力学对抗 · 坚决抗争", b: "眼神幽怨求饶，喵呜叫得撕心裂肺撒娇", bSub: "苦肉计谋 · 唤醒良心" },
+    { q: "家庭地位与人情世故？", dim: "TF", a: "对所有人一视同仁冷淡，谁喂饭谁是合格长工", aSub: "铁面无私 · 契约精神", b: "特别会看脸色，专找心肠最软的家庭成员撒娇", bSub: "人情练达 · 精明依恋" },
+
+    // 维度四：J vs P (16~20)
+    { q: "早晨叫铲屎官起床的作息？", dim: "JP", a: "误差不超 5 分钟，准点踩脸或抓门叫早", aSub: "活体闹钟 · 严谨秩序", b: "随心所欲，有时天不亮叫，有时睡到中午", bSub: "随心所欲 · 自由奔放" },
+    { q: "使用猫砂盆后的埋砂习惯？", dim: "JP", a: "反复掩埋闻嗅确认，甚至把盆边蹭干净", aSub: "工匠精神 · 井井有条", b: "随便划拉两下刨空气，带得满地砂就跑", bSub: "随手了事 · 毫无包袱" },
+    { q: "平时睡觉的地盘选择？", dim: "JP", a: "认准专属猫窝或固定地毯角落，雷打不动", aSub: "界限清晰 · 专一执着", b: "走到哪瘫到哪，地砖、水槽、电脑主机随处睡", bSub: "四海为家 · 极致松弛" },
+    { q: "面对一日三餐的干饭节奏？", dim: "JP", a: "出粮立刻规律进食，吃饱就停从不暴饮暴食", aSub: "自律养生 · 科学作息", b: "随缘进食，时而一口气暴风吸入，时而放着不理", bSub: "兴之所致 · 不受约束" },
+    { q: "夜深人静时的精神状态？", dim: "JP", a: "跟着两脚兽熄灯准时关机进入深度睡眠", aSub: "规律作息 · 模范室友", b: "凌晨三点半毫无征兆开启喵星 F1 疯狂跑酷", bSub: "夜行游侠 · 释放狂想" }
+  ];
+
+  const MBTI_CAT_BASE = {
+    "INTJ": { title: "幕后高冷军师猫", quote: "“愚蠢的两脚兽，你的一举一动都在本座算计之中。”", food: "原切高蛋白牛肉粒", avoid: "突然强行抱起吸肚子", habit: "站在柜顶冷眼俯瞰全家动线", human: "ENFP 快乐小狗型主人" },
+    "INTP": { title: "纸箱沉思哲学家", quote: "“这个纸箱的体积，刚好等于本喵灵魂的容积。”", food: "慢熬鸡胸肉浓汤", avoid: "打断它对着白墙发呆", habit: "可以凝视水龙头水滴一下午", human: "ENTJ 魄力大家长" },
+    "ENTJ": { title: "领地霸权铁血领主", quote: "“没有本座的允准，家里连一只飞虫都休想活过今夜。”", food: "顶级原切鹿肉冻干", avoid: "开饭推迟超过 3 分钟", habit: "巡逻领地，扇服家里所有生物", human: "INFP 乖巧小跟班" },
+    "ENTP": { title: "拆家物理杠精猫", quote: "“推翻水杯不是因为渴，纯为观察重力加速度。”", food: "趣味漏食球金枪鱼粒", avoid: "把它独自关在无聊房间", habit: "专挑贵重物品推下桌子看你抓狂", human: "INFJ 温和包容型家长" },
+
+    "INFJ": { title: "灵性通透赛博巫师", quote: "“我听得见你心碎的声音，过来，允许你吸三秒肚皮。”", food: "深海三文鱼抗氧化泥", avoid: "嘈杂尖叫的人群聚会", habit: "在你情绪低落时默默走来踩奶", human: "ENFP/ENTP 阳光开朗搭档" },
+    "INFP": { title: "敏感易碎软萌夹子", quote: "“刚才关门声音好大...你是不是不爱本喵了呜呜。”", food: "幼滑羊奶鲜肉羹", avoid: "大声斥责与严厉眼神", habit: "胆小飞机耳，但给摸时呼噜声最响", human: "ENFJ 温暖猫妈妈型主人" },
+    "ENFJ": { title: "操心包容猫妈妈", quote: "“这届两脚兽真不让人省心，还得本喵亲自催眠。”", food: "综合营养冻干拼盘", avoid: "家里成员发生争吵冷战", habit: "夜里巡视每个房间催大家睡觉", human: "INFP/ISFP 乖巧毛孩子" },
+    "ENFP": { title: "披着猫皮的快乐修勾", quote: "“哇！新的人类！哇！新的逗猫棒！世界太美好啦！”", food: "多汁诱食小鱼干", avoid: "限制自由与冷落不理", habit: "谁来都给摸，见人就翻肚皮呼噜", human: "INTJ 沉稳控场型管家" },
+
+    "ISTJ": { title: "猫德满分老干部", quote: "“早7点叫早，7:15干饭，舔毛完毕。无规矩不成方圆。”", food: "定温定量全价主食罐", avoid: "擅自改动食盆与猫砂盆位置", habit: "埋猫砂严谨得像个泥瓦匠", human: "ESFP 活力互补搭档" },
+    "ISFJ": { title: "默默守护贴心暖炉", quote: "“你安心工作吧，我就在这蜷成一个球陪着你。”", food: "清淡滋补鸭肉粒", avoid: "粗暴拽尾巴与生硬对待", habit: "常年安静趴在你的脚边当暖脚宝", human: "ESFJ 温暖顾家主人" },
+    "ESTJ": { title: "家规纪检委大队长", quote: "“饭盆空了超三分钟！各部门注意，立刻按规添粮！”", food: "厚切原肉饱腹冻干", avoid: "家里作息失控与拖延喂饭", habit: "站在走廊正中央监督全家作息", human: "ISFP 随遇而安乐天派" },
+    "ESFJ": { title: "迎宾馆首席公关经理", quote: "“欢迎光临寒舍！摸后背五分钟，请有序排队。”", food: "夹心酥脆猫草饼干", avoid: "客人来时把它关进黑屋", habit: "门铃一响第一个跑去门口蹲坐迎客", human: "ISTP 酷拽型技术宅" },
+
+    "ISTP": { title: "独行特工捕猎战神", quote: "“看见那只蟑螂了吗？0.3秒后它将成为历史。”", food: "高蛋白兔肉磨牙冻干", avoid: "强行抱它做过分亲昵动作", habit: "肉体硬刚吸尘器，捕虫百发百中", human: "ESFJ 贴心后勤大管家" },
+    "ISFP": { title: "随遇而安阳光艺术家", quote: "“争名夺利有何用，躺在阳光里把肚子晒热才是正经事。”", food: "鲜甜银鱼慢炖罐", avoid: "强行拖它起来做激烈运动", habit: "阳光晒到哪块地砖就瘫在哪块", human: "ESTJ 有序领地守护官" },
+    "ESTP": { title: "极限跑酷狂魔", quote: "“生活需要速度！从冰箱顶直接滑翔到沙发只要半秒！”", food: "弹射漏食球零食颗粒", avoid: "封锁高处通道不让攀爬", habit: "凌晨三点半固定发狂在门框引体向上", human: "ISFJ 佛系收拾残局家长" },
+    "ESFP": { title: "聚光灯下顶流女明星", quote: "“看吧，这蓬松的毛发、迷人的双眸，本喵就是全区顶流。”", food: "鲜嫩多汁三文鱼猫条", avoid: "拍照不拍它、夸别的小猫可爱", habit: "走路自带曼妙猫步，拍照极其配合镜头", human: "ISTJ 忠实粉丝兼铲屎官" }
+  };
+
+  let currentQIdx = 0;
+  let userAnswers = []; // 每题记 "E" 或 "I" 等
+
+  const modal = document.getElementById("mbtiModal");
+  const btnOpen = document.getElementById("btnOpenMbti");
+  const quizView = document.getElementById("mbtiQuizView");
+  const calcView = document.getElementById("mbtiCalcView");
+  const resView = document.getElementById("mbtiResultView");
+
+  const qNum = document.getElementById("mbtiQNum");
+  const qTitle = document.getElementById("mbtiQTitle");
+  const optAText = document.getElementById("mbtiOptAText");
+  const optBText = document.getElementById("mbtiOptBText");
+  const progressFill = document.getElementById("mbtiProgressFill");
+  const phaseText = document.getElementById("mbtiPhaseText");
+  const btnPrev = document.getElementById("btnMbtiPrev");
+
+  function openMbtiTest() {
+    currentQIdx = 0;
+    userAnswers = [];
+    quizView.style.display = "block";
+    calcView.style.display = "none";
+    resView.style.display = "none";
+    renderQuestion(0);
+    modal?.classList.add("show");
+  }
+
+  function renderQuestion(idx) {
+    const q = MBTI_QUESTIONS[idx];
+    qNum.textContent = `Q${idx + 1}.`;
+    qTitle.textContent = q.q;
+    optAText.textContent = q.a;
+    document.getElementById("mbtiOptA").querySelector(".mbti-opt-sub").textContent = q.aSub;
+    optBText.textContent = q.b;
+    document.getElementById("mbtiOptB").querySelector(".mbti-opt-sub").textContent = q.bSub;
+
+    const pct = ((idx + 1) / 20) * 100;
+    progressFill.style.width = `${pct}%`;
+
+    const phaseNames = ["社交能量 (E/I)", "感知模式 (S/N)", "决策共情 (T/F)", "作息秩序 (J/P)"];
+    const curPhase = phaseNames[Math.floor(idx / 5)];
+    phaseText.textContent = `第 ${Math.floor(idx / 5) + 1}/4 阶段：${curPhase} (${idx + 1}/20)`;
+
+    btnPrev.style.visibility = idx > 0 ? "visible" : "hidden";
+  }
+
+  function handleAnswer(choice) {
+    const q = MBTI_QUESTIONS[currentQIdx];
+    // A 对应前一个字母，B 对应后一个字母
+    const letter = choice === 'A' ? q.dim[0] : q.dim[1];
+    userAnswers[currentQIdx] = letter;
+
+    if (currentQIdx < 19) {
+      currentQIdx++;
+      renderQuestion(currentQIdx);
+    } else {
+      finishAndCalculate();
+    }
+  }
+
+  document.getElementById("mbtiOptA")?.addEventListener("click", () => handleAnswer('A'));
+  document.getElementById("mbtiOptB")?.addEventListener("click", () => handleAnswer('B'));
+  btnPrev?.addEventListener("click", () => {
+    if (currentQIdx > 0) {
+      currentQIdx--;
+      renderQuestion(currentQIdx);
+    }
+  });
+
+  document.getElementById("btnCloseMbtiQuiz")?.addEventListener("click", () => modal?.classList.remove("show"));
+  document.getElementById("btnCloseMbtiRes")?.addEventListener("click", () => modal?.classList.remove("show"));
+  document.getElementById("btnRestartMbti")?.addEventListener("click", openMbtiTest);
+
+  // 结算与算法综合推导
+  let finalMbtiResult = null;
+  function finishAndCalculate() {
+    quizView.style.display = "none";
+    calcView.style.display = "block";
+
+    // 统计各维度得分
+    let eCount = 0, sCount = 0, tCount = 0, jCount = 0;
+    for (let i = 0; i < 5; i++) if (userAnswers[i] === 'E') eCount++;
+    for (let i = 5; i < 10; i++) if (userAnswers[i] === 'S') sCount++;
+    for (let i = 10; i < 15; i++) if (userAnswers[i] === 'T') tCount++;
+    for (let i = 15; i < 20; i++) if (userAnswers[i] === 'J') jCount++;
+
+    const letter1 = eCount >= 3 ? 'E' : 'I';
+    const letter2 = sCount >= 3 ? 'S' : 'N';
+    const letter3 = tCount >= 3 ? 'T' : 'F';
+    const letter4 = jCount >= 3 ? 'J' : 'P';
+    const finalCode = `${letter1}${letter2}${letter3}${letter4}`;
+
+    const data = MBTI_CAT_BASE[finalCode] || MBTI_CAT_BASE["INTJ"];
+    finalMbtiResult = {
+      code: finalCode,
+      ...data,
+      scores: { eCount, sCount, tCount, jCount }
+    };
+
+    setTimeout(() => {
+      calcView.style.display = "none";
+      resView.style.display = "block";
+
+      document.getElementById("resMbtiCode").textContent = finalCode;
+      document.getElementById("resMbtiTitle").textContent = data.title;
+      document.getElementById("resMbtiQuote").textContent = data.quote;
+      document.getElementById("resMbtiFood").textContent = data.food;
+      document.getElementById("resMbtiAvoid").textContent = data.avoid;
+      document.getElementById("resMbtiHabit").textContent = data.habit;
+      document.getElementById("resMbtiHuman").textContent = data.human;
+
+      // 调整 4 维标尺游标位置
+      document.getElementById("dotEI").style.left = `${(eCount / 5) * 100}%`;
+      document.getElementById("dotSN").style.left = `${(sCount / 5) * 100}%`;
+      document.getElementById("dotTF").style.left = `${(tCount / 5) * 100}%`;
+      document.getElementById("dotJP").style.left = `${(jCount / 5) * 100}%`;
+
+      if (typeof fireConfetti === "function") fireConfetti();
+    }, 1200);
+  }
+
+  // 绑定主入口按钮
+  btnOpen?.addEventListener("click", () => {
+    if (typeof requireAuth === "function") {
+      requireAuth(openMbtiTest);
+    } else {
+      openMbtiTest();
+    }
+  });
+
+  // Canvas 海报生成与保存
+  document.getElementById("btnSaveMbtiPoster")?.addEventListener("click", () => {
+    if (!finalMbtiResult) return;
+    const res = finalMbtiResult;
+    const canvas = document.getElementById("mbtiCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 640;
+    canvas.height = 960;
+
+    const grad = ctx.createLinearGradient(0, 0, 640, 960);
+    grad.addColorStop(0, "#2e1065");
+    grad.addColorStop(0.5, "#170a30");
+    grad.addColorStop(1, "#090a0f");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 640, 960);
+
+    ctx.strokeStyle = "#ec4899";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(20, 20, 600, 920);
+
+    ctx.fillStyle = "#f472b6";
+    ctx.font = "bold 13px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText("✦ MEOW MBTI PSYCHOLOGY · 喵星性格潜能认证 ✦", 320, 75);
+
+    // MBTI 醒目大印鉴
+    ctx.fillStyle = "rgba(236, 72, 153, 0.25)";
+    ctx.beginPath();
+    ctx.roundRect(220, 105, 200, 64, 16);
+    ctx.fill();
+    ctx.strokeStyle = "#ec4899";
+    ctx.stroke();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 44px monospace";
+    ctx.fillText(res.code, 320, 152);
+
+    ctx.fillStyle = "#fbbf24";
+    ctx.font = "bold 24px -apple-system, sans-serif";
+    ctx.fillText(`【 ${res.title} 】`, 320, 215);
+
+    ctx.fillStyle = "#e2e8f0";
+    ctx.font = "italic 15px -apple-system, sans-serif";
+    ctx.fillText(res.quote, 320, 255);
+
+    // 2x2 网格背景框
+    ctx.fillStyle = "rgba(255, 255, 255, 0.04)";
+    ctx.fillRect(50, 290, 540, 480);
+
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#f472b6";
+    ctx.font = "bold 16px sans-serif";
+    ctx.fillText("✦ 喵生核心心理档案", 75, 335);
+
+    ctx.fillStyle = "#f3f4f6";
+    ctx.font = "14px sans-serif";
+    ctx.fillText(`🍗 专属口粮：${res.food}`, 75, 385);
+    ctx.fillText(`💣 绝对雷区：${res.avoid}`, 75, 435);
+    ctx.fillText(`💤 典型行为：${res.habit}`, 75, 485);
+    ctx.fillText(`🤝 天选铲屎官：${res.human}`, 75, 535);
+
+    // 四维分数文字记录
+    ctx.fillStyle = "rgba(236, 72, 153, 0.15)";
+    ctx.fillRect(75, 575, 490, 160);
+
+    ctx.fillStyle = "#fbbf24";
+    ctx.font = "bold 14px sans-serif";
+    ctx.fillText("四维行为倾向指数：", 95, 610);
+
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "13px monospace";
+    ctx.fillText(`• 社交能量：${res.scores.eCount > 2 ? '外向社牛 (E)' : '内向独处 (I)'}  [倾向度 ${Math.round((res.scores.eCount/5)*100)}%]`, 95, 642);
+    ctx.fillText(`• 信息感知：${res.scores.sCount > 2 ? '实感吃货 (S)' : '直觉脑洞 (N)'}  [倾向度 ${Math.round((res.scores.sCount/5)*100)}%]`, 95, 672);
+    ctx.fillText(`• 决策共情：${res.scores.tCount > 2 ? '原则理智 (T)' : '软萌共情 (F)'}  [倾向度 ${Math.round((res.scores.tCount/5)*100)}%]`, 95, 702);
+    ctx.fillText(`• 作息节律：${res.scores.jCount > 2 ? '严谨规矩 (J)' : '随性跑酷 (P)'}  [倾向度 ${Math.round((res.scores.jCount/5)*100)}%]`, 95, 732);
+
+    const userNick = typeof getUserFixedNickname === "function" ? getUserFixedNickname() : "两脚兽";
+    const dateStr = new Date().toLocaleDateString('zh-CN');
+    ctx.textAlign = "center";
+    ctx.font = "13px monospace";
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText(`测评监制官：${userNick}   |   ${dateStr}`, 320, 815);
+
+    ctx.fillStyle = "#10b981";
+    ctx.font = "bold 18px sans-serif";
+    ctx.fillText("毛毛星球 MeowHub · 智能养宠", 320, 865);
+    ctx.fillStyle = "#6b7280";
+    ctx.font = "12px sans-serif";
+    ctx.fillText("别让你家毛孩子再成为留守儿童了", 320, 892);
+
+    const dataUrl = canvas.toDataURL("image/png");
+    const pImg = document.getElementById("polaroidImg");
+    const pBtn = document.getElementById("downloadPolaroidBtn");
+    const pModal = document.getElementById("polaroidModal");
+    if (pImg && pBtn && pModal) {
+      pImg.src = dataUrl;
+      pBtn.href = dataUrl;
+      pBtn.download = `meow_mbti_${res.code}_${Date.now()}.png`;
+      modal?.classList.remove("show");
+      pModal.classList.add("show");
+    }
+  });
+})();
+    
   </script>
 </body>
 </html>
