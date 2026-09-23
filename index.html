@@ -975,6 +975,53 @@
   user-select: none;
   opacity: 0.85;
 }
+    
+    /* 圣三角牌阵与22张扇形排盘专属样式 */
+    .tarot-topic-bar { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; }
+    .tarot-topic-chip {
+      background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(168, 85, 247, 0.3);
+      color: var(--text-sub); padding: 5px 14px; border-radius: 99px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+    }
+    .tarot-topic-chip.active { background: linear-gradient(135deg, #a855f7, #6b21a8); color: #fff; border-color: #c084fc; box-shadow: 0 0 10px rgba(168, 85, 247, 0.4); }
+
+    .tarot-chosen-slots {
+      display: flex; justify-content: center; gap: 12px; width: 100%; min-height: 180px; margin: 8px 0 12px;
+    }
+    .tarot-slot-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .slot-tag { font-size: 11px; font-weight: 800; color: #fbbf24; }
+    .slot-placeholder {
+      width: 90px; height: 144px; border-radius: 10px; border: 1px dashed rgba(168, 85, 247, 0.35);
+      background: rgba(255, 255, 255, 0.02); display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: rgba(255, 255, 255, 0.25);
+    }
+
+    .tarot-deck-fan {
+      position: relative; width: 100%; height: 160px; margin: 6px 0 10px;
+      display: flex; justify-content: center; align-items: center; overflow: visible;
+    }
+    .fan-card {
+      position: absolute; width: 62px; height: 98px; border-radius: 8px; cursor: pointer;
+      background: linear-gradient(135deg, #1e1b4b, #0f172a); border: 1.5px solid #a855f7;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5); transform-origin: center bottom;
+      transition: transform 0.25s ease, border-color 0.2s, box-shadow 0.2s;
+      display: flex; align-items: center; justify-content: center; user-select: none;
+    }
+    .fan-card::before { content: '🐾'; font-size: 20px; filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.8)); }
+    .fan-card:hover { transform: translateY(-20px) scale(1.15) !important; z-index: 50 !important; border-color: #fbbf24; box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4); }
+
+    .tarot-synthesis-box {
+      background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; text-align: left; width: 100%; box-sizing: border-box;
+    }
+    .synthesis-badge { font-size: 12px; font-weight: 800; color: #fbbf24; margin-bottom: 6px; text-align: center; }
+    .synthesis-text { font-size: 13px; line-height: 1.6; color: #f3f4f6; }
+
+    .tarot-detail-list { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-bottom: 10px; }
+    .detail-card-item {
+      background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px; padding: 10px 12px; text-align: left;
+    }
+    .detail-card-header { display: flex; justify-content: space-between; font-size: 13px; font-weight: 800; margin-bottom: 4px; }
   </style>
 </head>
 <body>
@@ -1234,44 +1281,62 @@
   </div>
 
   <!-- ================= 弹窗集合：小猫塔罗牌专属交互弹窗 ================= -->
+  <!-- ================= 弹窗集合：小猫塔罗牌圣三角沉浸式弹窗 ================= -->
   <div class="app-modal" id="tarotModal">
     <div class="tarot-modal-box">
-      <div class="tarot-header-subtitle">MEOW TAROT DIVINATION</div>
-      <div class="tarot-header-title">🔮 喵星塔罗启示录</div>
-      <div class="tarot-header-tip" id="tarotHeaderTip">在心中默念你今天关心的问题，轻触选定一张牌</div>
+      <div class="tarot-header-subtitle">MEOW TAROT · TIME STREAM SPREAD</div>
+      <div class="tarot-header-title">🔮 喵星塔罗 · 圣三角时空流向阵</div>
+      
+      <!-- 意念聚焦选择 -->
+      <div class="tarot-topic-bar" id="tarotTopicBar">
+        <button class="tarot-topic-chip active" data-topic="运势" type="button">🐾 今日运势</button>
+        <button class="tarot-topic-chip" data-topic="捕猎" type="button">💼 事业/学业</button>
+        <button class="tarot-topic-chip" data-topic="羁绊" type="button">❤️ 情感/人际</button>
+      </div>
 
-      <!-- 3张卡牌容器 -->
-      <div class="tarot-cards-area" id="tarotCardsArea">
-        <div class="tarot-card" data-idx="0">
-          <div class="tarot-card-face tarot-card-back">
-            <span class="tarot-card-back-pattern">MEOW</span>
-          </div>
-          <div class="tarot-card-face tarot-card-front" id="cardFront0">
-            <div class="tarot-front-symbol" id="symbol0">🐾</div>
-            <div class="tarot-front-name" id="name0">塔罗牌</div>
-          </div>
+      <div class="tarot-header-tip" id="tarotHeaderTip">请凝神聚意，在下方 22 张牌堆中凭直觉盲选 3 张</div>
+
+      <!-- 选中的3张插槽展示位 -->
+      <div class="tarot-chosen-slots" id="tarotSlotsArea">
+        <div class="tarot-slot-col" id="slotCol0">
+          <div class="slot-tag">【过去 · 因缘】</div>
+          <div class="slot-placeholder" id="slotBox0">待选牌</div>
         </div>
-
-        <div class="tarot-card" data-idx="1">
-          <div class="tarot-card-face tarot-card-back">
-            <span class="tarot-card-back-pattern">MEOW</span>
-          </div>
-          <div class="tarot-card-face tarot-card-front" id="cardFront1">
-            <div class="tarot-front-symbol" id="symbol1">🐾</div>
-            <div class="tarot-front-name" id="name1">塔罗牌</div>
-          </div>
+        <div class="tarot-slot-col" id="slotCol1">
+          <div class="slot-tag">【当下 · 境况】</div>
+          <div class="slot-placeholder" id="slotBox1">待选牌</div>
         </div>
-
-        <div class="tarot-card" data-idx="2">
-          <div class="tarot-card-face tarot-card-back">
-            <span class="tarot-card-back-pattern">MEOW</span>
-          </div>
-          <div class="tarot-card-face tarot-card-front" id="cardFront2">
-            <div class="tarot-front-symbol" id="symbol2">🐾</div>
-            <div class="tarot-front-name" id="name2">塔罗牌</div>
-          </div>
+        <div class="tarot-slot-col" id="slotCol2">
+          <div class="slot-tag">【未来 · 启示】</div>
+          <div class="slot-placeholder" id="slotBox2">待选牌</div>
         </div>
       </div>
+
+      <!-- 22张整副牌扇形重叠牌堆容器 -->
+      <div class="tarot-deck-fan" id="tarotDeckFan"></div>
+
+      <!-- 多维深度综合解读大面板 -->
+      <div class="tarot-result-panel" id="tarotResultPanel" style="display:none;">
+        <div class="tarot-synthesis-box">
+          <div class="synthesis-badge">✦ 时空流向综合判词 ✦</div>
+          <div class="synthesis-text" id="tarotSynthesisText">综合推演报告生成中...</div>
+        </div>
+
+        <div class="tarot-detail-list" id="tarotDetailList"></div>
+
+        <div class="tarot-lucky-row">
+          <span>🐟 幸运补给：<b id="tarotLuckyFood" style="color: #60a5fa;">深海金枪鱼排</b></span>
+          <span>✨ 猫星指引：<b id="tarotLuckyAction" style="color: #fbbf24;">宜晒暖阳，忌熬夜跑酷</b></span>
+        </div>
+      </div>
+
+      <div class="tarot-action-bar">
+        <button class="btn-tarot-action primary" id="btnSaveTarotPoster" style="display:none;" type="button">📥 保存三联命帖海报</button>
+        <button class="btn-tarot-action secondary" id="btnResetTarot" type="button">🎲 诚心重抽</button>
+        <button class="btn-tarot-action secondary" id="btnCloseTarot" type="button" style="flex: 0.6;">关闭</button>
+      </div>
+    </div>
+  </div>
 
       <!-- 解读面板 -->
       <div class="tarot-result-panel" id="tarotResultPanel">
@@ -1647,22 +1712,98 @@
       });
     });
 
+// =========================================================================
+    // 小猫塔罗牌：22张猫咪大阿卡那全量体系 · 圣三角时空流向排盘引擎
     // =========================================================================
-    // 小猫塔罗牌核心系统（精选12大阿卡那 + 3D翻牌动效 + Canvas 海报生成）
-    // =========================================================================
-    const TAROT_DECK = [
-      { id: 0, name: "0 · 好奇幼猫 (The Fool)", symbol: "🐾", upright: "勇敢探索、未知旅程、毫无畏惧的新起点", reversed: "过于冒进、注意踩空、请备好退路", quote: "“世界上最远的距离不是天涯海角，而是猫爪够不到的逗猫棒。”", food: "鲜美幼猫羊奶羹", wish: "宜：大胆尝试新事物" },
-      { id: 1, name: "I · 抓鱼大师 (The Magician)", symbol: "🐟", upright: "技能拉满、创造力迸发、万事皆有掌控力", reversed: "眼高手低、准备不足、稍显手忙脚乱", quote: "“爪子伸进水里的那一刻，鱼儿便知命运已成定局。”", food: "特级深海金枪鱼排", wish: "宜：执行力拉满" },
-      { id: 2, name: "II · 静默黑猫 (The High Priestess)", symbol: "🌙", upright: "第六感极强、静观其变、内在沉静与智慧", reversed: "胡思乱想、直觉被屏蔽、沟通遇到障碍", quote: "“居高临下的凝视，不仅是观察领地，更是洞察人心。”", food: "慢熬鸡胸肉浓汤", wish: "宜：相信第一直觉" },
-      { id: 3, name: "III · 丰盛三花 (The Empress)", symbol: "🌸", upright: "丰盛富足、被爱包围、尽情享受当下与美食", reversed: "过度躺平、体重失控、生活节奏懒散", quote: "“每一粒落进碗里的猫粮，都是宇宙无差别的爱意倾注。”", food: "顶级冻干混合拼盘", wish: "宜：犒赏自己一顿大餐" },
-      { id: 4, name: "IV · 霸气大橘 (The Emperor)", symbol: "👑", upright: "主导全场、稳健担当、安全感与秩序守护者", reversed: "暴躁哈气、专横独断、抗拒外界变化", quote: "“大橘为重，坐稳方寸之间，山河皆归我有。”", food: "厚切原切牛肉块", wish: "宜：承担重任，主掌节奏" },
-      { id: 6, name: "VI · 贴贴双喵 (The Lovers)", symbol: "💖", upright: "亲密无间、灵魂契合、彼此完全信任", reversed: "互哈炸毛、缺乏安全感、意见分歧冷战", quote: "“互相舔毛的默契，无需言语，温度自会说明一切。”", food: "夹心猫草小饼干", wish: "宜：主动表达关怀" },
-      { id: 8, name: "VIII · 温柔抚摸 (Strength)", symbol: "🦁", upright: "以柔克刚、耐心治愈、用呼噜声融化一切坚冰", reversed: "失去耐心、强行撸猫反被抓、情绪急躁", quote: "“真正的力量从不是爪牙的锋利，而是主动露出的柔软肚皮。”", food: "滋补鸭肉益生菌冻干", wish: "宜：以温和化解矛盾" },
-      { id: 9, name: "IX · 纸箱哲学家 (The Hermit)", symbol: "📦", upright: "向内探索、享受独处、在安静中找回内心平静", reversed: "孤僻自闭、逃避社交、过度封闭心扉", quote: "“纸箱虽小，容得下整座喵星的深邃沉思。”", food: "高纤化毛膏", wish: "宜：静心复盘独处" },
-      { id: 10, name: "X · 逗猫之轮 (Wheel of Fortune)", symbol: "🎡", upright: "转机降临、时来运转、顺应周期拥抱好运", reversed: "偶遇扑空、暂时逆流、保持耐心继续埋伏", quote: "“旋转的飞羽转盘终会停下，好运的猎物必将落入掌心。”", food: "极鲜诱食小鱼干", wish: "宜：顺其自然抓住契机" },
-      { id: 17, name: "XVII · 赛博猫眼 (The Star)", symbol: "⭐", upright: "希望升起、灵感泉涌、纯净清澈的治愈能量", reversed: "失落迷茫、缺乏自信、期待过高带来落差", quote: "“抬头看看星光吧，它们与你眼里的亮光同样璀璨。”", food: "蓝莓三文鱼抗氧化泥", wish: "宜：许愿与创作" },
-      { id: 19, name: "XIX · 暖阳橘喵 (The Sun)", symbol: "☀️", upright: "纯粹快乐、朝气蓬勃、万物向阳温暖前行", reversed: "稍显倦怠、虚张声势、注意避免过度消耗", quote: "“躺在阳光照到的木地板上，全世界都值得被原谅。”", food: "鲜肉多汁主食罐", wish: "宜：晒太阳与户外活动" },
-      { id: 21, name: "XXI · 圆满猫球 (The World)", symbol: "🪐", upright: "圆满闭环、心愿达成、收获平静与幸福", reversed: "差临门一脚、延迟圆满、需要善始善终", quote: "“把自己蜷成一个完美的毛茸茸圆球，世界在此刻完整。”", food: "满汉全席猫条飨宴", wish: "宜：庆祝阶段性胜利" }
+    const FULL_TAROT_22 = [
+      { id: 0, name: "0 · 好奇幼猫 (The Fool)", symbol: "🐾", quote: "“世界再大，也是从探出纸箱的第一只爪子开始的。”",
+        past_up: "过去凭着一腔孤勇开启新尝试，纯真无畏带你走到今天。", past_rev: "之前有过盲目冒进的踩空体验，留下少许后遗症。",
+        now_up: "当下正处全新周期，允许自己做一个充满好奇的初学者。", now_rev: "行动缺乏长远规划，当心在不熟悉的地板上打滑。",
+        fut_up: "前方是一段令人兴奋的未知旅途，好运眷顾无畏探索者。", fut_rev: "警惕冲动决策，不要被晃动的羽毛引向过高危险处。" },
+      { id: 1, name: "I · 抓鱼大师 (The Magician)", symbol: "🐟", quote: "“爪子伸进水里的那一刻，鱼儿便知命运已成定局。”",
+        past_up: "你已扎实积累了足够的专业捕猎技巧，底盘坚实。", past_rev: "曾有过眼高手低或技能未用在刀刃上的遗憾时期。",
+        now_up: "个人状态处于黄金期，手头资源丰富，具备破局实力。", now_rev: "缺乏专注力，点子虽多但手忙脚乱容易打翻水盆。",
+        fut_up: "将展现出惊人的应变与执行力，捕猎战果丰硕。", fut_rev: "防范华而不实的承诺，看清表面诱惑下的深层企图。" },
+      { id: 2, name: "II · 静默黑猫 (The High Priestess)", symbol: "🌙", quote: "“居高临下的凝视，不仅是巡视领地，更是洞察人心。”",
+        past_up: "长期的暗中观察与内省，沉淀出了极深刻的直觉洞察力。", past_rev: "过去曾压抑真实直觉，被外界嘈杂的声音带乱节拍。",
+        now_up: "宜静不宜动。相信你的第一直觉，答案早已清晰印在心中。", now_rev: "胡思乱想导致精神内耗，潜意识的焦虑干扰了决断。",
+        fut_up: "迷雾将自行动退去，沉得住气的猫才能笑傲整个领地。", fut_rev: "隐藏的私密可能引发误会，需学会主动和两脚兽交流。" },
+      { id: 3, name: "III · 丰盛三花 (The Empress)", symbol: "🌸", quote: "“每一粒落进碗里的猫粮，都是宇宙无差别的爱意倾注。”",
+        past_up: "曾处于被爱包围、物质与精神双双得到滋养的丰盛期。", past_rev: "过度依赖两脚兽的宠溺投喂，曾一度丧失了独立野性。",
+        now_up: "尽情享受当下，美食与温暖将治愈你，温柔本身即是力量。", now_rev: "生活节奏过于懒散，警惕肚腩失控与行动力的慢性衰退。",
+        fut_up: "付出终将结出甜美硕果，迎来物质充沛与情感安宁的大丰收。", fut_rev: "可能陷入被琐事透支的状态，需尽早明确心理领地边界。" },
+      { id: 4, name: "IV · 霸气大橘 (The Emperor)", symbol: "👑", quote: "“大橘为重，坐稳方寸之间，山河皆归我有。”",
+        past_up: "过去建立了严谨的生活秩序与边界，构筑了牢靠的安全感。", past_rev: "曾受制于苛刻专横的外部环境，天性被过分压抑。",
+        now_up: "由你主掌大局！拿出魄力与定力，明确底线，主导事情走向。", now_rev: "偶有暴躁哈气与顽固偏执，抗拒变化反而引发领地争端。",
+        fut_up: "将斩获权威认可与不可撼动的威望，成就长治久安。", fut_rev: "过度紧绷恐遭断裂之险，适度给爪垫留些柔韧弹性空间。" },
+      { id: 5, name: "V · 呼噜教皇 (The Hierophant)", symbol: "📜", quote: "“按时踩奶、定时呼噜，古老的猫德自有其安宁之道。”",
+        past_up: "曾得到贵人长辈的指点提携，或依循正统规矩平稳避坑。", past_rev: "曾盲从教条与所谓权威，多绕了一大圈弯路。",
+        now_up: "宜融入集体，遵从成熟流程。向资深前辈请教可事半功倍。", now_rev: "旧规则已成为枷锁，是时候打破常规、跳出纸箱跑酷了。",
+        fut_up: "将融入心仪的圈子或获得精神导师的护佑，踏实笃定。", fut_rev: "警惕裹挟名义的说教绑架，按自己舒服的节奏呼噜踩奶。" },
+      { id: 6, name: "VI · 贴贴双喵 (The Lovers)", symbol: "💖", quote: "“互相舔毛的默契，无需言语，彼此的温度自会说明一切。”",
+        past_up: "曾做出过遵从内心的正确选择，享有过至纯至善的伙伴同行。", past_rev: "曾遭受过信任错位或在两个诱人玩具之间摇摆两难。",
+        now_up: "信任与默契正浓，坦诚互诉能消弭一切隔阂，同心协力。", now_rev: "出现分歧或冷战哈气，核心在于缺乏安全感与真实诉求表达。",
+        fut_up: "迎来更深层的灵魂共振与坚不可摧的盟约，关系升华。", fut_rev: "将面临两难诱惑的考验，切莫两头讨好，选定最在乎的唯一。" },
+      { id: 7, name: "VII · 战车猫巡 (The Chariot)", symbol: "🛡️", quote: "“认准前方的冻干，即使脚下是晃动的扫地机也休想动摇我。”",
+        past_up: "凭借顽强斗志扫平了上一阶段的绊脚石，攻克了难关。", past_rev: "曾因冲动过速撞上家具，或跑错方向消耗了大量体能。",
+        now_up: "锁定目标全力冲刺！排除杂念，用坚不可摧的意志突围破局。", now_rev: "内心两股力量互相拉扯，车轮失控前务必先稳住爪步刹车。",
+        fut_up: "胜利终将归于坚韧者，你将以无可争议的表现摘得战果。", fut_rev: "切忌盲目蛮干，欲速则不达，谨防从猫爬架高处跌落打滑。" },
+      { id: 8, name: "VIII · 温柔抚摸 (Strength)", symbol: "🦁", quote: "“最强大的力量不是爪牙锋利，而是主动露出的柔软肚皮。”",
+        past_up: "曾用超凡的耐心与爱意化解过严峻冲突，以柔克刚。", past_rev: "曾因情绪失控亮出利爪，无心伤及了在乎你的两脚兽伙伴。",
+        now_up: "无需声嘶力竭。用平稳的呼噜与平和气场化解身边的戾气抗衡。", now_rev: "信心暂时动摇，容易炸毛抓狂，需先从容接纳抚慰自我。",
+        fut_up: "内在从容将彻底显现，一切尖锐阻力都将被你的定力所驯服。", fut_rev: "精力出现透支预警，别勉强硬撑，该睡大觉时绝不逞强。" },
+      { id: 9, name: "IX · 纸箱哲学家 (The Hermit)", symbol: "📦", quote: "“纸箱虽窄，容得下整座喵星的浩瀚深思。”",
+        past_up: "经历过安静深刻的沉淀期，独处的智慧凝结成了成熟定力。", past_rev: "曾陷入过自我封闭与逃避现实，切断了外界应有的关怀支持。",
+        now_up: "谢绝浮躁社交。留出一整段不被打扰的时光，向内梳理复盘。", now_rev: "莫因防备心太强而筑起高墙，探出毛茸茸的脑袋看看外边世界。",
+        fut_up: "将在黑暗幽径中探寻到指路明灯，成为清醒通透的引路者。", fut_rev: "长期离群索居易产生偏狭，该出来蹭蹭阳光和人间烟火了。" },
+      { id: 10, name: "X · 逗猫之轮 (Wheel of Fortune)", symbol: "🎡", quote: "“飞转的逗猫羽毛终会停下，顺应周期的猫总能截获猎物。”",
+        past_up: "曾机敏捕捉到了突降的时代红利或幸运转机，借势而起。", past_rev: "曾经历过运势低谷的被动洗牌，饱尝时运不济之苦。",
+        now_up: "命运齿轮开始加速转动！契机瞬息万变，顺应天时果断出击。", now_rev: "正逢周期波动逆风期，暂时扑空莫灰心，伏低身子静待下一圈。",
+        fut_up: "困局将迎戏剧化转机，命运的天平将毫不犹豫倒向你这一方。", fut_rev: "外部大环境存在未知变数，稳住粮碗底线，不盲目豪赌盲盒。" },
+      { id: 11, name: "XI · 公平猫秤 (Justice)", symbol: "⚖️", quote: "“多猫家庭一猫一条，因果法则从不偏袒任何一只贪吃猫。”",
+        past_up: "过去的诚信累积与公正口碑，在当下化为了宝贵的信用资本。", past_rev: "曾遭遇过不公对待，或在过往事件中感情用事蒙蔽了客观眼睛。",
+        now_up: "恪守理智、合同与因果平衡。抛开侥幸心理，实事求是行事。", now_rev: "深陷失衡或偏袒争议，需要自我反思有无违心或双标逻辑自欺。",
+        fut_up: "将迎来一清二楚的公道评判，付出多少汗水就获赠多少小鱼干。", fut_rev: "面临条款履约或契约摩擦，注意保留好痕迹凭据以备无患。" },
+      { id: 12, name: "XII · 倒挂悬猫 (The Hanged Man)", symbol: "🧗", quote: "“换个倒过来的视角看房间，天花板便成了辽阔的新地板。”",
+        past_up: "曾主动做出过韬光养晦的隐忍牺牲，为长远铺垫了更大格局。", past_rev: "曾做过毫无价值的苦等与挣扎内耗，平白折损了心力筹码。",
+        now_up: "看似卡顿受阻，实为顿悟转折之契机。换个新视角，路即刻显现。", now_rev: "莫沉溺受害者执念无端自怜，若想解脱只需放开纠结的双爪。",
+        fut_up: "通过放下某种过分固执的偏念，你将迎来思维维度的脱胎换骨。", fut_rev: "抗拒改变视角将延长悬空停滞的时间，主动打破才得自由。" },
+      { id: 13, name: "XIII · 换毛蜕变 (Death)", symbol: "🍂", quote: "“不舍得褪掉一身旧毛，怎能长出抵御凛冬的簇新皮草。”",
+        past_up: "已彻底断舍离了腐朽的旧环境或病态关系，完成关键蜕壳。", past_rev: "过去告别拖泥带水，依恋发霉旧垫子导致迁延受累。",
+        now_up: "某阶段的终局已不可逆转。坦然道别，旧去新来方是生命节律。", now_rev: "拼命死撑在行将就木的项目或消耗关系里，徒增无谓创伤。",
+        fut_up: "一场彻底的大洗牌即将破晓，破旧立新，未来清朗辽阔万分。", fut_rev: "阵痛拉长源自被动抗拒，及早主动斩断旧牵绊才能拥抱新生。" },
+      { id: 14, name: "XIV · 适度调和 (Temperance)", symbol: "🥛", quote: "“水与粮的比例刚刚好，胃里才能升腾起最安适的温热。”",
+        past_up: "始终维系着适度与折衷，心态与身心节奏维持在良性平稳中。", past_rev: "曾有过过度紧绷或极度摆烂的失衡极端，拉扯过大。",
+        now_up: "求同存异，调和冲突。以温和而坚韧的细水长流方式稳步推进。", now_rev: "节奏被打乱，沟通不在一个频道各说各话，陷入内耗。",
+        fut_up: "对立将消弭于无形，身心归于恬静，长期协同平稳致远。", fut_rev: "过度透支或自律失效将诱发健康报警，亟待回归作息常轨。" },
+      { id: 15, name: "XV · 薄荷诱惑 (The Devil)", symbol: "🌿", quote: "“猫薄荷虽香，吸多了不仅爪麻，连神智都被套上了无形项圈。”",
+        past_up: "曾深陷有毒依赖或精神消耗怪圈，历经艰难才挣扎脱敏而出。", past_rev: "过去完成过一次觉醒洗礼，从虚妄依赖中找回了独立自我。",
+        now_up: "检视当下的痴迷依赖。是你掌控了欲望，还是欲望奴役了你？", now_rev: "打破精神镣铐的契机已现！看破诱饵背后的隐形枷锁，重获主权。",
+        fut_up: "表面诱惑暗藏长期代价，提防甜蜜陷阱对个人自由的剥夺。", fut_rev: "彻底踢翻有毒的薄荷球，你将斩断羁绊，掌控自己的人生。" },
+      { id: 16, name: "XVI · 坍塌爬架 (The Tower)", symbol: "⚡", quote: "“如果猫爬架注定地基不稳，早点塌掉总好过日后摔伤脊椎。”",
+        past_up: "经历过突发震撼性的幻灭打破，但也洗清了虚浮不可靠的假象。", past_rev: "曾在惊险风暴中勉强避过一劫，但深层暗礁仍未彻底排除。",
+        now_up: "直面震荡！危楼必塌，无须惶恐，猫有四脚平稳落地的天然本领。", now_rev: "危机正在逼近，切莫麻痹侥幸，及早抽身跳离摇晃的危险架构。",
+        fut_up: "雷霆扫去虚妄，虽短暂阵痛，却腾出了重建坚固家园的空地。", fut_rev: "轻慢大意恐引发连锁颠覆，立时排查身边隐患，防微杜渐。" },
+      { id: 17, name: "XVII · 赛博猫眼 (The Star)", symbol: "⭐", quote: "“抬头看看星光吧，它们与你眼里的清澈光芒同样璀璨。”",
+        past_up: "在至暗时刻曾感知到希望微光，重新点燃了对美好明天的信心。", past_rev: "曾抱有不切实际的虚幻空想，被冰冷现实浇得浑身湿透。",
+        now_up: "伤痛正在愈合，灵感汩汩涌现。秉持清澈本心，向宇宙祈愿。", now_rev: "感到迷茫沮丧，看不见前路的光芒，源自埋头太久未曾仰望星空。",
+        fut_up: "善念心愿将被温柔护佑，才情绽放，前路洒满治愈温暖光芒。", fut_rev: "梦想需落地生根，切莫沉醉在理想天国里忘了低头看看饭盆。" },
+      { id: 18, name: "XVIII · 幽夜幻月 (The Moon)", symbol: "🌕", quote: "“地板上的黄瓜之所以吓人，是因为你在恐惧中给它脑补了毒蛇獠牙。”",
+        past_up: "曾走过一段充满信息盲区、猜忌与不安的情绪暗夜时光。", past_rev: "曾经的心魔与误会开始消弭，理智逐步战胜了疑神疑鬼。",
+        now_up: "当下焦虑多源自自我内耗脑补。天亮之前不盲动，静待真相大白。", now_rev: "迷局正被驱散，你看清了谁真谁伪，心头不安彻底烟消云散。",
+        fut_up: "前路尚有盲点，切莫轻信单方之辞，多方核实方可免入圈套。", fut_rev: "拨云见日，情绪内耗彻底宣告终结，重获踏实笃定。" },
+      { id: 19, name: "XIX · 暖阳橘喵 (The Sun)", symbol: "☀️", quote: "“只要能安稳躺在阳光照到的木地板上，全世界都值得被原谅。”",
+        past_up: "曾享有过信心满满、活力洋溢的顺遂黄金期，积攒了充足阳光。", past_rev: "曾一度狂妄冒进爱出风头，刺伤了彼此融洽相处的柔和界限。",
+        now_up: "能量充沛顶峰！阴霾退散，尽情展现你的笑容，胜利近在眼前。", now_rev: "偶有浮云遮蔽光芒，略显倦怠，但太阳仍在，晒晒太阳立刻还魂。",
+        fut_up: "宏愿圆满达成，事业与情感迎来高光时刻，满载欢欣与温情。", fut_rev: "短暂迟滞阻挡不了晨曦破晓，沉住气，暖阳就在转角之后。" },
+      { id: 20, name: "XX · 罐头召唤 (Judgement)", symbol: "🎺", quote: "“开罐器的‘咔哒’一声响起，所有装睡的猫都会原地觉醒。”",
+        past_up: "曾顺应过命运的关键唤醒，做出了重塑人生轨迹的重要决断。", past_rev: "曾对内心的呼唤充耳不闻，在犹豫不决中错失了觉醒窗口。",
+        now_up: "命运的号角已鸣！清算历史旧账，走向你本该踏上的天命航道。", now_rev: "抗拒审视与复盘，沉湎于悔恨自责里裹足不前，需清醒起身。",
+        fut_up: "迎来脱胎换骨的跃升，过去的磨难化作加冕领地上最耀眼的勋章。", fut_rev: "如果不愿正视教训，同样的考卷还会一次又一次重现眼前。" },
+      { id: 21, name: "XXI · 圆满猫球 (The World)", symbol: "🪐", quote: "“把自己蜷成一个完美的毛茸茸圆球，世界在此刻完整无缺。”",
+        past_up: "过去某段重要旅程已圆满收官交卷，建立起了不可替代的成就闭环。", past_rev: "过往某件事因临门一脚的松懈未能善始善终，留有些许遗憾。",
+        now_up: "万事俱备，身心处于从容自足的巅峰平衡态，你是自己的主宰。", now_rev: "行百里者半九十，距离圆满仅差最后一块拼图，务必慎终如始。",
+        fut_up: "大功告成！你将站上全新的人生阶梯，迈入海阔天空的新境界。", fut_rev: "收尾工作务必扣紧针脚细节，莫让前期心血因疏漏功亏一篑。" }
     ];
 
     const btnOpenTarot = document.getElementById("btnOpenTarot");
@@ -1670,178 +1811,275 @@
     const btnCloseTarot = document.getElementById("btnCloseTarot");
     const btnResetTarot = document.getElementById("btnResetTarot");
     const btnSaveTarotPoster = document.getElementById("btnSaveTarotPoster");
-    const tarotCardsArea = document.getElementById("tarotCardsArea");
+    const tarotDeckFan = document.getElementById("tarotDeckFan");
+    const tarotSlotsArea = document.getElementById("tarotSlotsArea");
     const tarotResultPanel = document.getElementById("tarotResultPanel");
     const tarotHeaderTip = document.getElementById("tarotHeaderTip");
-    const tarotResultBadge = document.getElementById("tarotResultBadge");
-    const tarotWisdomQuote = document.getElementById("tarotWisdomQuote");
+    const tarotSynthesisText = document.getElementById("tarotSynthesisText");
+    const tarotDetailList = document.getElementById("tarotDetailList");
     const tarotLuckyFood = document.getElementById("tarotLuckyFood");
     const tarotLuckyAction = document.getElementById("tarotLuckyAction");
     const tarotCanvas = document.getElementById("tarotCanvas");
 
-    let currentTarotResult = null;
-    let tarotHasDrawn = false;
+    let currentTopic = "运势";
+    let chosenThreeCards = []; // [{card, isRev, slotIdx, flipped}]
+    let isSpreading = false;
 
-    function initTarotDesk() {
-      tarotHasDrawn = false;
-      currentTarotResult = null;
-      if (tarotHeaderTip) tarotHeaderTip.textContent = "在心中默念你今天关心的问题，轻触选定一张牌";
+    // 意念切换
+    document.querySelectorAll(".tarot-topic-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll(".tarot-topic-chip").forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        currentTopic = chip.dataset.topic;
+        initFanDeck();
+      });
+    });
+
+    // 初始化扇形整副牌堆
+    function initFanDeck() {
+      chosenThreeCards = [];
+      isSpreading = false;
+      if (tarotHeaderTip) tarotHeaderTip.textContent = "请凝神聚意，在下方 22 张牌堆中凭直觉盲选 3 张";
       if (tarotResultPanel) tarotResultPanel.style.display = "none";
       if (btnSaveTarotPoster) btnSaveTarotPoster.style.display = "none";
+      if (tarotDeckFan) {
+        tarotDeckFan.innerHTML = "";
+        tarotDeckFan.style.display = "flex";
+      }
 
-      const cards = tarotCardsArea ? tarotCardsArea.querySelectorAll(".tarot-card") : [];
-      cards.forEach((card) => {
-        card.className = "tarot-card";
-        card.style.display = "block";
-        const front = card.querySelector(".tarot-card-front");
-        if (front) front.className = "tarot-card-face tarot-card-front";
+      // 重置3个插槽
+      for (let i = 0; i < 3; i++) {
+        const box = document.getElementById(`slotBox${i}`);
+        if (box) {
+          box.innerHTML = `<span style="font-size:11px;opacity:0.4;">待选第 ${i+1} 张</span>`;
+          box.className = "slot-placeholder";
+        }
+      }
+
+      // 准备乱序洗牌的 22 张
+      const shuffled = [...FULL_TAROT_22].sort(() => Math.random() - 0.5);
+
+      // 计算扇形弧度 (22张在 -42deg 到 +42deg 之间优雅散开)
+      const total = 22;
+      const startAngle = -42;
+      const angleStep = 84 / (total - 1);
+
+      shuffled.forEach((cData, idx) => {
+        const cardEl = document.createElement("div");
+        cardEl.className = "fan-card";
+        const angle = startAngle + idx * angleStep;
+        const xOffset = (idx - (total - 1) / 2) * 11;
+        cardEl.style.transform = `translateX(${xOffset}px) rotate(${angle}deg)`;
+        cardEl.style.zIndex = idx + 1;
+
+        cardEl.addEventListener("click", () => {
+          if (chosenThreeCards.length >= 3) return;
+          // 挑选飞牌逻辑
+          pickCardToSlot(cData, cardEl);
+        });
+
+        tarotDeckFan.appendChild(cardEl);
       });
+    }
+
+    // 盲选单张飞入插槽
+    function pickCardToSlot(cData, originalEl) {
+      originalEl.style.pointerEvents = "none";
+      originalEl.style.opacity = "0";
+
+      const slotIdx = chosenThreeCards.length;
+      const isRev = Math.random() < 0.35;
+      const cardObj = { data: cData, isRev, slotIdx, flipped: false };
+      chosenThreeCards.push(cardObj);
+
+      const targetBox = document.getElementById(`slotBox${slotIdx}`);
+      if (targetBox) {
+        targetBox.className = "tarot-card";
+        targetBox.style.cursor = "pointer";
+        targetBox.innerHTML = `
+          <div class="tarot-card-face tarot-card-back"><span class="tarot-card-back-pattern">MEOW</span></div>
+          <div class="tarot-card-face tarot-card-front ${isRev ? 'is-reversed' : ''}">
+            <div class="tarot-front-symbol">${cData.symbol}</div>
+            <div class="tarot-front-name">${cData.name}</div>
+          </div>
+        `;
+
+        targetBox.onclick = () => {
+          if (cardObj.flipped) return;
+          cardObj.flipped = true;
+          targetBox.classList.add("flipped");
+          if (isRev) targetBox.classList.add("is-reversed");
+          checkAllFlipped();
+        };
+      }
+
+      if (chosenThreeCards.length === 3) {
+        if (tarotDeckFan) tarotDeckFan.style.display = "none";
+        if (tarotHeaderTip) tarotHeaderTip.textContent = "✦ 3 张宿命之牌已入阵，请轻触卡牌逐一翻揭 ✦";
+      }
+    }
+
+    // 检查三张是否翻完，揭晓报告
+    function checkAllFlipped() {
+      const allDone = chosenThreeCards.length === 3 && chosenThreeCards.every(c => c.flipped);
+      if (!allDone) return;
+
+      setTimeout(() => {
+        if (tarotHeaderTip) tarotHeaderTip.textContent = "✦ 圣三角时空流向推演完毕 ✦";
+        renderSpreadSynthesis();
+        if (tarotResultPanel) tarotResultPanel.style.display = "flex";
+        if (btnSaveTarotPoster) btnSaveTarotPoster.style.display = "inline-flex";
+        if (typeof fireConfetti === "function") fireConfetti();
+      }, 500);
+    }
+
+    // 生成综合报告
+    function renderSpreadSynthesis() {
+      const [c0, c1, c2] = chosenThreeCards;
+
+      // 提取三位判词
+      const pText = c0.isRev ? c0.data.past_rev : c0.data.past_up;
+      const nText = c1.isRev ? c1.data.now_rev : c1.data.now_up;
+      const fText = c2.isRev ? c2.data.fut_rev : c2.data.fut_up;
+
+      // 综合时空连线判词（串成完整因果）
+      const synthesisNarrative = `【聚焦于${currentTopic}】：回顾过去，${c0.data.name}（${c0.isRev ? '逆位' : '正位'}）印证了你“${pText}”；立足当下，${c1.data.name}（${c1.isRev ? '逆位' : '正位'}）提示你“${nText}”；放眼未来，能量正导向${c2.data.name}（${c2.isRev ? '逆位' : '正位'}），启示着“${fText}”。猫星箴言：心怀笃定，自能跃过一切风浪。`;
+
+      if (tarotSynthesisText) tarotSynthesisText.textContent = synthesisNarrative;
+
+      if (tarotDetailList) {
+        tarotDetailList.innerHTML = `
+          <div class="detail-card-item">
+            <div class="detail-card-header"><span style="color:#60a5fa;">【过去位】${c0.data.name}</span><span style="color:${c0.isRev ? '#f87171' : '#34d399'};">${c0.isRev ? '逆位' : '正位'}</span></div>
+            <div style="font-size:12px; color:var(--text-sub); line-height:1.5;">${pText}</div>
+          </div>
+          <div class="detail-card-item">
+            <div class="detail-card-header"><span style="color:#fbbf24;">【当下位】${c1.data.name}</span><span style="color:${c1.isRev ? '#f87171' : '#34d399'};">${c1.isRev ? '逆位' : '正位'}</span></div>
+            <div style="font-size:12px; color:var(--text-sub); line-height:1.5;">${nText}</div>
+          </div>
+          <div class="detail-card-item">
+            <div class="detail-card-header"><span style="color:#c084fc;">【未来位】${c2.data.name}</span><span style="color:${c2.isRev ? '#f87171' : '#34d399'};">${c2.isRev ? '逆位' : '正位'}</span></div>
+            <div style="font-size:12px; color:var(--text-sub); line-height:1.5;">${fText}</div>
+          </div>
+        `;
+      }
     }
 
     btnOpenTarot?.addEventListener("click", () => {
       requireAuth(() => {
-        initTarotDesk();
+        initFanDeck();
         tarotModal?.classList.add("show");
       });
     });
 
     btnCloseTarot?.addEventListener("click", () => tarotModal?.classList.remove("show"));
-    btnResetTarot?.addEventListener("click", initTarotDesk);
+    btnResetTarot?.addEventListener("click", initFanDeck);
     tarotModal?.addEventListener("click", (e) => {
       if (e.target === tarotModal) tarotModal?.classList.remove("show");
     });
 
-    // 抽牌核心点击事件
-    if (tarotCardsArea) {
-      tarotCardsArea.querySelectorAll(".tarot-card").forEach(card => {
-        card.addEventListener("click", () => {
-          if (tarotHasDrawn) return;
-          tarotHasDrawn = true;
-
-          const randomCard = TAROT_DECK[Math.floor(Math.random() * TAROT_DECK.length)];
-          const isReversed = Math.random() < 0.35;
-
-          currentTarotResult = { ...randomCard, isReversed };
-
-          const front = card.querySelector(".tarot-card-front");
-          const symbolEl = card.querySelector(".tarot-front-symbol");
-          const nameEl = card.querySelector(".tarot-front-name");
-
-          if (symbolEl) symbolEl.textContent = randomCard.symbol;
-          if (nameEl) nameEl.textContent = isReversed ? `${randomCard.name} (逆位)` : randomCard.name;
-
-          card.classList.add("flipped");
-          if (isReversed) {
-            front?.classList.add("is-reversed");
-            card.classList.add("is-reversed");
-          }
-
-          tarotCardsArea.querySelectorAll(".tarot-card").forEach(other => {
-            if (other !== card) other.classList.add("fade-out");
-          });
-
-          setTimeout(() => {
-            if (tarotHeaderTip) tarotHeaderTip.textContent = "✦ 喵星神启已降临 ✦";
-            if (tarotResultBadge) {
-              tarotResultBadge.className = `tarot-result-badge ${isReversed ? 'reversed' : 'upright'}`;
-              tarotResultBadge.textContent = isReversed ? `逆位 · ${randomCard.reversed}` : `正位 · ${randomCard.upright}`;
-            }
-            if (tarotWisdomQuote) tarotWisdomQuote.textContent = randomCard.quote;
-            if (tarotLuckyFood) tarotLuckyFood.textContent = randomCard.food;
-            if (tarotLuckyAction) tarotLuckyAction.textContent = randomCard.wish;
-
-            if (tarotResultPanel) tarotResultPanel.style.display = "flex";
-            if (btnSaveTarotPoster) btnSaveTarotPoster.style.display = "inline-flex";
-            fireConfetti();
-          }, 600);
-        });
-      });
-    }
-
+    // Canvas 绘制三联圣三角命帖高清海报
     btnSaveTarotPoster?.addEventListener("click", () => {
-      if (!currentTarotResult || !tarotCanvas) return;
-      const res = currentTarotResult;
+      if (chosenThreeCards.length < 3 || !tarotCanvas) return;
       const canvas = tarotCanvas;
       const ctx = canvas.getContext("2d");
-      canvas.width = 600;
-      canvas.height = 840;
+      canvas.width = 640;
+      canvas.height = 960;
 
-      const grad = ctx.createLinearGradient(0, 0, 600, 840);
+      const grad = ctx.createLinearGradient(0, 0, 640, 960);
       grad.addColorStop(0, "#1e1b4b");
-      grad.addColorStop(0.5, "#0f172a");
+      grad.addColorStop(0.4, "#0f172a");
       grad.addColorStop(1, "#090a0f");
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 600, 840);
+      ctx.fillRect(0, 0, 640, 960);
 
       ctx.strokeStyle = "#a855f7";
       ctx.lineWidth = 4;
-      ctx.strokeRect(20, 20, 560, 800);
+      ctx.strokeRect(20, 20, 600, 920);
 
       ctx.strokeStyle = "rgba(251, 191, 36, 0.4)";
       ctx.lineWidth = 1.5;
       ctx.setLineDash([8, 5]);
-      ctx.strokeRect(30, 30, 540, 780);
+      ctx.strokeRect(30, 30, 580, 900);
       ctx.setLineDash([]);
 
       ctx.fillStyle = "#c084fc";
       ctx.font = "bold 13px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("✦ MEOW TAROT DIVINATION · 喵星塔罗 ✦", 300, 80);
-
-      ctx.save();
-      ctx.translate(300, 210);
-      if (res.isReversed) ctx.rotate(Math.PI);
-      ctx.font = "80px sans-serif";
-      ctx.fillText(res.symbol, 0, 25);
-      ctx.restore();
+      ctx.fillText("✦ MEOW TAROT · 喵星圣三角时空流向帖 ✦", 320, 75);
 
       ctx.fillStyle = "#fbbf24";
-      ctx.font = "bold 30px -apple-system, sans-serif";
-      ctx.fillText(res.name, 300, 320);
+      ctx.font = "bold 24px -apple-system, sans-serif";
+      ctx.fillText(`【问测意念：${currentTopic}】`, 320, 115);
 
-      ctx.fillStyle = res.isReversed ? "rgba(239, 68, 68, 0.2)" : "rgba(16, 185, 129, 0.2)";
-      ctx.beginPath();
-      ctx.roundRect(160, 345, 280, 36, 18);
-      ctx.fill();
+      // 并排绘制3张小牌卡
+      const slotX = [135, 320, 505];
+      const slotTitles = ["过去 · 因缘", "当下 · 境况", "未来 · 启示"];
+      chosenThreeCards.forEach((c, idx) => {
+        const cx = slotX[idx];
+        ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+        ctx.strokeStyle = c.isRev ? "#ef4444" : "#10b981";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(cx - 70, 145, 140, 210);
+        ctx.fillRect(cx - 70, 145, 140, 210);
 
-      ctx.fillStyle = res.isReversed ? "#f87171" : "#34d399";
-      ctx.font = "bold 15px -apple-system, sans-serif";
-      ctx.fillText(res.isReversed ? `【 逆 位 】` : `【 正 位 】`, 300, 368);
+        ctx.font = "12px sans-serif";
+        ctx.fillStyle = "#fbbf24";
+        ctx.fillText(`[ ${slotTitles[idx]} ]`, cx, 172);
 
-      ctx.fillStyle = "rgba(255, 255, 255, 0.04)";
-      ctx.fillRect(50, 410, 500, 160);
+        ctx.font = "38px sans-serif";
+        ctx.fillText(c.data.symbol, cx, 235);
 
-      ctx.textAlign = "center";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillStyle = "#fff";
+        ctx.fillText(c.data.name.split(" ")[2] || c.data.name, cx, 290);
+
+        ctx.fillStyle = c.isRev ? "#f87171" : "#34d399";
+        ctx.font = "bold 12px sans-serif";
+        ctx.fillText(c.isRev ? "【逆位】" : "【正位】", cx, 325);
+      });
+
+      // 综合大判词背景框
+      ctx.fillStyle = "rgba(168, 85, 247, 0.12)";
+      ctx.fillRect(45, 385, 550, 420);
+
+      ctx.textAlign = "left";
+      ctx.fillStyle = "#fbbf24";
+      ctx.font = "bold 15px sans-serif";
+      ctx.fillText("✦ 时空流向深度判词：", 65, 420);
+
       ctx.fillStyle = "#f3f4f6";
-      ctx.font = "16px sans-serif";
-      ctx.fillText(res.isReversed ? res.reversed : res.upright, 300, 455);
-
-      ctx.fillStyle = "#fbbf24";
-      ctx.font = "italic 16px sans-serif";
-      ctx.fillText(res.quote, 300, 510);
-
-      ctx.font = "14px sans-serif";
-      ctx.fillStyle = "#9ca3af";
-      ctx.fillText(`🐟 幸运干粮：${res.food}    |    ✨ 宜忌：${res.wish}`, 300, 610);
+      ctx.font = "13px sans-serif";
+      const fullText = tarotSynthesisText.textContent || "";
+      let line = "", y = 450;
+      for (let n = 0; n < fullText.length; n++) {
+        const test = line + fullText[n];
+        if (ctx.measureText(test).width > 500 && n > 0) {
+          ctx.fillText(line, 65, y);
+          line = fullText[n];
+          y += 24;
+        } else {
+          line = test;
+        }
+      }
+      ctx.fillText(line, 65, y);
 
       const userNick = getUserFixedNickname();
       const dateStr = new Date().toLocaleDateString('zh-CN');
+      ctx.textAlign = "center";
       ctx.font = "13px monospace";
-      ctx.fillStyle = "#64748b";
-      ctx.fillText(`占卜官：${userNick}   |   机位：${currentRoomName}   |   ${dateStr}`, 300, 660);
+      ctx.fillStyle = "#9ca3af";
+      ctx.fillText(`占卜官：${userNick}   |   机位：${currentRoomName}   |   ${dateStr}`, 320, 845);
 
       ctx.fillStyle = "#10b981";
-      ctx.font = "bold 18px sans-serif";
-      ctx.fillText("毛毛星球 MeowHub · 智能养宠", 300, 735);
-      ctx.fillStyle = "#6b7280";
-      ctx.font = "12px sans-serif";
-      ctx.fillText("别让你家毛孩子再成为留守儿童了", 300, 762);
+      ctx.font = "bold 16px sans-serif";
+      ctx.fillText("毛毛星球 MeowHub · 智能养宠", 320, 885);
 
       const dataUrl = canvas.toDataURL("image/png");
       if (polaroidImg) polaroidImg.src = dataUrl;
       if (downloadPolaroidBtn) {
         downloadPolaroidBtn.href = dataUrl;
-        downloadPolaroidBtn.download = `meow_tarot_${res.name}_${Date.now()}.png`;
+        downloadPolaroidBtn.download = `meow_tarot_spread_${Date.now()}.png`;
       }
       tarotModal?.classList.remove("show");
       polaroidModal?.classList.add("show");
