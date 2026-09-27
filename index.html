@@ -2699,6 +2699,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 检查三张是否翻完，揭晓报告
+    function checkAllFlipped() {
+      const allFlipped = chosenThreeCards.length === 3 && chosenThreeCards.every(c => c.flipped);
+      if (allFlipped) {
+        const isEn = (currentLang === "en");
+        if (tarotHeaderTip) {
+          tarotHeaderTip.textContent = isEn 
+            ? "✦ 3 Destiny Cards revealed · Insight Generated ✦" 
+            : "✦ 3 张宿命之牌已翻揭 · 圣三角时空流向阵已成 ✦";
+        }
+        if (tarotResultPanel) tarotResultPanel.style.display = "flex";
+        if (btnSaveTarotPoster) btnSaveTarotPoster.style.display = "inline-flex";
+        renderSpreadSynthesis();
+        if (typeof fireConfetti === "function") fireConfetti();
+      }
+    }
     // 生成综合报告（支持中英双语自适应）
     function renderSpreadSynthesis() {
       const [c0, c1, c2] = chosenThreeCards;
