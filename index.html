@@ -1880,19 +1880,28 @@
   
   <script>
     // ==========================================
-// 国际化轻量字典与切换引擎 (i18n Engine)
-// ==========================================
+// =========================================================================
+// 毛毛星球 MeowHub 全量国际化引擎 (i18n Full Engine)
+// =========================================================================
 const I18N_LOCALES = {
   zh: {
+    // 全局与导航
     site_title: "毛毛星球 MeowHub | 智能养宠",
     nav_live: "📹 实时直播",
     nav_rankings: "🏆 投喂榜单",
     nav_about: "ℹ️ 关于我们",
     nav_sponsor: "☕ 爱心赞助",
+    btn_signin: "🔑 Sign in / 登录",
+    btn_checkin_capsule: "📅 每日打卡",
+    badge_live_tag: "直播间在线",
+    live_direct: "LIVE 实时直连",
     hero_title: "毛毛星球 MeowHub | 智能养宠",
     footer_slogan: "别让你家毛孩子再成为留守儿童了",
     sidebar_title: "切换直播间",
     mobile_select_room: "📹 选机位",
+    total_stations_fmt: "共{n}个机位",
+    
+    // 播放器与投喂控制
     btn_feed_pet: "🍗 立即投喂",
     btn_tarot: "🔮 喵星塔罗",
     btn_bazi: "📜 小猫算命",
@@ -1902,9 +1911,23 @@ const I18N_LOCALES = {
     danmaku_off: "💬 弹幕: 关",
     audio_unmute: "🔇 开启声音",
     audio_mute: "🔊 静音",
+    loading_stream: "正在连线设备...",
+    loading_stream_desc: "调取自适应码流中，请稍候...",
+    
+    // 聊天区
     chat_title: "💬 实时猫友互动区",
+    chat_tip: "双击视频画面攒功德 · 发送【开饭/鱼干/撒花/下雨】触发彩蛋 🐾",
+    chat_loading: "正在加载互动...",
+    chat_empty: "暂无互动消息，快来发第一条吧~",
     chat_placeholder: "说点什么吧，按回车发送弹幕...",
     btn_chat_send: "发送",
+    chip_1: "🍗 加餐加餐",
+    chip_2: "🐟 赛博云喂猫",
+    chip_3: "🎉 恭喜撒花",
+    chip_4: "🐱 咪咪好乖",
+    chip_5: "❤️ 来看小可爱啦",
+    
+    // 榜单
     rank_header_title: "🏆 投喂功德排行榜",
     rank_header_desc: "点滴善意汇聚成光 · 感谢每一位守护流浪生灵的爱心猫友",
     rank_tab_all: "全部时间",
@@ -1914,10 +1937,62 @@ const I18N_LOCALES = {
     rank_th_user: "猫友",
     rank_th_count: "累计投喂",
     rank_unit_times: "次",
-    about_banner: "🐾 欢迎来到毛毛星球！我们致力于用物联网与云原生技术，让每一位爱猫人士跨越时空守护毛孩子。别让你家毛孩子再成为留守儿童了。",
-    faq_main_title: "🐾 常见问题解答 (FAQ)",
+    my_rank_guest: "未登录猫友",
+    my_rank_guest_tip: "登录后可查看我的专属战绩",
+    btn_login_rank: "立即登录",
+    rank_loading: "正在载入功德英雄榜...",
+    rank_loaded_all: "— 已展示全部上榜猫友 —",
     
-    // 动态插值与状态反馈
+    // 赞助面板 (Buy Me a Coffee)
+    sponsor_title: "支持毛毛星球持续运转",
+    sponsor_desc: "在这里，<b>每个人的投喂互动都是完全免费的</b>。如果您喜欢这里的毛孩子，欢迎请它们加个罐头，赞助款将全额用于补贴基地电费、云端推流及猫粮采购！",
+    tab_support_once: "☕ 一次性赞助",
+    tab_support_monthly: "👑 按月支持 ($5/月)",
+    sponsor_amount_label: "赞助金额：",
+    sponsor_monthly_card_t: "$5 / 月 · 长期守护者",
+    sponsor_monthly_card_d: "自动按月支持，随时可取消。感谢您成为流浪生灵背后最坚实的后盾！",
+    sponsor_name_ph: "您的昵称 (选填)",
+    sponsor_msg_ph: "给现场小猫留一句鼓励的话吧... (选填)",
+    btn_pay_label: "💖 支持",
+    sponsor_footer_tip: "🔒 由 Creem 提供全球安全结账 · 支持银行卡 / Apple Pay / Google Pay",
+    
+    // 塔罗弹窗
+    tarot_title: "🔮 喵星塔罗 · 圣三角时空流向阵",
+    tarot_topic_1: "🐾 今日运势",
+    tarot_topic_2: "💼 事业/学业",
+    tarot_topic_3: "❤️ 情感/人际",
+    tarot_tip: "请凝神聚意，在下方 22 张牌堆中凭直觉盲选 3 张",
+    tarot_slot_0: "【过去 · 因缘】",
+    tarot_slot_1: "【当下 · 境况】",
+    tarot_slot_2: "【未来 · 启示】",
+    tarot_waiting: "待选牌",
+    btn_reset_tarot: "🎲 诚心重抽",
+    btn_save_tarot: "📥 保存三联命帖海报",
+    
+    // 算命弹窗
+    bazi_title: "📜 喵星周易算命帖",
+    bazi_name_label: "🐾 爱猫芳名：",
+    bazi_name_ph: "例如: 咪咪 / 当前小猫",
+    bazi_color_label: "🎨 毛色五行：",
+    bazi_season_label: "⏳ 出生时节：",
+    btn_bazi_calc: "☯️ 奉旨排盘",
+    btn_bazi_random: "🎲 拈指一算",
+    btn_save_bazi: "📥 保存命帖海报",
+    
+    // MBTI 弹窗
+    mbti_title: "🐾 喵星性格潜能研究所 · MBTI",
+    btn_save_mbti: "📥 保存主子身份海报",
+    btn_restart_mbti: "🎲 重测一只",
+    
+    // 拍立得弹窗
+    polaroid_tip: "手机端长按图片可直接存入相册 / 发社交网络",
+    btn_save_poster: "📥 保存海报",
+    
+    // 通用按钮
+    btn_close: "关闭",
+    btn_know: "我知道啦",
+    
+    // 动态交互
     feed_confirm: "确认要为【{name}】的毛孩子加餐出粮吗？",
     feed_dispensing: "出粮中...",
     feed_cooldown_prefix: "全网冷却中 ({remain}s)",
@@ -1925,16 +2000,25 @@ const I18N_LOCALES = {
     feed_danmaku_success: "🎉 感谢猫友【{user}】为现场毛孩子投喂了猫粮！",
     feed_error_lock: "全网冷却中：【{name}】刚刚被爱心猫友投喂过，猫咪还在吃呢，请等 {waitSec} 秒后再喂~"
   },
+  
   en: {
+    // 全局与导航
     site_title: "MeowHub | Smart Pet Care",
     nav_live: "📹 Live Stream",
     nav_rankings: "🏆 Honor Roll",
     nav_about: "ℹ️ About Us",
     nav_sponsor: "☕ Sponsor",
+    btn_signin: "🔑 Sign In",
+    btn_checkin_capsule: "📅 Daily Check-in",
+    badge_live_tag: "Live Streams",
+    live_direct: "LIVE Direct",
     hero_title: "MeowHub | Smart Pet Care",
     footer_slogan: "Never leave your fur babies alone again",
     sidebar_title: "Switch Camera",
     mobile_select_room: "📹 Cameras",
+    total_stations_fmt: "Total {n} Cameras",
+    
+    // 播放器与投喂控制
     btn_feed_pet: "🍗 Feed Now",
     btn_tarot: "🔮 Meow Tarot",
     btn_bazi: "📜 Meow Fortune",
@@ -1944,9 +2028,23 @@ const I18N_LOCALES = {
     danmaku_off: "💬 Danmaku: Off",
     audio_unmute: "🔇 Unmute",
     audio_mute: "🔊 Mute",
+    loading_stream: "Connecting to Device...",
+    loading_stream_desc: "Fetching adaptive stream, please wait...",
+    
+    // 聊天区
     chat_title: "💬 Live Cat Chat",
+    chat_tip: "Double tap video for merit · Try words: feast, fish, rain 🐾",
+    chat_loading: "Loading chat...",
+    chat_empty: "No messages yet. Say hello to cats!",
     chat_placeholder: "Say something... Press Enter to send",
     btn_chat_send: "Send",
+    chip_1: "🍗 Extra Treats",
+    chip_2: "🐟 Cyber Feeding",
+    chip_3: "🎉 Congrats!",
+    chip_4: "🐱 Good Kitty",
+    chip_5: "❤️ Here for cuties",
+    
+    // 榜单
     rank_header_title: "🏆 Feeding Hall of Fame",
     rank_header_desc: "Every kindness counts · Thank you for feeding stray lives",
     rank_tab_all: "All Time",
@@ -1956,10 +2054,62 @@ const I18N_LOCALES = {
     rank_th_user: "Patron",
     rank_th_count: "Total Feeds",
     rank_unit_times: "times",
-    about_banner: "🐾 Welcome to MeowHub! Connecting pet lovers worldwide through IoT and real-time streaming. Never leave your fur babies alone again.",
-    faq_main_title: "🐾 Frequently Asked Questions (FAQ)",
+    my_rank_guest: "Guest Patron",
+    my_rank_guest_tip: "Sign in to view your stats",
+    btn_login_rank: "Sign In",
+    rank_loading: "Loading rankings...",
+    rank_loaded_all: "— All patrons displayed —",
     
-    // 动态插值与状态反馈
+    // 赞助面板 (Buy Me a Coffee)
+    sponsor_title: "Support MeowHub Live",
+    sponsor_desc: "All feeding controls are <b>100% free for everyone</b>! If you enjoy the stream, treat the kitties to canned snacks. Donations cover shelter power, video streaming, and cat food.",
+    tab_support_once: "☕ One-time Tip",
+    tab_support_monthly: "👑 Monthly ($5/mo)",
+    sponsor_amount_label: "Amount:",
+    sponsor_monthly_card_t: "$5 / month · Guardian Tier",
+    sponsor_monthly_card_d: "Renews monthly, cancel anytime. Thank you for protecting stray lives!",
+    sponsor_name_ph: "Your Name (Optional)",
+    sponsor_msg_ph: "Leave a cheer note for kitties... (Optional)",
+    btn_pay_label: "💖 Support",
+    sponsor_footer_tip: "🔒 Powered by Creem · Safe Checkout with Card / Apple Pay / Google Pay",
+    
+    // 塔罗弹窗
+    tarot_title: "🔮 Meow Tarot · Spread",
+    tarot_topic_1: "🐾 Fortune",
+    tarot_topic_2: "💼 Career",
+    tarot_topic_3: "❤️ Love",
+    tarot_tip: "Focus your intent and blind-pick 3 cards from the deck below",
+    tarot_slot_0: "【Past · Cause】",
+    tarot_slot_1: "【Now · State】",
+    tarot_slot_2: "【Future · Vision】",
+    tarot_waiting: "Pick Card",
+    btn_reset_tarot: "🎲 Redraw",
+    btn_save_tarot: "📥 Save Poster",
+    
+    // 算命弹窗
+    bazi_title: "📜 Meow I Ching Reading",
+    bazi_name_label: "🐾 Cat's Name:",
+    bazi_name_ph: "e.g. Mimi / Current Cat",
+    bazi_color_label: "🎨 Coat Five Elements:",
+    bazi_season_label: "⏳ Birth Season:",
+    btn_bazi_calc: "☯️ Cast Reading",
+    btn_bazi_random: "🎲 Divine by Fate",
+    btn_save_bazi: "📥 Save Poster",
+    
+    // MBTI 弹窗
+    mbti_title: "🐾 Feline Personality Lab · MBTI",
+    btn_save_mbti: "📥 Save Personality Card",
+    btn_restart_mbti: "🎲 Retest Another",
+    
+    // 拍立得弹窗
+    polaroid_tip: "Long-press image on mobile to save or share",
+    btn_save_poster: "📥 Save Poster",
+    
+    // 通用按钮
+    btn_close: "Close",
+    btn_know: "Got It",
+    
+    // 动态交互
     feed_confirm: "Confirm treat drop for 【{name}】?",
     feed_dispensing: "Dispensing...",
     feed_cooldown_prefix: "Cooldown ({remain}s)",
@@ -1969,10 +2119,8 @@ const I18N_LOCALES = {
   }
 };
 
-// 状态初始化：优先读取缓存，若无缓存则依据浏览器系统语言智能判定
 let currentLang = localStorage.getItem("meow_app_lang") || (navigator.language.startsWith("zh") ? "zh" : "en");
 
-// 文本获取与插值工具函数
 function t(key, params = {}) {
   const dict = I18N_LOCALES[currentLang] || I18N_LOCALES.zh;
   let text = dict[key] || key;
@@ -1982,45 +2130,82 @@ function t(key, params = {}) {
   return text;
 }
 
-// 全局节点扫描渲染函数
+// 自动映射表：免去手动改数百行 HTML，直接由引擎按 ID 与 Class 精确刷新
 function applyLanguage(lang) {
   currentLang = lang;
   localStorage.setItem("meow_app_lang", lang);
   document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
 
-  // 1. 翻译普通文本节点
+  // 1. 静态 data-i18n 属性映射
   document.querySelectorAll("[data-i18n]").forEach(el => {
-    const key = el.getAttribute("data-i18n");
-    const val = t(key);
+    const val = t(el.getAttribute("data-i18n"));
     if (val) el.textContent = val;
   });
-
-  // 2. 翻译输入框占位符
   document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-    const key = el.getAttribute("data-i18n-placeholder");
-    const val = t(key);
+    const val = t(el.getAttribute("data-i18n-placeholder"));
     if (val) el.placeholder = val;
   });
 
-  // 3. 更新切换按钮文字
-  const btnLabel = document.getElementById("currentLangLabel");
-  if (btnLabel) {
-    btnLabel.textContent = currentLang === "zh" ? "EN" : "中";
+  // 2. 精准绑定弹窗各组件（自动替换，无需动 HTML）
+  const idMap = {
+    // 导航与头部
+    "tabNavLive": "nav_live", "tabNavRankings": "nav_rankings", "tabNavAbout": "nav_about", "btnOpenSponsor": "nav_sponsor",
+    "btnClerkSignIn": "btn_signin",
+    // 播放器与控制
+    "btnFeedPet": "btn_feed_pet", "btnOpenTarot": "btn_tarot", "btnOpenBazi": "btn_bazi", "btnOpenMbti": "btn_mbti", "snapshotBtn": "btn_snapshot",
+    "emptyTitle": "loading_stream", "emptyCopy": "loading_stream_desc",
+    // 赞助弹窗
+    "tabSupportOnce": "tab_support_once", "tabSupportMonthly": "tab_support_monthly",
+    // 塔罗弹窗
+    "tarotHeaderTip": "tarot_tip", "btnResetTarot": "btn_reset_tarot", "btnSaveTarotPoster": "btn_save_tarot", "btnCloseTarot": "btn_close",
+    // 算命弹窗
+    "btnDoBaziCalc": "btn_bazi_calc", "btnDoBaziRandom": "btn_bazi_random", "btnSaveBaziCanvas": "btn_save_bazi", "btnCloseBaziModal": "btn_close",
+    // MBTI 弹窗
+    "btnSaveMbtiPoster": "btn_save_mbti", "btnRestartMbti": "btn_restart_mbti", "btnCloseMbtiRes": "btn_close", "btnCloseMbtiQuiz": "btn_close",
+    // 打卡与段位
+    "closeCheckinBtn": "btn_close", "closeHonorBtn": "btn_know", "closePolaroidBtn": "btn_close", "downloadPolaroidBtn": "btn_save_poster"
+  };
+
+  for (const [id, key] of Object.entries(idMap)) {
+    const el = document.getElementById(id);
+    if (el) {
+      // 保持内部包含子节点（如 span）时的安全替换
+      if (el.children.length === 0) el.textContent = t(key);
+    }
   }
 
-  // 4. 更新网页标题
+  // 3. 赞助弹窗标题与描述
+  const sponsorTitle = document.querySelector(".bmac-title");
+  if (sponsorTitle) sponsorTitle.textContent = t("sponsor_title");
+  const sponsorDesc = document.querySelector(".bmac-desc");
+  if (sponsorDesc) sponsorDesc.innerHTML = t("sponsor_desc");
+
+  // 4. 输入框 Placeholder 自动替换
+  const phMap = {
+    "textInput": "chat_placeholder",
+    "sponsorInputName": "sponsor_name_ph",
+    "sponsorInputMsg": "sponsor_msg_ph",
+    "baziCatName": "bazi_name_ph"
+  };
+  for (const [id, key] of Object.entries(phMap)) {
+    const el = document.getElementById(id);
+    if (el) el.placeholder = t(key);
+  }
+
+  // 5. 语言切换按钮文字
+  const btnLabel = document.getElementById("currentLangLabel");
+  if (btnLabel) btnLabel.textContent = currentLang === "zh" ? "EN" : "中";
+
+  // 6. 网页 Title
   document.title = t("site_title");
 }
 
-// 绑定右上角切换按钮事件
 document.addEventListener("DOMContentLoaded", () => {
   const btnToggle = document.getElementById("btnToggleLang");
   btnToggle?.addEventListener("click", () => {
     const nextLang = currentLang === "zh" ? "en" : "zh";
     applyLanguage(nextLang);
   });
-
-  // 首屏挂载应用
   applyLanguage(currentLang);
 });
     const API_ENDPOINT = "https://maomao-live-api.yuangchen16.workers.dev";
