@@ -2266,7 +2266,8 @@ function applyLanguage(lang) {
   // 投喂按钮双语刷新
   const btnFeedPet = document.getElementById("btnFeedPet");
   if (btnFeedPet) {
-    btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
+    const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
   }
   const chatTitleEl = document.querySelector(".chat-title");
   if (chatTitleEl) chatTitleEl.textContent = isEn ? "💬 Live Chat Room" : "💬 实时猫友互动区";
