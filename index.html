@@ -2237,6 +2237,34 @@ function applyLanguage(lang) {
   // 6. 网页 Title
   document.title = t("site_title");
   // 7. 小猫算命弹窗全面双语刷新
+  // 聊天区与底部卡片双语刷新
+  const chatTitleEl = document.querySelector(".chat-title");
+  if (chatTitleEl) chatTitleEl.textContent = isEn ? "💬 Live Chat Room" : "💬 实时猫友互动区";
+
+  const chatTipEl = document.querySelector(".chat-header > div:last-child");
+  if (chatTipEl) {
+    chatTipEl.textContent = isEn 
+      ? "Double-tap screen for merits · Type feast, fish, rain for surprises 🐾" 
+      : "双击视频画面攒功德 · 发送【开饭/鱼干/撒花/下雨】触发彩蛋 🐾";
+  }
+
+  const liveDirectBadges = document.querySelectorAll(".player-bar .badge-live span:last-child");
+  liveDirectBadges.forEach(el => {
+    el.textContent = isEn ? "LIVE Connected" : "LIVE 实时直连";
+  });
+
+  const quickChips = document.querySelectorAll(".quick-chips .chip-btn");
+  const chipsEn = ["🍗 Extra Treats", "🐟 Cloud Feeding", "🎉 Congrats!", "🐱 Good Kitty", "❤️ Love Kitties"];
+  const chipsZh = ["🍗 加餐加餐", "🐟 赛博云喂猫", "🎉 恭喜撒花", "🐱 咪咪好乖", "❤️ 来看小可爱啦"];
+  quickChips.forEach((btn, idx) => {
+    btn.textContent = isEn ? (chipsEn[idx] || btn.textContent) : (chipsZh[idx] || btn.textContent);
+  });
+
+  const downloadBtn = document.getElementById("btnDownloadApp");
+  if (downloadBtn) downloadBtn.textContent = isEn ? "Download App" : "下载 App";
+
+  const footerSlogan = document.querySelector(".footer-box p");
+  if (footerSlogan) footerSlogan.textContent = isEn ? "Never leave your fur babies alone again" : "别让你家毛孩子再成为留守儿童了";
   const isEn = (currentLang === "en");
   
   const baziSub = document.querySelector("#baziModal div[style*='letter-spacing:2px']");
