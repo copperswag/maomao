@@ -2236,8 +2236,7 @@ function applyLanguage(lang) {
 
   // 6. 网页 Title
   document.title = t("site_title");
-  // 7. 小猫算命弹窗全面双语刷新
-  // 聊天区与底部卡片双语刷新
+  const isEn = (currentLang === "en");
   const chatTitleEl = document.querySelector(".chat-title");
   if (chatTitleEl) chatTitleEl.textContent = isEn ? "💬 Live Chat Room" : "💬 实时猫友互动区";
 
@@ -2265,7 +2264,7 @@ function applyLanguage(lang) {
 
   const footerSlogan = document.querySelector(".footer-box p");
   if (footerSlogan) footerSlogan.textContent = isEn ? "Never leave your fur babies alone again" : "别让你家毛孩子再成为留守儿童了";
-  const isEn = (currentLang === "en");
+  
   
   const baziSub = document.querySelector("#baziModal div[style*='letter-spacing:2px']");
   if (baziSub) baziSub.textContent = isEn ? "MEOW IMPERIAL ASTRONOMY · BAZI" : "喵星钦天监 · 四柱八字推衍";
