@@ -4177,9 +4177,11 @@ function renderCheckinModal() {
         seenCommentIds.clear();
       }
 
-      if (!comments || comments.length === 0) {
+     if (!comments || comments.length === 0) {
         if (chatList.children.length === 0) {
-          chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">暂无互动消息，快来发第一条吧~</div>';
+          const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+          const emptyMsg = isEn ? "No messages yet. Say hello to cats!" : "暂无互动消息，快来发第一条吧~";
+          chatList.innerHTML = `<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">${emptyMsg}</div>`;
         }
         return;
       }
@@ -4449,8 +4451,10 @@ function renderCheckinModal() {
 
       seenCommentIds.clear();
       latestCommentId = "";
-      if (chatList) {
-        chatList.innerHTML = '<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">正在加载互动...</div>';
+    if (chatList) {
+        const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+        const loadingMsg = isEn ? "Loading chat..." : "正在加载互动...";
+        chatList.innerHTML = `<div style="color: var(--text-sub); font-size: 13px; text-align: center; margin-top: 40px;">${loadingMsg}</div>`;
       }
       
       fetchComments(true);
