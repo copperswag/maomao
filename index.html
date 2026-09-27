@@ -2237,6 +2237,32 @@ function applyLanguage(lang) {
   // 6. 网页 Title
   document.title = t("site_title");
   const isEn = (currentLang === "en");
+  // 顶栏胶囊与在线状态双语刷新
+  const checkinBtnEl = document.getElementById("btnOpenCheckin");
+  if (checkinBtnEl) {
+    const streakNum = (typeof checkinData !== "undefined" && checkinData) ? (checkinData.streakDays || 0) : 0;
+    checkinBtnEl.innerHTML = isEn 
+      ? `📅 Daily Check-in (<span id="checkinStreakCount">${streakNum}</span>d)`
+      : `📅 每日打卡 (<span id="checkinStreakCount">${streakNum}</span>天)`;
+  }
+
+  const onlineEl = document.getElementById("onlineCount");
+  if (onlineEl && typeof roomList !== "undefined" && roomList) {
+    onlineEl.textContent = isEn 
+      ? `${roomList.length || 0} Live Streams` 
+      : `${roomList.length || 0} 直播间在线`;
+  }
+
+  // 广播横条默认双语
+  const noticeEl = document.getElementById("noticeContent");
+  if (noticeEl && (!noticeEl.textContent || noticeEl.textContent.includes("毛毛星球") || noticeEl.textContent.includes("MeowHub"))) {
+    noticeEl.textContent = isEn ? "Welcome to MeowHub Live!" : "欢迎大家来到毛毛星球";
+  }
+
+  // 立即联动刷新一次段位勋章文字
+  if (typeof updateHonorUI === "function") {
+    updateHonorUI();
+  }
   const chatTitleEl = document.querySelector(".chat-title");
   if (chatTitleEl) chatTitleEl.textContent = isEn ? "💬 Live Chat Room" : "💬 实时猫友互动区";
 
@@ -3406,11 +3432,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let checkinData = loadCheckinData();
 
-    function updateCheckinHeaderUI() {
-      if (checkinStreakCount) checkinStreakCount.textContent = checkinData.streakDays || 0;
+function updateCheckinHeaderUI() {
+      const checkinBtnEl = document.getElementById("btnOpenCheckin");
+      const streakNum = (typeof checkinData !== "undefined" && checkinData) ? (checkinData.streakDays || 0) : 0;
+      const isEn = (currentLang === "en");
+      if (checkinBtnEl) {
+        checkinBtnEl.innerHTML = isEn 
+          ? `📅 Daily Check-in (<span id="checkinStreakCount">${streakNum}</span>d)`
+          : `📅 每日打卡 (<span id="checkinStreakCount">${streakNum}</span>天)`;
+      }
     }
-    updateCheckinHeaderUI();
 
+    updateCheckinHeaderUI();
 function renderCheckinModal() {
       const todayStr = getTodayString(); // 补上关键变量定义
 
@@ -3609,12 +3642,14 @@ function renderCheckinModal() {
       return current;
     }
 
-    function updateHonorUI() {
+   function updateHonorUI() {
       const honor = getCurrentHonor();
+      const isEn = (currentLang === "en");
+      const title = isEn ? (honor.titleEn || honor.title) : honor.title;
       const mins = Math.floor(staySeconds / 60);
       const starStr = crownStamps > 0 ? ` [★×${crownStamps}]` : "";
       if (myHonorBadge) {
-        myHonorBadge.textContent = `${honor.title}${starStr} (${mins}m) ⓘ`;
+        myHonorBadge.textContent = `${title}${starStr} (${mins}m) ⓘ`;
         myHonorBadge.className = `honor-badge ${honor.class}`;
       }
     }
