@@ -1999,6 +1999,26 @@ const I18N_LOCALES = {
     feed_success_msg: "投喂成功！",
     feed_danmaku_success: "🎉 感谢猫友【{user}】为现场毛孩子投喂了猫粮！",
     feed_error_lock: "全网冷却中：【{name}】刚刚被爱心猫友投喂过，猫咪还在吃呢，请等 {waitSec} 秒后再喂~"
+
+    checkin_modal_title: "🐾 每日吸猫打卡册",
+    checkin_stat_text: "已连续打卡 <span id=\"modalStreakDays\" style=\"color: #fbbf24; font-weight: 800; font-size: 16px;\">{streak}</span> 天 · 累计吸猫 <span id=\"modalTotalDays\" style=\"color: #fff; font-weight: 700;\">{total}</span> 天",
+    checkin_stamps_head: "🐾 4周猫爪印章收集馆",
+    stamp_w1: "第1周印章",
+    stamp_w2: "第2周印章",
+    stamp_w3: "第3周印章",
+    stamp_w4: "元老印章",
+    checkin_track_head: "📅 本周打卡轨迹",
+    btn_checkin_do: "✨ 立即打卡盖章",
+    btn_checkin_done: "今日已打卡 ✓",
+    week_days: ["日", "一", "二", "三", "四", "五", "六"],
+    week_prefix: "周",
+    
+    honor_season_prefix: "📅 当前赛季：{season} (每周一重置)",
+    honor_stay_fmt: "{mins} 分钟 ({sec} 秒)",
+    honor_next_tip: "距解锁【{next}】还需约 {need} 分钟",
+    honor_max_tip: "已达成最高殿堂荣耀！赛季结算将斩获守护神星标 👑",
+    honor_achieved: "已达成 ✓",
+    honor_locked: "未解锁 🔒",
   },
   
   en: {
@@ -2116,6 +2136,26 @@ const I18N_LOCALES = {
     feed_success_msg: "Feed Successful!",
     feed_danmaku_success: "🎉 Big thanks to 【{user}】 for treating the kitties!",
     feed_error_lock: "Cooldown active: 【{name}】 was just fed! Please wait {waitSec}s~"
+
+  checkin_modal_title: "🐾 Daily Meow Check-in",
+    checkin_stat_text: "Streak: <span id=\"modalStreakDays\" style=\"color: #fbbf24; font-weight: 800; font-size: 16px;\">{streak}</span> days · Total: <span id=\"modalTotalDays\" style=\"color: #fff; font-weight: 700;\">{total}</span> days",
+    checkin_stamps_head: "🐾 4-Week Paw Stamp Club",
+    stamp_w1: "Week 1 Stamp",
+    stamp_w2: "Week 2 Stamp",
+    stamp_w3: "Week 3 Stamp",
+    stamp_w4: "Veteran Stamp",
+    checkin_track_head: "📅 Weekly Attendance Track",
+    btn_checkin_do: "✨ Stamp Today",
+    btn_checkin_done: "Stamped Today ✓",
+    week_days: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    week_prefix: "",
+    
+    honor_season_prefix: "📅 Season: {season} (Resets Mon)",
+    honor_stay_fmt: "{mins} mins ({sec}s)",
+    honor_next_tip: "{need} mins left to unlock 【{next}】",
+    honor_max_tip: "Max Honor Achieved! Guardian Star awarded at reset 👑",
+    honor_achieved: "Unlocked ✓",
+    honor_locked: "Locked 🔒",
   }
 };
 
@@ -2198,6 +2238,57 @@ function applyLanguage(lang) {
 
   // 6. 网页 Title
   document.title = t("site_title");
+  // 7. 小猫算命弹窗全面双语刷新
+  const isEn = (currentLang === "en");
+  
+  const baziSub = document.querySelector("#baziModal div[style*='letter-spacing:2px']");
+  if (baziSub) baziSub.textContent = isEn ? "MEOW IMPERIAL ASTRONOMY · BAZI" : "喵星钦天监 · 四柱八字推衍";
+  
+  const baziTitle = document.querySelector("#baziModal h3");
+  if (baziTitle) baziTitle.textContent = isEn ? "📜 Meow I Ching Reading" : "📜 喵星周易算命帖";
+  
+  const baziLabels = document.querySelectorAll("#baziModal label");
+  if (baziLabels.length >= 3) {
+    baziLabels[0].textContent = isEn ? "🐾 Cat's Name:" : "🐾 爱猫芳名：";
+    baziLabels[1].textContent = isEn ? "🎨 Coat Element:" : "🎨 毛色五行：";
+    baziLabels[2].textContent = isEn ? "⏳ Birth Season:" : "⏳ 出生时节：";
+  }
+
+  const selColor = document.getElementById("baziCatColor");
+  if (selColor && selColor.options.length >= 6) {
+    selColor.options[0].text = isEn ? "Orange (Gold/Fire · Wealth)" : "大橘 (金火·富贵旺财)";
+    selColor.options[1].text = isEn ? "Black (Water · Ward Off Evil)" : "玄猫 (玄水·辟邪镇煞)";
+    selColor.options[2].text = isEn ? "Calico (Wood/Fire · Infinite Blessing)" : "三花 (全木火·福泽无疆)";
+    selColor.options[3].text = isEn ? "Tabby (Wood · Hunting God)" : "狸花 (青木·捕猎战神)";
+    selColor.options[4].text = isEn ? "White (Metal · Noble & Elegant)" : "素白 (兑金·高冷出尘)";
+    selColor.options[5].text = isEn ? "Tuxedo (Water/Fire · Quirky Spirit)" : "奶牛 (水火相济·灵动神经)";
+  }
+
+  const selSeason = document.getElementById("baziSeason");
+  if (selSeason && selSeason.options.length >= 4) {
+    selSeason.options[0].text = isEn ? "Early Spring (Awakening)" : "孟春 (初春苏醒)";
+    selSeason.options[1].text = isEn ? "Midsummer (Sunbathing)" : "仲夏 (向阳舒展)";
+    selSeason.options[2].text = isEn ? "Golden Autumn (Harvest)" : "金秋 (贴膘丰收)";
+    selSeason.options[3].text = isEn ? "Deep Winter (Hibernation)" : "隆冬 (盘窝冬眠)";
+  }
+
+  // 8. 小猫塔罗弹窗全面双语刷新
+  const tarotMainTitle = document.querySelector(".tarot-header-title");
+  if (tarotMainTitle) tarotMainTitle.textContent = isEn ? "🔮 Meow Tarot · Time Stream Spread" : "🔮 喵星塔罗 · 圣三角时空流向阵";
+
+  const topicChips = document.querySelectorAll(".tarot-topic-chip");
+  if (topicChips.length >= 3) {
+    topicChips[0].textContent = isEn ? "🐾 Fortune" : "🐾 今日运势";
+    topicChips[1].textContent = isEn ? "💼 Career/Study" : "💼 事业/学业";
+    topicChips[2].textContent = isEn ? "❤️ Love/Social" : "❤️ 情感/人际";
+  }
+
+  const slotTags = document.querySelectorAll(".slot-tag");
+  if (slotTags.length >= 3) {
+    slotTags[0].textContent = isEn ? "【Past · Cause】" : "【过去 · 因缘】";
+    slotTags[1].textContent = isEn ? "【Now · State】" : "【当下 · 境况】";
+    slotTags[2].textContent = isEn ? "【Future · Vision】" : "【未来 · 启示】";
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -2515,7 +2606,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function initFanDeck() {
       chosenThreeCards = [];
       isSpreading = false;
-      if (tarotHeaderTip) tarotHeaderTip.textContent = "请凝神聚意，在下方 22 张牌堆中凭直觉盲选 3 张";
+      const isEn = (currentLang === "en");
+
+      if (tarotHeaderTip) {
+        tarotHeaderTip.textContent = isEn 
+          ? "Focus your intent, blind-pick 3 cards from the deck below" 
+          : "请凝神聚意，在下方 22 张牌堆中凭直觉盲选 3 张";
+      }
       if (tarotResultPanel) tarotResultPanel.style.display = "none";
       if (btnSaveTarotPoster) btnSaveTarotPoster.style.display = "none";
       if (tarotDeckFan) {
@@ -2523,11 +2620,10 @@ document.addEventListener("DOMContentLoaded", () => {
         tarotDeckFan.style.display = "flex";
       }
 
-      // 重置3个插槽
       for (let i = 0; i < 3; i++) {
         const box = document.getElementById(`slotBox${i}`);
         if (box) {
-          box.innerHTML = `<span style="font-size:11px;opacity:0.4;">待选第 ${i+1} 张</span>`;
+          box.innerHTML = `<span style="font-size:11px;opacity:0.4;">${isEn ? `Card ${i+1}` : `待选第 ${i+1} 张`}</span>`;
           box.className = "slot-placeholder";
         }
       }
@@ -2597,56 +2693,62 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (chosenThreeCards.length === 3) {
         if (tarotDeckFan) tarotDeckFan.style.display = "none";
-        if (tarotHeaderTip) tarotHeaderTip.textContent = "✦ 3 张宿命之牌已入阵，请轻触卡牌逐一翻揭 ✦";
+        const isEn = (currentLang === "en");
+        if (tarotHeaderTip) tarotHeaderTip.textContent = isEn 
+          ? "✦ 3 Destiny Cards locked. Tap to reveal each card ✦" 
+          : "✦ 3 张宿命之牌已入阵，请轻触卡牌逐一翻揭 ✦";
       }
     }
 
     // 检查三张是否翻完，揭晓报告
-    function checkAllFlipped() {
-      const allDone = chosenThreeCards.length === 3 && chosenThreeCards.every(c => c.flipped);
-      if (!allDone) return;
-
-      setTimeout(() => {
-        if (tarotHeaderTip) tarotHeaderTip.textContent = "✦ 圣三角时空流向推演完毕 ✦";
-        renderSpreadSynthesis();
-        if (tarotResultPanel) tarotResultPanel.style.display = "flex";
-        if (btnSaveTarotPoster) btnSaveTarotPoster.style.display = "inline-flex";
-        if (typeof fireConfetti === "function") fireConfetti();
-      }, 500);
-    }
-
-    // 生成综合报告
+    // 生成综合报告（支持中英双语自适应）
     function renderSpreadSynthesis() {
       const [c0, c1, c2] = chosenThreeCards;
+      const isEn = (currentLang === "en");
 
       // 提取三位判词
       const pText = c0.isRev ? c0.data.past_rev : c0.data.past_up;
       const nText = c1.isRev ? c1.data.now_rev : c1.data.now_up;
       const fText = c2.isRev ? c2.data.fut_rev : c2.data.fut_up;
 
-      // 综合时空连线判词（串成完整因果）
-      const synthesisNarrative = `【聚焦于${currentTopic}】：回顾过去，${c0.data.name}（${c0.isRev ? '逆位' : '正位'}）印证了你“${pText}”；立足当下，${c1.data.name}（${c1.isRev ? '逆位' : '正位'}）提示你“${nText}”；放眼未来，能量正导向${c2.data.name}（${c2.isRev ? '逆位' : '正位'}），启示着“${fText}”。猫星箴言：心怀笃定，自能跃过一切风浪。`;
+      const pRevLabel = c0.isRev ? (isEn ? "Reversed" : "逆位") : (isEn ? "Upright" : "正位");
+      const nRevLabel = c1.isRev ? (isEn ? "Reversed" : "逆位") : (isEn ? "Upright" : "正位");
+      const fRevLabel = c2.isRev ? (isEn ? "Reversed" : "逆位") : (isEn ? "Upright" : "正位");
+
+      // 综合时空连线判词
+      let synthesisNarrative = "";
+      if (isEn) {
+        synthesisNarrative = `【Focus: ${currentTopic}】Looking back, ${c0.data.name} (${pRevLabel}) marks that "${pText}"; At present, ${c1.data.name} (${nRevLabel}) reminds you that "${nText}"; Looking ahead, the energy flows toward ${c2.data.name} (${fRevLabel}), revealing "${fText}". Meow Wisdom: Keep your heart steady, and leap through any waves with feline grace.`;
+      } else {
+        synthesisNarrative = `【聚焦于${currentTopic}】：回顾过去，${c0.data.name}（${pRevLabel}）印证了你“${pText}”；立足当下，${c1.data.name}（${nRevLabel}）提示你“${nText}”；放眼未来，能量正导向${c2.data.name}（${fRevLabel}），启示着“${fText}”。猫星箴言：心怀笃定，自能跃过一切风浪。`;
+      }
 
       if (tarotSynthesisText) tarotSynthesisText.textContent = synthesisNarrative;
+
+      const badgeSynthesis = document.querySelector(".synthesis-badge");
+      if (badgeSynthesis) badgeSynthesis.textContent = isEn ? "✦ Time Stream Synthesis Report ✦" : "✦ 时空流向综合判词 ✦";
 
       if (tarotDetailList) {
         tarotDetailList.innerHTML = `
           <div class="detail-card-item">
-            <div class="detail-card-header"><span style="color:#60a5fa;">【过去位】${c0.data.name}</span><span style="color:${c0.isRev ? '#f87171' : '#34d399'};">${c0.isRev ? '逆位' : '正位'}</span></div>
+            <div class="detail-card-header"><span style="color:#60a5fa;">${isEn ? '[Past] ' : '【过去位】'}${c0.data.name}</span><span style="color:${c0.isRev ? '#f87171' : '#34d399'};">${pRevLabel}</span></div>
             <div style="font-size:12px; color:var(--text-sub); line-height:1.5;">${pText}</div>
           </div>
           <div class="detail-card-item">
-            <div class="detail-card-header"><span style="color:#fbbf24;">【当下位】${c1.data.name}</span><span style="color:${c1.isRev ? '#f87171' : '#34d399'};">${c1.isRev ? '逆位' : '正位'}</span></div>
+            <div class="detail-card-header"><span style="color:#fbbf24;">${isEn ? '[Present] ' : '【当下位】'}${c1.data.name}</span><span style="color:${c1.isRev ? '#f87171' : '#34d399'};">${nRevLabel}</span></div>
             <div style="font-size:12px; color:var(--text-sub); line-height:1.5;">${nText}</div>
           </div>
           <div class="detail-card-item">
-            <div class="detail-card-header"><span style="color:#c084fc;">【未来位】${c2.data.name}</span><span style="color:${c2.isRev ? '#f87171' : '#34d399'};">${c2.isRev ? '逆位' : '正位'}</span></div>
+            <div class="detail-card-header"><span style="color:#c084fc;">${isEn ? '[Future] ' : '【未来位】'}${c2.data.name}</span><span style="color:${c2.isRev ? '#f87171' : '#34d399'};">${fRevLabel}</span></div>
             <div style="font-size:12px; color:var(--text-sub); line-height:1.5;">${fText}</div>
           </div>
         `;
       }
-    }
 
+      // 底部幸运补给与猫星指引
+      if (tarotLuckyFood) tarotLuckyFood.textContent = isEn ? "Tuna Steak Feast" : "深海金枪鱼排";
+      if (tarotLuckyAction) tarotLuckyAction.textContent = isEn ? "Bask in warm sunshine, avoid late-night zoomies" : "宜晒暖阳，忌熬夜跑酷";
+    }
     btnOpenTarot?.addEventListener("click", () => {
       requireAuth(() => {
         initFanDeck();
@@ -3229,25 +3331,48 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     updateCheckinHeaderUI();
 
-    function renderCheckinModal() {
-      if (modalStreakDays) modalStreakDays.textContent = checkinData.streakDays;
-      if (modalTotalDays) modalTotalDays.textContent = checkinData.totalDays;
+function renderCheckinModal() {
+      // 1. 标题与说明
+      const headerTitle = document.querySelector("#checkinModal .honor-current-title");
+      if (headerTitle) headerTitle.textContent = t("checkin_modal_title");
+      
+      const statContainer = document.querySelector("#checkinModal .honor-stay-stat");
+      if (statContainer) {
+        statContainer.innerHTML = t("checkin_stat_text", {
+          streak: checkinData.streakDays,
+          total: checkinData.totalDays
+        });
+      }
+
+      const stampsHead = document.querySelector("#checkinModal .stamp-grid")?.previousElementSibling?.firstElementChild;
+      if (stampsHead) stampsHead.textContent = t("checkin_stamps_head");
 
       const stampsCount = Math.min(Math.floor(checkinData.streakDays / 7), 4);
-      if (stampProgressText) stampProgressText.textContent = `${stampsCount} / 4 印章`;
+      if (stampProgressText) stampProgressText.textContent = `${stampsCount} / 4`;
 
+      // 4 周印章卡片文字
+      const stampKeys = ["stamp_w1", "stamp_w2", "stamp_w3", "stamp_w4"];
       for (let i = 1; i <= 4; i++) {
         const card = document.getElementById(`stampCard${i}`);
         if (card) {
+          const txtEl = card.querySelector(".stamp-text");
+          if (txtEl) txtEl.textContent = t(stampKeys[i - 1]);
           if (i <= stampsCount) card.classList.add("stamped");
           else card.classList.remove("stamped");
         }
       }
 
+      // 打卡轨迹标题
+      const trackHead = document.querySelector("#checkinModal .calendar-days-grid")?.previousElementSibling?.firstElementChild;
+      if (trackHead) trackHead.textContent = t("checkin_track_head");
+
+      // 渲染 7 天周历格子
       if (weekCalendarGrid) {
         weekCalendarGrid.innerHTML = "";
         const todayStr = getTodayString();
         const now = new Date();
+        const daysDict = I18N_LOCALES[currentLang]?.week_days || I18N_LOCALES.zh.week_days;
+        const pfx = I18N_LOCALES[currentLang]?.week_prefix || "";
 
         for (let i = 6; i >= 0; i--) {
           const target = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
@@ -3258,23 +3383,23 @@ document.addEventListener("DOMContentLoaded", () => {
           const cell = document.createElement("div");
           cell.className = `cal-day-cell ${isChecked ? 'active-day' : ''} ${isToday ? 'today-cell' : ''}`;
           
-          const weekNames = ["日", "一", "二", "三", "四", "五", "六"];
           cell.innerHTML = `
-            <span>周${weekNames[target.getDay()]}</span>
+            <span>${pfx}${daysDict[target.getDay()]}</span>
             <span style="font-size: 13px; margin: 2px 0;">${isChecked ? '🐾' : target.getDate()}</span>
           `;
           weekCalendarGrid.appendChild(cell);
         }
       }
 
+      // 按钮状态与文字
       const isTodayChecked = (checkinData.lastCheckinDate === todayStr);
       if (btnDoCheckin) {
         if (isTodayChecked) {
-          btnDoCheckin.textContent = "今日已打卡 ✓";
+          btnDoCheckin.textContent = t("btn_checkin_done");
           btnDoCheckin.disabled = true;
           btnDoCheckin.style.opacity = "0.6";
         } else {
-          btnDoCheckin.textContent = "✨ 立即打卡盖章";
+          btnDoCheckin.textContent = t("btn_checkin_do");
           btnDoCheckin.disabled = false;
           btnDoCheckin.style.opacity = "1";
         }
@@ -3379,17 +3504,18 @@ document.addEventListener("DOMContentLoaded", () => {
     let celebratedTiers = JSON.parse(localStorage.getItem("meow_celebrated_tiers") || "[]");
 
     const HONOR_TIERS = [
-      { level: 0, minSec: 0, title: "🌱 路过猫奴", icon: "🌱", desc: "初来乍到，与毛毛星球结缘", class: "" },
-      { level: 1, minSec: 60, title: "🐾 初级铲屎官", icon: "🐾", desc: "本周累计陪伴满 1 分钟", class: "tier-1" },
-      { level: 2, minSec: 180, title: "🍗 猫条投喂员", icon: "🍗", desc: "本周累计陪伴满 3 分钟", class: "tier-2" },
-      { level: 3, minSec: 360, title: "🐟 干饭引路人", icon: "🐟", desc: "本周累计陪伴满 6 分钟", class: "tier-3" },
-      { level: 4, minSec: 600, title: "🧸 金牌陪玩师", icon: "🧸", desc: "本周累计陪伴满 10 分钟", class: "tier-4" },
-      { level: 5, minSec: 900, title: "🏡 资深云爸妈", icon: "🏡", desc: "本周累计陪伴满 15 分钟", class: "tier-5" },
-      { level: 6, minSec: 1500, title: "🩺 喵星健康官", icon: "🩺", desc: "本周累计陪伴满 25 分钟", class: "tier-6" },
-      { level: 7, minSec: 2400, title: "🛡️ 巡逻队长", icon: "🛡️", desc: "本周累计陪伴满 40 分钟", class: "tier-7" },
-      { level: 8, minSec: 3600, title: "⭐ 护喵大使", icon: "⭐", desc: "本周累计陪伴满 60 分钟", class: "tier-8" },
-      { level: 9, minSec: 5400, title: "🏰 星球领主", icon: "🏰", desc: "本周累计陪伴满 90 分钟", class: "tier-9" },
-      { level: 10, minSec: 7200, title: "👑 猫岛守护神", icon: "👑", desc: "本周累计陪伴满 120 分钟", class: "tier-10" }
+     const HONOR_TIERS = [
+      { level: 0, minSec: 0, title: "🌱 路过猫奴", titleEn: "🌱 Cat Passerby", desc: "初来乍到，与毛毛星球结缘", descEn: "First encounter with MeowHub", icon: "🌱", class: "" },
+      { level: 1, minSec: 60, title: "🐾 初级铲屎官", titleEn: "🐾 Junior Caretaker", desc: "本周累计陪伴满 1 分钟", descEn: "Accompanied for 1 min this week", icon: "🐾", class: "tier-1" },
+      { level: 2, minSec: 180, title: "🍗 猫条投喂员", titleEn: "🍗 Snack Dispenser", desc: "本周累计陪伴满 3 分钟", descEn: "Accompanied for 3 mins this week", icon: "🍗", class: "tier-2" },
+      { level: 3, minSec: 360, title: "🐟 干饭引路人", titleEn: "🐟 Feast Guide", desc: "本周累计陪伴满 6 分钟", descEn: "Accompanied for 6 mins this week", icon: "🐟", class: "tier-3" },
+      { level: 4, minSec: 600, title: "🧸 金牌陪玩师", titleEn: "🧸 Master Playmate", desc: "本周累计陪伴满 10 分钟", descEn: "Accompanied for 10 mins this week", icon: "🧸", class: "tier-4" },
+      { level: 5, minSec: 900, title: "🏡 资深云爸妈", titleEn: "🏡 Senior Cloud Parent", desc: "本周累计陪伴满 15 分钟", descEn: "Accompanied for 15 mins this week", icon: "🏡", class: "tier-5" },
+      { level: 6, minSec: 1500, title: "🩺 喵星健康官", titleEn: "🩺 Meow Wellness Officer", desc: "本周累计陪伴满 25 分钟", descEn: "Accompanied for 25 mins this week", icon: "🩺", class: "tier-6" },
+      { level: 7, minSec: 2400, title: "🛡️ 巡逻队长", titleEn: "🛡️ Patrol Captain", desc: "本周累计陪伴满 40 分钟", descEn: "Accompanied for 40 mins this week", icon: "🛡️", class: "tier-7" },
+      { level: 8, minSec: 3600, title: "⭐ 护喵大使", titleEn: "⭐ Feline Guardian", desc: "本周累计陪伴满 60 分钟", descEn: "Accompanied for 60 mins this week", icon: "⭐", class: "tier-8" },
+      { level: 9, minSec: 5400, title: "🏰 星球领主", titleEn: "🏰 Planet Overlord", desc: "本周累计陪伴满 90 分钟", descEn: "Accompanied for 90 mins this week", icon: "🏰", class: "tier-9" },
+      { level: 10, minSec: 7200, title: "👑 猫岛守护神", titleEn: "👑 Island Deity", desc: "本周累计陪伴满 120 分钟", descEn: "Accompanied for 120 mins this week", icon: "👑", class: "tier-10" }
     ];
 
     function getCurrentHonor() {
@@ -3592,18 +3718,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }, 1000);
 
-    function openHonorModal() {
+   function openHonorModal() {
       const current = getCurrentHonor();
+      const isEn = (currentLang === "en");
+      const currentTitle = isEn ? current.titleEn : current.title;
       const currentIdx = HONOR_TIERS.findIndex(h => h.level === current.level);
       const mins = Math.floor(staySeconds / 60);
 
-      if (modalSeasonLabel) modalSeasonLabel.textContent = `📅 当前赛季：${currentSeasonKey} (每周一重置)`;
-      if (modalHonorTitle) modalHonorTitle.textContent = current.title;
-      if (modalStayTimeText) modalStayTimeText.textContent = `${mins} 分钟 (${staySeconds} 秒)`;
-      if (modalCrownCount) modalCrownCount.textContent = `${crownStamps} 枚`;
+      if (modalSeasonLabel) modalSeasonLabel.textContent = t("honor_season_prefix", { season: currentSeasonKey });
+      if (modalHonorTitle) modalHonorTitle.textContent = currentTitle;
+      if (modalStayTimeText) modalStayTimeText.textContent = t("honor_stay_fmt", { mins: mins, sec: staySeconds });
+      if (modalCrownCount) modalCrownCount.textContent = `${crownStamps} ${isEn ? "Stars" : "枚"}`;
 
       if (currentIdx < HONOR_TIERS.length - 1) {
         const next = HONOR_TIERS[currentIdx + 1];
+        const nextTitle = isEn ? next.titleEn : next.title;
         const prevSec = current.minSec;
         const totalGap = next.minSec - prevSec;
         const curGap = staySeconds - prevSec;
@@ -3611,16 +3740,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (modalProgressFill) modalProgressFill.style.width = `${pct}%`;
         const needMins = Math.ceil((next.minSec - staySeconds) / 60);
-        if (modalNextTierTip) modalNextTierTip.textContent = `距解锁【${next.title}】还需约 ${needMins} 分钟`;
+        if (modalNextTierTip) modalNextTierTip.textContent = t("honor_next_tip", { next: nextTitle, need: needMins });
       } else {
         if (modalProgressFill) modalProgressFill.style.width = "100%";
-        if (modalNextTierTip) modalNextTierTip.textContent = "已达成最高殿堂荣耀！赛季结算将斩获守护神星标 👑";
+        if (modalNextTierTip) modalNextTierTip.textContent = t("honor_max_tip");
       }
 
       if (honorListContainer) {
         honorListContainer.innerHTML = "";
         HONOR_TIERS.forEach((tier) => {
           const isUnlocked = staySeconds >= tier.minSec;
+          const tierTitle = isEn ? tier.titleEn : tier.title;
+          const tierDesc = isEn ? tier.descEn : tier.desc;
           const row = document.createElement("div");
           row.className = `honor-item ${isUnlocked ? 'unlocked' : ''}`;
 
@@ -3628,19 +3759,18 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="honor-item-left">
               <div class="honor-item-icon">${tier.icon}</div>
               <div>
-                <div class="honor-item-name">Lv.${tier.level} ${tier.title}</div>
-                <div class="honor-item-req">${tier.desc}</div>
+                <div class="honor-item-name">Lv.${tier.level} ${tierTitle}</div>
+                <div class="honor-item-req">${tierDesc}</div>
               </div>
             </div>
-            <div class="honor-item-status">${isUnlocked ? '已达成 ✓' : '未解锁 🔒'}</div>
+            <div class="honor-item-status">${isUnlocked ? t("honor_achieved") : t("honor_locked")}</div>
           `;
           honorListContainer.appendChild(row);
         });
       }
 
-      honorModal?.classList.add("show");
+      modal.classList.add("show");
     }
-
     myHonorBadge?.addEventListener("click", () => {
       requireAuth(() => {
         openHonorModal();
