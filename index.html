@@ -2676,7 +2676,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="tarot-card-face tarot-card-back"><span class="tarot-card-back-pattern">MEOW</span></div>
           <div class="tarot-card-face tarot-card-front ${isRev ? 'is-reversed' : ''}">
             <div class="tarot-front-symbol">${cData.symbol}</div>
-            <div class="tarot-front-name">${cData.name}</div>
+           <div class="tarot-front-name">${(currentLang === 'en' && cData.name.includes('(')) ? cData.name.match(/\((.*?)\)/)[1] : cData.name}</div>
           </div>
         `;
 
@@ -2714,26 +2714,54 @@ document.addEventListener("DOMContentLoaded", () => {
         if (typeof fireConfetti === "function") fireConfetti();
       }
     }
-    // 生成综合报告（支持中英双语自适应）
+// 生成综合报告（彻底全英文无缝本地化）
     function renderSpreadSynthesis() {
       const [c0, c1, c2] = chosenThreeCards;
       const isEn = (currentLang === "en");
 
-      // 提取三位判词
-      const pText = c0.isRev ? c0.data.past_rev : c0.data.past_up;
-      const nText = c1.isRev ? c1.data.now_rev : c1.data.now_up;
-      const fText = c2.isRev ? c2.data.fut_rev : c2.data.fut_up;
+      // 1. 意念主题英文映射
+      const topicMap = { "运势": "Fortune", "捕猎": "Career & Study", "羁绊": "Love & Social" };
+      const displayTopic = isEn ? (topicMap[currentTopic] || currentTopic) : currentTopic;
 
+      // 2. 提取卡牌英文简称
+      function getCleanCardName(rawName) {
+        if (!isEn) return rawName;
+        const match = rawName.match(/\((.*?)\)/);
+        return match ? match[1] : rawName;
+      }
+
+      const c0Name = getCleanCardName(c0.data.name);
+      const c1Name = getCleanCardName(c1.data.name);
+      const c2Name = getCleanCardName(c2.data.name);
+
+      // 3. 正逆位标签
       const pRevLabel = c0.isRev ? (isEn ? "Reversed" : "逆位") : (isEn ? "Upright" : "正位");
       const nRevLabel = c1.isRev ? (isEn ? "Reversed" : "逆位") : (isEn ? "Upright" : "正位");
       const fRevLabel = c2.isRev ? (isEn ? "Reversed" : "逆位") : (isEn ? "Upright" : "正位");
 
-      // 综合时空连线判词
+      // 4. 英文版通用生动判词推导
+      let pText = c0.isRev ? c0.data.past_rev : c0.data.past_up;
+      let nText = c1.isRev ? c1.data.now_rev : c1.data.now_up;
+      let fText = c2.isRev ? c2.data.fut_rev : c2.data.fut_up;
+
+      if (isEn) {
+        pText = c0.isRev 
+          ? "A period of hesitation and slight missteps in the past, yet it laid solid wisdom." 
+          : "You moved forward with pure bravery and true intuition, paving a steady path.";
+        nText = c1.isRev 
+          ? "Scattered focus or subtle anxiety is present; pause, stretch your paws, and regain calm." 
+          : "You hold the center stage; clear boundaries and strong intent are turning into real power.";
+        fText = c2.isRev 
+          ? "Clear away mental clutter and stay alert against fleeting distractions ahead." 
+          : "A smooth breakthrough is approaching; steady steps will lead to a bountiful feast.";
+      }
+
+      // 5. 综合连线大判词
       let synthesisNarrative = "";
       if (isEn) {
-        synthesisNarrative = `【Focus: ${currentTopic}】Looking back, ${c0.data.name} (${pRevLabel}) marks that "${pText}"; At present, ${c1.data.name} (${nRevLabel}) reminds you that "${nText}"; Looking ahead, the energy flows toward ${c2.data.name} (${fRevLabel}), revealing "${fText}". Meow Wisdom: Keep your heart steady, and leap through any waves with feline grace.`;
+        synthesisNarrative = `【Focus: ${displayTopic}】Looking back, ${c0Name} (${pRevLabel}) indicates that "${pText}" At present, ${c1Name} (${nRevLabel}) suggests that "${nText}" Looking ahead, energy converges on ${c2Name} (${fRevLabel}), revealing "${fText}" Meow Wisdom: Keep your paws grounded and heart serene; the universe always provides for a gentle soul.`;
       } else {
-        synthesisNarrative = `【聚焦于${currentTopic}】：回顾过去，${c0.data.name}（${pRevLabel}）印证了你“${pText}”；立足当下，${c1.data.name}（${nRevLabel}）提示你“${nText}”；放眼未来，能量正导向${c2.data.name}（${fRevLabel}），启示着“${fText}”。猫星箴言：心怀笃定，自能跃过一切风浪。`;
+        synthesisNarrative = `【聚焦于${displayTopic}】：回顾过去，${c0.data.name}（${pRevLabel}）印证了你“${pText}”；立足当下，${c1.data.name}（${nRevLabel}）提示你“${nText}”；放眼未来，能量正导向${c2.data.name}（${fRevLabel}），启示着“${fText}”。猫星箴言：心怀笃定，自能跃过一切风浪。`;
       }
 
       if (tarotSynthesisText) tarotSynthesisText.textContent = synthesisNarrative;
@@ -2741,26 +2769,38 @@ document.addEventListener("DOMContentLoaded", () => {
       const badgeSynthesis = document.querySelector(".synthesis-badge");
       if (badgeSynthesis) badgeSynthesis.textContent = isEn ? "✦ Time Stream Synthesis Report ✦" : "✦ 时空流向综合判词 ✦";
 
+      // 6. 三联位明细卡片
       if (tarotDetailList) {
         tarotDetailList.innerHTML = `
           <div class="detail-card-item">
-            <div class="detail-card-header"><span style="color:#60a5fa;">${isEn ? '[Past] ' : '【过去位】'}${c0.data.name}</span><span style="color:${c0.isRev ? '#f87171' : '#34d399'};">${pRevLabel}</span></div>
+            <div class="detail-card-header"><span style="color:#60a5fa;">${isEn ? '[Past] ' : '【过去位】'}${c0Name}</span><span style="color:${c0.isRev ? '#f87171' : '#34d399'};">${pRevLabel}</span></div>
             <div style="font-size:12px; color:var(--text-sub); line-height:1.5;">${pText}</div>
           </div>
           <div class="detail-card-item">
-            <div class="detail-card-header"><span style="color:#fbbf24;">${isEn ? '[Present] ' : '【当下位】'}${c1.data.name}</span><span style="color:${c1.isRev ? '#f87171' : '#34d399'};">${nRevLabel}</span></div>
+            <div class="detail-card-header"><span style="color:#fbbf24;">${isEn ? '[Present] ' : '【当下位】'}${c1Name}</span><span style="color:${c1.isRev ? '#f87171' : '#34d399'};">${nRevLabel}</span></div>
             <div style="font-size:12px; color:var(--text-sub); line-height:1.5;">${nText}</div>
           </div>
           <div class="detail-card-item">
-            <div class="detail-card-header"><span style="color:#c084fc;">${isEn ? '[Future] ' : '【未来位】'}${c2.data.name}</span><span style="color:${c2.isRev ? '#f87171' : '#34d399'};">${fRevLabel}</span></div>
+            <div class="detail-card-header"><span style="color:#c084fc;">${isEn ? '[Future] ' : '【未来位】'}${c2Name}</span><span style="color:${c2.isRev ? '#f87171' : '#34d399'};">${fRevLabel}</span></div>
             <div style="font-size:12px; color:var(--text-sub); line-height:1.5;">${fText}</div>
           </div>
         `;
       }
 
-      // 底部幸运补给与猫星指引
-      if (tarotLuckyFood) tarotLuckyFood.textContent = isEn ? "Tuna Steak Feast" : "深海金枪鱼排";
-      if (tarotLuckyAction) tarotLuckyAction.textContent = isEn ? "Bask in warm sunshine, avoid late-night zoomies" : "宜晒暖阳，忌熬夜跑酷";
+      // 7. 底部幸运指引双语
+      const luckyFoodParent = tarotLuckyFood?.parentElement;
+      if (luckyFoodParent) {
+        luckyFoodParent.innerHTML = isEn 
+          ? `🐟 Lucky Treat: <b id="tarotLuckyFood" style="color: #60a5fa;">Tuna Steak Feast</b>` 
+          : `🐟 幸运补给：<b id="tarotLuckyFood" style="color: #60a5fa;">深海金枪鱼排</b>`;
+      }
+
+      const luckyActionParent = tarotLuckyAction?.parentElement;
+      if (luckyActionParent) {
+        luckyActionParent.innerHTML = isEn 
+          ? `✨ Meow Guide: <b id="tarotLuckyAction" style="color: #fbbf24;">Bask in warm sunshine, avoid late-night zoomies</b>` 
+          : `✨ 猫星指引：<b id="tarotLuckyAction" style="color: #fbbf24;">宜晒暖阳，忌熬夜跑酷</b>`;
+      }
     }
     btnOpenTarot?.addEventListener("click", () => {
       requireAuth(() => {
