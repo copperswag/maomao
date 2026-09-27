@@ -2290,7 +2290,15 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
   quickChips.forEach((btn, idx) => {
     btn.textContent = isEn ? (chipsEn[idx] || btn.textContent) : (chipsZh[idx] || btn.textContent);
   });
-
+  
+// 拍立得底部提示文案双语
+  const polaroidTipEl = document.querySelector("#polaroidModal div[style*='rgba(255,255,255,0.6)']");
+  if (polaroidTipEl) {
+    polaroidTipEl.textContent = isEn 
+      ? "Long-press image on mobile to save to album or share" 
+      : "手机端长按图片可直接存入相册 / 发社交网络";
+  }
+  
   const downloadBtn = document.getElementById("btnDownloadApp");
   if (downloadBtn) downloadBtn.textContent = isEn ? "Download App" : "下载 App";
 
@@ -4001,20 +4009,20 @@ function renderCheckinModal() {
       });
     });
 
-    audioBtn?.addEventListener("click", () => {
+   audioBtn?.addEventListener("click", () => {
       requireAuth(() => {
         if (ezPlayer) {
-          const isMuted = audioBtn.textContent.includes("开启");
+          const isMuted = audioBtn.textContent.includes("开启") || audioBtn.textContent.toLowerCase().includes("unmute");
           if (isMuted) {
             try { ezPlayer.openSound(); } catch(e) {}
-            audioBtn.innerHTML = '🔊 静音';
+            audioBtn.innerHTML = t("audio_mute");
           } else {
             try { ezPlayer.closeSound(); } catch(e) {}
-            audioBtn.innerHTML = '🔇 开启声音';
+            audioBtn.innerHTML = t("audio_unmute");
           }
         } else if (video) {
           video.muted = !video.muted;
-          audioBtn.innerHTML = video.muted ? '🔇 开启声音' : '🔊 静音';
+          audioBtn.innerHTML = video.muted ? t("audio_unmute") : t("audio_mute");
         }
       });
     });
@@ -4023,7 +4031,7 @@ function renderCheckinModal() {
       requireAuth(() => {
         danmakuEnabled = !danmakuEnabled;
         if (danmakuBox) danmakuBox.style.display = danmakuEnabled ? "block" : "none";
-        danmakuToggleBtn.textContent = danmakuEnabled ? "💬 弹幕: 开" : "💬 弹幕: 关";
+        danmakuToggleBtn.textContent = danmakuEnabled ? t("danmaku_on") : t("danmaku_off");
       });
     });
 
@@ -4099,9 +4107,15 @@ function renderCheckinModal() {
           String(now.getMinutes()).padStart(2, '0') + ":" + 
           String(now.getSeconds()).padStart(2, '0');
 
+        const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+        const honorTitle = isEn ? (honor.titleEn || honor.title) : honor.title;
+        const snapTitle = isEn ? `📍 ${currentRoomName} · Live Snap` : `📍 ${currentRoomName} · 现场抓拍`;
+        const snapperText = isEn ? `🐾 Snapper: ${userNick} [${honorTitle}]` : `🐾 抓拍官：${userNick} [${honor.title}]`;
+        const brandSlogan = isEn ? "Never leave your fur babies alone again" : "别让你家毛孩子再成为留守儿童了";
+
         ctx.fillStyle = "#111827";
         ctx.font = "bold 24px -apple-system, sans-serif";
-        ctx.fillText(`📍 ${currentRoomName} · 现场抓拍`, PHOTO_X + 4, PHOTO_Y + PHOTO_H + 50);
+        ctx.fillText(snapTitle, PHOTO_X + 4, PHOTO_Y + PHOTO_H + 50);
 
         ctx.fillStyle = "#6b7280";
         ctx.font = "14px monospace";
@@ -4109,16 +4123,16 @@ function renderCheckinModal() {
 
         ctx.fillStyle = "#059669";
         ctx.font = "bold 15px -apple-system, sans-serif";
-        ctx.fillText(`🐾 抓拍官：${userNick} [${honor.title}]`, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
+        ctx.fillText(snapperText, PHOTO_X + 6, PHOTO_Y + PHOTO_H + 114);
 
         ctx.textAlign = "right";
         ctx.fillStyle = "#10b981";
-        ctx.font = "bold 16px -apple-system, sans-serif";
-        ctx.fillText("毛毛星球 MeowHub", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 75);
+        ctx.font = "bold 16px sans-serif";
+        ctx.fillText("MeowHub Live", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 75);
 
         ctx.fillStyle = "#9ca3af";
         ctx.font = "12px sans-serif";
-        ctx.fillText("别让你家毛孩子再成为留守儿童了", CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 102);
+        ctx.fillText(brandSlogan, CARD_W - PHOTO_X, PHOTO_Y + PHOTO_H + 102);
 
         ctx.textAlign = "left";
 
