@@ -1283,7 +1283,7 @@
             <div class="danmaku-container" id="danmakuBox"></div>
             
             <div class="controls-overlay">
-              <button class="player-ctrl-btn" id="btnFeedPet" data-i18n="btn_feed_pet" style="background: linear-gradient(135deg, #10b981, #059669); font-weight: 700;" type="button">🍗 立即投喂</button>
+              <button id="btnFeedPet" class="chip-btn chip-feed" data-i18n="btn_feed_pet">🍗 立即投喂</button>
               <button class="player-ctrl-btn btn-tarot" id="btnOpenTarot" data-i18n="btn_tarot" type="button">🔮 喵星塔罗</button>
               <button class="player-ctrl-btn" id="btnOpenBazi" data-i18n="btn_bazi" style="background: linear-gradient(135deg, #d97706, #92400e); color:#fff; font-weight:700;" type="button">📜 小猫算命</button>
               <button class="player-ctrl-btn" id="btnOpenMbti" data-i18n="btn_mbti" style="background: linear-gradient(135deg, #ec4899, #be185d); color:#fff; font-weight:700;" type="button">🐾 喵生MBTI</button>
@@ -2262,6 +2262,11 @@ function applyLanguage(lang) {
   // 立即联动刷新一次段位勋章文字
   if (typeof updateHonorUI === "function") {
     updateHonorUI();
+  }
+  // 投喂按钮双语刷新
+  const btnFeedPet = document.getElementById("btnFeedPet");
+  if (btnFeedPet) {
+    btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
   }
   const chatTitleEl = document.querySelector(".chat-title");
   if (chatTitleEl) chatTitleEl.textContent = isEn ? "💬 Live Chat Room" : "💬 实时猫友互动区";
