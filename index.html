@@ -4358,7 +4358,13 @@ function renderCheckinModal() {
     });
 
     // 核心：全网共享倒计时控制器（防止刷新跳过）
+    // 核心：全网共享倒计时控制器（全面国际化防回退）
     const btnFeedPet = document.getElementById("btnFeedPet");
+
+    function getFeedButtonDefaultText() {
+      const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+      return isEn ? "🍗 Feed Now" : "🍗 立即投喂";
+    }
 
     function startBtnCooldown(seconds) {
       if (activeCooldownInterval) clearInterval(activeCooldownInterval);
@@ -4367,7 +4373,7 @@ function renderCheckinModal() {
       if (remain <= 0) {
         if (btnFeedPet) {
           btnFeedPet.disabled = false;
-          btnFeedPet.textContent = "🍗 立即投喂";
+          btnFeedPet.textContent = getFeedButtonDefaultText();
         }
         return;
       }
@@ -4384,10 +4390,10 @@ function renderCheckinModal() {
           activeCooldownInterval = null;
           if (btnFeedPet) {
             btnFeedPet.disabled = false;
-            btnFeedPet.textContent = "🍗 立即投喂";
+            btnFeedPet.textContent = getFeedButtonDefaultText();
           }
         } else {
-          if (btnFeedPet) btnFeedPet.textContent = `全网冷却中 (${remain}s)`;
+          if (btnFeedPet) btnFeedPet.textContent = t("feed_cooldown_prefix", { remain: remain });
         }
       }, 1000);
     }
@@ -4404,7 +4410,7 @@ function renderCheckinModal() {
             if (activeCooldownInterval) clearInterval(activeCooldownInterval);
             if (btnFeedPet) {
               btnFeedPet.disabled = false;
-              btnFeedPet.textContent = "🍗 立即投喂";
+              btnFeedPet.textContent = getFeedButtonDefaultText();
             }
           }
         }
