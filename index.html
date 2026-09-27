@@ -1998,8 +1998,7 @@ const I18N_LOCALES = {
     feed_cooldown_prefix: "全网冷却中 ({remain}s)",
     feed_success_msg: "投喂成功！",
     feed_danmaku_success: "🎉 感谢猫友【{user}】为现场毛孩子投喂了猫粮！",
-    feed_error_lock: "全网冷却中：【{name}】刚刚被爱心猫友投喂过，猫咪还在吃呢，请等 {waitSec} 秒后再喂~"
-
+    feed_error_lock: "全网冷却中：【{name}】刚刚被爱心猫友投喂过，猫咪还在吃呢，请等 {waitSec} 秒后再喂~"，
     checkin_modal_title: "🐾 每日吸猫打卡册",
     checkin_stat_text: "已连续打卡 <span id=\"modalStreakDays\" style=\"color: #fbbf24; font-weight: 800; font-size: 16px;\">{streak}</span> 天 · 累计吸猫 <span id=\"modalTotalDays\" style=\"color: #fff; font-weight: 700;\">{total}</span> 天",
     checkin_stamps_head: "🐾 4周猫爪印章收集馆",
@@ -2135,7 +2134,7 @@ const I18N_LOCALES = {
     feed_cooldown_prefix: "Cooldown ({remain}s)",
     feed_success_msg: "Feed Successful!",
     feed_danmaku_success: "🎉 Big thanks to 【{user}】 for treating the kitties!",
-    feed_error_lock: "Cooldown active: 【{name}】 was just fed! Please wait {waitSec}s~"
+    feed_error_lock: "Cooldown active: 【{name}】 was just fed! Please wait {waitSec}s~"，
 
   checkin_modal_title: "🐾 Daily Meow Check-in",
     checkin_stat_text: "Streak: <span id=\"modalStreakDays\" style=\"color: #fbbf24; font-weight: 800; font-size: 16px;\">{streak}</span> days · Total: <span id=\"modalTotalDays\" style=\"color: #fff; font-weight: 700;\">{total}</span> days",
@@ -3503,7 +3502,6 @@ function renderCheckinModal() {
     let staySeconds = parseInt(localStorage.getItem("meow_weekly_stay_sec") || "0", 10);
     let celebratedTiers = JSON.parse(localStorage.getItem("meow_celebrated_tiers") || "[]");
 
-    const HONOR_TIERS = [
      const HONOR_TIERS = [
       { level: 0, minSec: 0, title: "🌱 路过猫奴", titleEn: "🌱 Cat Passerby", desc: "初来乍到，与毛毛星球结缘", descEn: "First encounter with MeowHub", icon: "🌱", class: "" },
       { level: 1, minSec: 60, title: "🐾 初级铲屎官", titleEn: "🐾 Junior Caretaker", desc: "本周累计陪伴满 1 分钟", descEn: "Accompanied for 1 min this week", icon: "🐾", class: "tier-1" },
