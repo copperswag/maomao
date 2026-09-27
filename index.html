@@ -3330,6 +3330,8 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCheckinHeaderUI();
 
 function renderCheckinModal() {
+      const todayStr = getTodayString(); // 补上关键变量定义
+
       // 1. 标题与说明
       const headerTitle = document.querySelector("#checkinModal .honor-current-title");
       if (headerTitle) headerTitle.textContent = t("checkin_modal_title");
@@ -3367,7 +3369,6 @@ function renderCheckinModal() {
       // 渲染 7 天周历格子
       if (weekCalendarGrid) {
         weekCalendarGrid.innerHTML = "";
-        const todayStr = getTodayString();
         const now = new Date();
         const daysDict = I18N_LOCALES[currentLang]?.week_days || I18N_LOCALES.zh.week_days;
         const pfx = I18N_LOCALES[currentLang]?.week_prefix || "";
@@ -3766,8 +3767,8 @@ function renderCheckinModal() {
         });
       }
 
-      modal.classList.add("show");
-    }
+     honorModal?.classList.add("show"); // 
+  }
     myHonorBadge?.addEventListener("click", () => {
       requireAuth(() => {
         openHonorModal();
