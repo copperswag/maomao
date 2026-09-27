@@ -4757,21 +4757,92 @@ shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
 
   let currentBaziInfo = null;
 
-  function executeBazi(nameInput, color, season) {
-    const finalName = nameInput.trim() || (typeof currentRoomName !== "undefined" ? currentRoomName : "咪咪");
+ function executeBazi(nameInput, color, season) {
+    const isEn = (currentLang === "en");
+    const defaultName = isEn ? "Kitty" : "咪咪";
+    const finalName = nameInput.trim() || (typeof currentRoomName !== "undefined" ? currentRoomName : defaultName);
+
     let hash = 0;
     const seed = `${finalName}_${color}_${season}`;
     for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) % 100000;
     const item = BAZI_DATA_BASE[Math.abs(hash) % BAZI_DATA_BASE.length];
 
-    currentBaziInfo = { name: finalName, color, season, ...item };
+    // 获取当前选中的下拉框英文显示文本（若在英文模式下）
+    const selColorEl = document.getElementById("baziCatColor");
+    const selSeasonEl = document.getElementById("baziSeason");
+    const displayColor = isEn && selColorEl ? selColorEl.options[selColorEl.selectedIndex]?.text.split(" (")[0] : color;
+    const displaySeason = isEn && selSeasonEl ? selSeasonEl.options[selSeasonEl.selectedIndex]?.text.split(" (")[0] : season;
 
-    document.getElementById("outBaziCatInfo").textContent = `${finalName} (${color} · 岁在${season})`;
-    document.getElementById("outBaziTitle").textContent = item.title;
-    document.getElementById("outBaziQuote").textContent = item.quote;
-    document.getElementById("outBaziText").innerHTML = `<b>【经史本旨】</b>${item.source}<br>${item.text}`;
-    document.getElementById("outBaziNoble").textContent = item.noble;
-    document.getElementById("outBaziAvoid").textContent = item.avoid;
+    // 英文版命帖判词映射
+    const BAZI_EN_MAP = {
+      0: {
+        title: "【I Ching · Hidden Dragon in the Deep】",
+        quote: "“Hidden within the carton, unseen; once the meat aroma spreads, it leaps into the sky.”",
+        source: "《I Ching · Hexagram Qian》: 'Hidden dragon, do not act; yang is below.'",
+        text: "This feline has deep internal power and masters the art of patience. Napping in cardboard boxes by day gathers cosmic energy. When twilight arrives, its zoomies unleash true sovereign majesty.",
+        noble: "Can-Opening Human", avoid: "Vacuums, Bath Basin"
+      },
+      1: {
+        title: "【Hexagram Kun · Bountiful Earth & Heavy Paws】",
+        quote: "“A chubby belly brings vast peace. Heavy fur grounded, summoning prosperity.”",
+        source: "《I Ching · Hexagram Kun》: 'The earth's capacity is vast; a noble soul carries all with virtue.'",
+        text: "Blessed with endless food fortune and a full moon belly. Walking with steady, imperial strides, this cat is a sacred guardian of wealth. Every pound gained amplifies home luck and comfort.",
+        noble: "Snack-Serving Patron", avoid: "Diet Kibble"
+      },
+      2: {
+        title: "【Classic of Poetry · Elegant Willow & Gentle Water】",
+        quote: "“Graceful calls by the riverbank. Tender fish, a cat's true delight.”",
+        source: "《Classic of Poetry · Guan Ju》",
+        text: "Naturally gifted with poetic charm and water-wood serenity. Eyes clear as autumn springs, steps as gentle as willow wisps. Repays every gentle stroke with purring kneading, adored by all humankind.",
+        noble: "Gentle Brushing Companion", avoid: "Rough Tail Pulling"
+      }
+    };
+
+    const baziIdx = Math.abs(hash) % BAZI_DATA_BASE.length;
+    const enItem = BAZI_EN_MAP[baziIdx] || BAZI_EN_MAP[0];
+
+    const outTitle = isEn ? enItem.title : item.title;
+    const outQuote = isEn ? enItem.quote : item.quote;
+    const outSource = isEn ? enItem.source : item.source;
+    const outText = isEn ? enItem.text : item.text;
+    const outNoble = isEn ? enItem.noble : item.noble;
+    const outAvoid = isEn ? enItem.avoid : item.avoid;
+
+    currentBaziInfo = { 
+      name: finalName, 
+      color: displayColor, 
+      season: displaySeason, 
+      title: outTitle,
+      quote: outQuote,
+      source: outSource,
+      text: outText,
+      noble: outNoble,
+      avoid: outAvoid
+    };
+
+    // 命帖卡片 DOM 写入
+    const catInfoLabel = isEn ? "Fated Subject: " : "命主尊讳：";
+    const catInfoTail = isEn ? ` (${displayColor} · Born in ${displaySeason})` : ` (${color} · 岁在${season})`;
+    document.getElementById("outBaziCatInfo").textContent = `${finalName}${catInfoTail}`;
+    
+    document.getElementById("outBaziTitle").textContent = outTitle;
+    document.getElementById("outBaziQuote").textContent = outQuote;
+    
+    const sourceLabel = isEn ? "<b>【Classical Origin】</b>" : "<b>【经史本旨】</b>";
+    document.getElementById("outBaziText").innerHTML = `${sourceLabel} ${outSource}<br>${outText}`;
+    
+    const noblePrefix = isEn ? "✦ Fated Ally: " : "✦ 合拍贵人：";
+    const avoidPrefix = isEn ? " | ✦ To Avoid: " : " | ✦ 避忌煞星：";
+    const nobleContainer = document.getElementById("outBaziNoble")?.parentElement;
+    if (nobleContainer) {
+      nobleContainer.innerHTML = `${noblePrefix}<b id="outBaziNoble" style="color:#991b1b;">${outNoble}</b>${avoidPrefix}<b id="outBaziAvoid">${outAvoid}</b>`;
+    }
+
+    // 印章文字
+    const sealEl = document.querySelector("#baziResultBox div[style*='border:2px solid #b91c1c']");
+    if (sealEl) {
+      sealEl.innerHTML = isEn ? "IMPERIAL<br>MEOW" : "钦天监<br>猫命帖";
+    }
 
     if (resBox) resBox.style.display = "block";
     if (btnSave) btnSave.style.display = "inline-flex";
@@ -4907,58 +4978,155 @@ shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
 // 小猫 MBTI 专属体系：20题全场景 + 16型人格图鉴 + Canvas 海报引擎
 // =========================================================================
 (function() {
-  const MBTI_QUESTIONS = [
+const MBTI_QUESTIONS = [
     // 维度一：E vs I (1~5)
-    { q: "门铃突响，快递/外卖敲门时？", dim: "EI", a: "箭步冲向防盗门，嗅门缝甚至叫唤想接驾", aSub: "好奇心拉满 · 积极巡查", b: "瞬间压低底盘潜行，光速溜进床底暗中观察", bSub: "安全至上 · 静观其变" },
-    { q: "家里来了几位热情的两脚兽客人？", dim: "EI", a: "在客人脚边来回蹭蹭，大方亮肚皮巡场", aSub: "社交悍匪 · 见人就贴", b: "只要外人在场绝不现身，零食也引诱不出", bSub: "社恐自卫 · 拒绝社交" },
-    { q: "去宠物医院做常规体检时？", dim: "EI", a: "探头探脑打量诊室，试图与护士互动", aSub: "随遇而安 · 适应力强", b: "缩在猫包深处，抱出来就飞机耳浑身紧绷", bSub: "警惕抗拒 · 渴望回家" },
-    { q: "铲屎官在家看剧/办公时？", dim: "EI", a: "必须趴在键盘、大腿或胸口强刷存在感", aSub: "极度黏人 · 必须被爱", b: "呆在同房间但保持安全距离自顾自睡", bSub: "独立自主 · 默默守望" },
-    { q: "窗外飞来一只小鸟或路过流浪猫？", dim: "EI", a: "扒着玻璃激动得“咔咔咔”叫，尾巴狂甩", aSub: "情绪外显 · 急迫沟通", b: "伏低身体凝视良久，默默后退两步静观", bSub: "沉着内敛 · 暗中盘算" },
+    { 
+      q: "门铃突响，快递/外卖敲门时？", qEn: "When the doorbell rings or courier knocks?", dim: "EI", 
+      a: "箭步冲向防盗门，嗅门缝甚至叫唤想接驾", aEn: "Dashes to the door, sniffing cracks and meowing to greet",
+      aSub: "好奇心拉满 · 积极巡查", aSubEn: "Pure Curiosity · Active Patrol", 
+      b: "瞬间压低底盘潜行，光速溜进床底暗中观察", bEn: "Drops low and sprints under the bed to observe quietly",
+      bSub: "安全至上 · 静观其变", bSubEn: "Safety First · Silent Watch" 
+    },
+    { 
+      q: "家里来了几位热情的两脚兽客人？", qEn: "When enthusiastic human guests visit your home?", dim: "EI", 
+      a: "在客人脚边来回蹭蹭，大方亮肚皮巡场", aEn: "Rubs against ankles and shows belly to everyone", 
+      aSub: "社交悍匪 · 见人就贴", aSubEn: "Social Butterfly · Friendly Cuddles", 
+      b: "只要外人在场绝不现身，零食也引诱不出", bEn: "Refuses to come out while strangers are around", 
+      bSub: "社恐自卫 · 拒绝社交", bSubEn: "Social Avoidance · Deep Privacy" 
+    },
+    { 
+      q: "去宠物医院做常规体检时？", qEn: "During a routine visit to the vet clinic?", dim: "EI", 
+      a: "探头探脑打量诊室，试图与护士互动", aEn: "Peeks around curiously and tries interacting with nurses", 
+      aSub: "随遇而安 · 适应力强", aSubEn: "Adaptable · Easygoing", 
+      b: "缩在猫包深处，抱出来就飞机耳浑身紧绷", bEn: "Huddles deep in carrier with airplane ears and stiff body", 
+      bSub: "警惕抗拒 · 渴望回家", bSubEn: "High Alert · Wants Home Now" 
+    },
+    { 
+      q: "铲屎官在家看剧/办公时？", qEn: "When human is working or watching shows at home?", dim: "EI", 
+      a: "必须趴在键盘、大腿或胸口强刷存在感", aEn: "Demands presence by sitting on keyboard, lap, or chest", 
+      aSub: "极度黏人 · 必须被爱", aSubEn: "Velcro Cat · Craves Attention", 
+      b: "呆在同房间但保持安全距离自顾自睡", bEn: "Stays in same room but sleeps at a polite distance", 
+      bSub: "独立自主 · 默默守望", bSubEn: "Independent · Quiet Companion" 
+    },
+    { 
+      q: "窗外飞来一只小鸟或路过流浪猫？", qEn: "A bird flies by or stray cat passes outside the window?", dim: "EI", 
+      a: "扒着玻璃激动得“咔咔咔”叫，尾巴狂甩", aEn: "Chatters at the glass excitedly with tail swishing", 
+      aSub: "情绪外显 · 急迫沟通", aSubEn: "Expressive · Eager Hunter", 
+      b: "伏低身体凝视良久，默默后退两步静观", bEn: "Crouches low, watches silently, and backs away smoothly", 
+      bSub: "沉着内敛 · 暗中盘算", bSubEn: "Calm & Calculative · Observant" 
+    },
 
     // 维度二：S vs N (6~10)
-    { q: "面对一个刚拆开的快递空纸箱？", dim: "SN", a: "只要能塞进去立刻钻入盘好，讲求实用", aSub: "务实体验 · 物理舒适", b: "对箱子兴趣一般，却对着胶带反光发呆", bSub: "脑洞发散 · 观察细节" },
-    { q: "平时最热衷的消遣娱乐？", dim: "SN", a: "明确抓实体逗猫棒、滚地乒乓球或老鼠", aSub: "眼见为实 · 实体捕猎", b: "自导自演抓空气中的隐形飞虫或凝视白墙", bSub: "赛博通灵 · 虚空构想" },
-    { q: "家里家具位置发生了明显挪动？", dim: "SN", a: "走路立刻绕开，并逐一去蹭角落标记", aSub: "感知具象 · 空间实证", b: "没注意家具变了，但莫名疑神疑鬼踱步", bSub: "气场敏感 · 直觉感知" },
-    { q: "探索新买的复杂猫爬架时？", dim: "SN", a: "一步一爪稳健攀爬，迅速理清路线跳台", aSub: "循序渐进 · 结构大师", b: "不走寻常路，从不可思议的缝隙倒挂借力", bSub: "打破常规 · 奇思妙想" },
-    { q: "尝试全新配方的新零食时？", dim: "SN", a: "深吸一口气精准挑食，不合口味立刻埋砂", aSub: "味蕾挑剔 · 专注口感", b: "闻半天不下嘴，像哲学家一样盯碗沉思", bSub: "审慎思索 · 充满怀疑" },
+    { 
+      q: "面对一个刚拆开的快递空纸箱？", qEn: "Facing a newly unpacked empty cardboard box?", dim: "SN", 
+      a: "只要能塞进去立刻钻入盘好，讲求实用", aEn: "Squeezes in immediately if fits, highly practical", 
+      aSub: "务实体验 · 物理舒适", aSubEn: "Pragmatic · Physical Comfort", 
+      b: "对箱子兴趣一般，却对着胶带反光发呆", bEn: "Ignores the box, mesmerized by reflections on tape", 
+      bSub: "脑洞发散 · 观察细节", bSubEn: "Abstract Mind · Detail Focus" 
+    },
+    { 
+      q: "平时最热衷的消遣娱乐？", qEn: "Favorite playtime activity?", dim: "SN", 
+      a: "明确抓实体逗猫棒、滚地乒乓球或老鼠", aEn: "Chasing real wand teasers, ping-pong balls, or mice", 
+      aSub: "眼见为实 · 实体捕猎", aSubEn: "Sensory Reality · Tangible Prey", 
+      b: "自导自演抓空气中的隐形飞虫或凝视白墙", bEn: "Hunting invisible flying bugs or staring at blank walls", 
+      bSub: "赛博通灵 · 虚空构想", bSubEn: "Greebles Hunter · Pure Imagination" 
+    },
+    { 
+      q: "家里家具位置发生了明显挪动？", qEn: "When home furniture is rearranged noticeably?", dim: "SN", 
+      a: "走路立刻绕开，并逐一去蹭角落标记", aEn: "Walks around new routes and rubs cheeks on every corner", 
+      aSub: "感知具象 · 空间实证", aSubEn: "Spatial Fact · Concrete Mapping", 
+      b: "没注意家具变了，但莫名疑神疑鬼踱步", bEn: "Misses physical changes but senses weird energy shifts", 
+      bSub: "气场敏感 · 直觉感知", bSubEn: "Intuitive Vibe · Sixth Sense" 
+    },
+    { 
+      q: "探索新买的复杂猫爬架时？", qEn: "Exploring a brand-new multi-tier cat tree?", dim: "SN", 
+      a: "一步一爪稳健攀爬，迅速理清路线跳台", aEn: "Climbs step by step, methodically testing every platform", 
+      aSub: "循序渐进 · 结构大师", aSubEn: "Step-by-Step · Architectural", 
+      b: "不走寻常路，从不可思议的缝隙倒挂借力", bEn: "Defies logic, hanging upside down via unbelievable gaps", 
+      bSub: "打破常规 · 奇思妙想", bSubEn: "Unconventional · Creative Acrobat" 
+    },
+    { 
+      q: "尝试全新配方的新零食时？", qEn: "Tasting a new formula snack for the first time?", dim: "SN", 
+      a: "深吸一口气精准挑食，不合口味立刻埋砂", aEn: "Sniffs meticulously; air-scratches immediately if disliked", 
+      aSub: "味蕾挑剔 · 专注口感", aSubEn: "Texture Focus · Critical Palate", 
+      b: "闻半天不下嘴，像哲学家一样盯碗沉思", bEn: "Stares at the bowl like a philosopher contemplating life", 
+      bSub: "审慎思索 · 充满怀疑", bSubEn: "Philosophical · Cautious Mind" 
+    },
 
     // 维度三：T vs F (11~15)
-    { q: "主人情绪低落坐在沙发叹气时？", dim: "TF", a: "面无表情路过，走到空碗旁敲碗催加饭", aSub: "理智务实 · 现实长工", b: "走过来闻眼泪，轻柔踩奶呼噜贴脸安慰", bSub: "高度共情 · 暖心天使" },
-    { q: "不小心推翻水杯被严肃呵斥了一声？", dim: "TF", a: "翻个白眼转头就走，过会儿当面再推一个", aSub: "桀骜不驯 · 坚持本我", b: "委屈得耳朵耷拉躲角落，甚至绝食抗议", bSub: "心思敏感 · 容易受伤" },
-    { q: "被伸手摸平时不给碰的后爪或肚皮？", dim: "TF", a: "绝无试探，一旦越界立刻精准出爪哈气", aSub: "原则清晰 · 底线分明", b: "哼唧抽走爪子，实在躲不过也只轻轻假咬", bSub: "心软顾念 · 舍不得伤" },
-    { q: "被抱进猫包准备出门时？", dim: "TF", a: "化身四脚支撑的液体，精确卡死猫包口", aSub: "力学对抗 · 坚决抗争", b: "眼神幽怨求饶，喵呜叫得撕心裂肺撒娇", bSub: "苦肉计谋 · 唤醒良心" },
-    { q: "家庭地位与人情世故？", dim: "TF", a: "对所有人一视同仁冷淡，谁喂饭谁是合格长工", aSub: "铁面无私 · 契约精神", b: "特别会看脸色，专找心肠最软的家庭成员撒娇", bSub: "人情练达 · 精明依恋" },
+    { 
+      q: "主人情绪低落坐在沙发叹气时？", qEn: "When human sits sighing with low mood?", dim: "TF", 
+      a: "面无表情路过，走到空碗旁敲碗催加饭", aEn: "Walks past expressionless and clinks bowl for refills", 
+      aSub: "理智务实 · 现实长工", aSubEn: "Cold Pragmatist · Food First", 
+      b: "走过来闻眼泪，轻柔踩奶呼噜贴脸安慰", bEn: "Sniffs tears gently, purrs and kneads cheek for comfort", 
+      bSub: "高度共情 · 暖心天使", bSubEn: "High Empathy · Healing Angel" 
+    },
+    { 
+      q: "不小心推翻水杯被严肃呵斥了一声？", qEn: "Scolded sternly after knocking over a cup?", dim: "TF", 
+      a: "翻个白眼转头就走，过会儿当面再推一个", aEn: "Rolls eyes, walks away, and pushes another down later", 
+      aSub: "桀骜不驯 · 坚持本我", aSubEn: "Rebellious · Unapologetic", 
+      b: "委屈得耳朵耷拉躲角落，甚至绝食抗议", bEn: "Ears droop sadly in corner, may refuse treats in protest", 
+      bSub: "心思敏感 · 容易受伤", bSubEn: "Sensitive Heart · Easily Hurt" 
+    },
+    { 
+      q: "被伸手摸平时不给碰的后爪或肚皮？", qEn: "Touched on forbidden back paws or belly?", dim: "TF", 
+      a: "绝无试探，一旦越界立刻精准出爪哈气", aEn: "Zero compromise: swats and hisses with pinpoint precision", 
+      aSub: "原则清晰 · 底线分明", aSubEn: "Clear Boundaries · Strict Rules", 
+      b: "哼唧抽走爪子，实在躲不过也只轻轻假咬", bEn: "Whimpers away paw; only gives gentle warning nibbles", 
+      bSub: "心软顾念 · 舍不得伤", bSubEn: "Gentle Soul · Forgiving" 
+    },
+    { 
+      q: "被抱进猫包准备出门时？", qEn: "Being put into travel carrier for an outing?", dim: "TF", 
+      a: "化身四脚支撑的液体，精确卡死猫包口", aEn: "Turns into rigid 4-legged tripod blocking entrance physics", 
+      aSub: "力学对抗 · 坚决抗争", aSubEn: "Mechanical Defiance · Resolute", 
+      b: "眼神幽怨求饶，喵呜叫得撕心裂肺撒娇", bEn: "Cries heart-melting meows begging with sad puppy eyes", 
+      bSub: "苦肉计谋 · 唤醒良心", bSubEn: "Guilt Tripper · Emotional Appeal" 
+    },
+    { 
+      q: "家庭地位与人情世故？", qEn: "View on family dynamics and relationships?", dim: "TF", 
+      a: "对所有人一视同仁冷淡，谁喂饭谁是合格长工", aEn: "Equally aloof; whoever feeds on time is an acceptable servant", 
+      aSub: "铁面无私 · 契约精神", aSubEn: "Contractual · Fair Deal", 
+      b: "特别会看脸色，专找心肠最软的家庭成员撒娇", bEn: "Reads room sharp; cuddles the most soft-hearted member", 
+      bSub: "人情练达 · 精明依恋", bSubEn: "Emotional Savvy · Sweet Bond" 
+    },
 
     // 维度四：J vs P (16~20)
-    { q: "早晨叫铲屎官起床的作息？", dim: "JP", a: "误差不超 5 分钟，准点踩脸或抓门叫早", aSub: "活体闹钟 · 严谨秩序", b: "随心所欲，有时天不亮叫，有时睡到中午", bSub: "随心所欲 · 自由奔放" },
-    { q: "使用猫砂盆后的埋砂习惯？", dim: "JP", a: "反复掩埋闻嗅确认，甚至把盆边蹭干净", aSub: "工匠精神 · 井井有条", b: "随便划拉两下刨空气，带得满地砂就跑", bSub: "随手了事 · 毫无包袱" },
-    { q: "平时睡觉的地盘选择？", dim: "JP", a: "认准专属猫窝或固定地毯角落，雷打不动", aSub: "界限清晰 · 专一执着", b: "走到哪瘫到哪，地砖、水槽、电脑主机随处睡", bSub: "四海为家 · 极致松弛" },
-    { q: "面对一日三餐的干饭节奏？", dim: "JP", a: "出粮立刻规律进食，吃饱就停从不暴饮暴食", aSub: "自律养生 · 科学作息", b: "随缘进食，时而一口气暴风吸入，时而放着不理", bSub: "兴之所致 · 不受约束" },
-    { q: "夜深人静时的精神状态？", dim: "JP", a: "跟着两脚兽熄灯准时关机进入深度睡眠", aSub: "规律作息 · 模范室友", b: "凌晨三点半毫无征兆开启喵星 F1 疯狂跑酷", bSub: "夜行游侠 · 释放狂想" }
+    { 
+      q: "早晨叫铲屎官起床的作息？", qEn: "Morning wake-up routine for human?", dim: "JP", 
+      a: "误差不超 5 分钟，准点踩脸或抓门叫早", aEn: "Within 5 mins precision: walks on face or scratches door", 
+      aSub: "活体闹钟 · 严谨秩序", aSubEn: "Living Alarm Clock · Strict Routine", 
+      b: "随心所欲，有时天不亮叫，有时睡到中午", bEn: "Spontaneous: 4 AM zoomies today, snoozing till noon tomorrow", 
+      bSub: "随心所欲 · 自由奔放", bSubEn: "Free Spirit · Unpredictable" 
+    },
+    { 
+      q: "使用猫砂盆后的埋砂习惯？", qEn: "Litter box burying etiquette?", dim: "JP", 
+      a: "反复掩埋闻嗅确认，甚至把盆边蹭干净", aEn: "Buries, sniffs, re-buries, and wipes paws clean on rims", 
+      aSub: "工匠精神 · 井井有条", aSubEn: "Craftsman Detail · Orderly", 
+      b: "随便划拉两下刨空气，带得满地砂就跑", bEn: "Scratches thin air twice and darts out trailing litter", 
+      bSub: "随手了事 · 毫无包袱", bSubEn: "Casual Toss · No Care" 
+    },
+    { 
+      q: "平时睡觉的地盘选择？", qEn: "Sleeping spot preferences?", dim: "JP", 
+      a: "认准专属猫窝或固定地毯角落，雷打不动", aEn: "Only sleeps in designated bed or fixed cozy rug corner", 
+      aSub: "界限清晰 · 专一执着", aSubEn: "Firm Territory · Consistent", 
+      b: "走到哪瘫到哪，地砖、水槽、电脑主机随处睡", bEn: "Collapses wherever: tile floor, sink, warm laptop chassis", 
+      bSub: "四海为家 · 极致松弛", bSubEn: "Nomad Sleeper · Ultra Relaxed" 
+    },
+    { 
+      q: "面对一日三餐的干饭节奏？", qEn: "Daily feeding and snacking rhythm?", dim: "JP", 
+      a: "出粮立刻规律进食，吃饱就停从不暴饮暴食", aEn: "Eats on schedule, stops when full, never overeats", 
+      aSub: "自律养生 · 科学作息", aSubEn: "Disciplined Diner · Balanced", 
+      b: "随缘进食，时而一口气暴风吸入，时而放着不理", bEn: "Moody feasts: vacuums bowl now, ignores treats later", 
+      bSub: "兴之所致 · 不受约束", bSubEn: "Whimsical Nibbler · Unrestrained" 
+    },
+    { 
+      q: "夜深人静时的精神状态？", qEn: "Late-night energy level?", dim: "JP", 
+      a: "跟着两脚兽熄灯准时关机进入深度睡眠", aEn: "Powers down into deep slumber once the lights turn off", 
+      aSub: "规律作息 · 模范室友", aSubEn: "Model Roommate · Sync Schedule", 
+      b: "凌晨三点半毫无征兆开启喵星 F1 疯狂跑酷", bEn: "Launches random 3:30 AM feline Formula 1 zoomies", 
+      bSub: "夜行游侠 · 释放狂想", bSubEn: "Midnight Phantom · High Energy" 
+    }
   ];
-
-  const MBTI_CAT_BASE = {
-    "INTJ": { title: "幕后高冷军师猫", quote: "“愚蠢的两脚兽，你的一举一动都在本座算计之中。”", food: "原切高蛋白牛肉粒", avoid: "突然强行抱起吸肚子", habit: "站在柜顶冷眼俯瞰全家动线", human: "ENFP 快乐小狗型主人" },
-    "INTP": { title: "纸箱沉思哲学家", quote: "“这个纸箱的体积，刚好等于本喵灵魂的容积。”", food: "慢熬鸡胸肉浓汤", avoid: "打断它对着白墙发呆", habit: "可以凝视水龙头水滴一下午", human: "ENTJ 魄力大家长" },
-    "ENTJ": { title: "领地霸权铁血领主", quote: "“没有本座的允准，家里连一只飞虫都休想活过今夜。”", food: "顶级原切鹿肉冻干", avoid: "开饭推迟超过 3 分钟", habit: "巡逻领地，扇服家里所有生物", human: "INFP 乖巧小跟班" },
-    "ENTP": { title: "拆家物理杠精猫", quote: "“推翻水杯不是因为渴，纯为观察重力加速度。”", food: "趣味漏食球金枪鱼粒", avoid: "把它独自关在无聊房间", habit: "专挑贵重物品推下桌子看你抓狂", human: "INFJ 温和包容型家长" },
-
-    "INFJ": { title: "灵性通透赛博巫师", quote: "“我听得见你心碎的声音，过来，允许你吸三秒肚皮。”", food: "深海三文鱼抗氧化泥", avoid: "嘈杂尖叫的人群聚会", habit: "在你情绪低落时默默走来踩奶", human: "ENFP/ENTP 阳光开朗搭档" },
-    "INFP": { title: "敏感易碎软萌夹子", quote: "“刚才关门声音好大...你是不是不爱本喵了呜呜。”", food: "幼滑羊奶鲜肉羹", avoid: "大声斥责与严厉眼神", habit: "胆小飞机耳，但给摸时呼噜声最响", human: "ENFJ 温暖猫妈妈型主人" },
-    "ENFJ": { title: "操心包容猫妈妈", quote: "“这届两脚兽真不让人省心，还得本喵亲自催眠。”", food: "综合营养冻干拼盘", avoid: "家里成员发生争吵冷战", habit: "夜里巡视每个房间催大家睡觉", human: "INFP/ISFP 乖巧毛孩子" },
-    "ENFP": { title: "披着猫皮的快乐修勾", quote: "“哇！新的人类！哇！新的逗猫棒！世界太美好啦！”", food: "多汁诱食小鱼干", avoid: "限制自由与冷落不理", habit: "谁来都给摸，见人就翻肚皮呼噜", human: "INTJ 沉稳控场型管家" },
-
-    "ISTJ": { title: "猫德满分老干部", quote: "“早7点叫早，7:15干饭，舔毛完毕。无规矩不成方圆。”", food: "定温定量全价主食罐", avoid: "擅自改动食盆与猫砂盆位置", habit: "埋猫砂严谨得像个泥瓦匠", human: "ESFP 活力互补搭档" },
-    "ISFJ": { title: "默默守护贴心暖炉", quote: "“你安心工作吧，我就在这蜷成一个球陪着你。”", food: "清淡滋补鸭肉粒", avoid: "粗暴拽尾巴与生硬对待", habit: "常年安静趴在你的脚边当暖脚宝", human: "ESFJ 温暖顾家主人" },
-    "ESTJ": { title: "家规纪检委大队长", quote: "“饭盆空了超三分钟！各部门注意，立刻按规添粮！”", food: "厚切原肉饱腹冻干", avoid: "家里作息失控与拖延喂饭", habit: "站在走廊正中央监督全家作息", human: "ISFP 随遇而安乐天派" },
-    "ESFJ": { title: "迎宾馆首席公关经理", quote: "“欢迎光临寒舍！摸后背五分钟，请有序排队。”", food: "夹心酥脆猫草饼干", avoid: "客人来时把它关进黑屋", habit: "门铃一响第一个跑去门口蹲坐迎客", human: "ISTP 酷拽型技术宅" },
-
-    "ISTP": { title: "独行特工捕猎战神", quote: "“看见那只蟑螂了吗？0.3秒后它将成为历史。”", food: "高蛋白兔肉磨牙冻干", avoid: "强行抱它做过分亲昵动作", habit: "肉体硬刚吸尘器，捕虫百发百中", human: "ESFJ 贴心后勤大管家" },
-    "ISFP": { title: "随遇而安阳光艺术家", quote: "“争名夺利有何用，躺在阳光里把肚子晒热才是正经事。”", food: "鲜甜银鱼慢炖罐", avoid: "强行拖它起来做激烈运动", habit: "阳光晒到哪块地砖就瘫在哪块", human: "ESTJ 有序领地守护官" },
-    "ESTP": { title: "极限跑酷狂魔", quote: "“生活需要速度！从冰箱顶直接滑翔到沙发只要半秒！”", food: "弹射漏食球零食颗粒", avoid: "封锁高处通道不让攀爬", habit: "凌晨三点半固定发狂在门框引体向上", human: "ISFJ 佛系收拾残局家长" },
-    "ESFP": { title: "聚光灯下顶流女明星", quote: "“看吧，这蓬松的毛发、迷人的双眸，本喵就是全区顶流。”", food: "鲜嫩多汁三文鱼猫条", avoid: "拍照不拍它、夸别的小猫可爱", habit: "走路自带曼妙猫步，拍照极其配合镜头", human: "ISTJ 忠实粉丝兼铲屎官" }
-  };
-
   let currentQIdx = 0;
   let userAnswers = []; // 每题记 "E" 或 "I" 等
 
@@ -4988,20 +5156,31 @@ shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
 
   function renderQuestion(idx) {
     const q = MBTI_QUESTIONS[idx];
+    const isEn = (currentLang === "en");
+
+    // 顶部标题
+    const mbtiMainTitle = document.querySelector("#mbtiQuizView .mbti-header-title");
+    if (mbtiMainTitle) {
+      mbtiMainTitle.textContent = isEn ? "🐾 Feline Personality Lab · MBTI" : "🐾 喵星性格潜能研究所 · MBTI";
+    }
+
     qNum.textContent = `Q${idx + 1}.`;
-    qTitle.textContent = q.q;
-    optAText.textContent = q.a;
-    document.getElementById("mbtiOptA").querySelector(".mbti-opt-sub").textContent = q.aSub;
-    optBText.textContent = q.b;
-    document.getElementById("mbtiOptB").querySelector(".mbti-opt-sub").textContent = q.bSub;
+    qTitle.textContent = isEn && q.qEn ? q.qEn : q.q;
+    optAText.textContent = isEn && q.aEn ? q.aEn : q.a;
+    document.getElementById("mbtiOptA").querySelector(".mbti-opt-sub").textContent = isEn && q.aSubEn ? q.aSubEn : q.aSub;
+    optBText.textContent = isEn && q.bEn ? q.bEn : q.b;
+    document.getElementById("mbtiOptB").querySelector(".mbti-opt-sub").textContent = isEn && q.bSubEn ? q.bSubEn : q.bSub;
 
     const pct = ((idx + 1) / 20) * 100;
     progressFill.style.width = `${pct}%`;
 
-    const phaseNames = ["社交能量 (E/I)", "感知模式 (S/N)", "决策共情 (T/F)", "作息秩序 (J/P)"];
-    const curPhase = phaseNames[Math.floor(idx / 5)];
-    phaseText.textContent = `第 ${Math.floor(idx / 5) + 1}/4 阶段：${curPhase} (${idx + 1}/20)`;
+    const phaseNamesZh = ["社交能量 (E/I)", "感知模式 (S/N)", "决策共情 (T/F)", "作息秩序 (J/P)"];
+    const phaseNamesEn = ["Social Energy (E/I)", "Perception (S/N)", "Decision Logic (T/F)", "Lifestyle Order (J/P)"];
+    const curPhase = isEn ? phaseNamesEn[Math.floor(idx / 5)] : phaseNamesZh[Math.floor(idx / 5)];
+    const phasePrefix = isEn ? `Phase ${Math.floor(idx / 5) + 1}/4: ` : `第 ${Math.floor(idx / 5) + 1}/4 阶段：`;
+    phaseText.textContent = `${phasePrefix}${curPhase} (${idx + 1}/20)`;
 
+    btnPrev.textContent = isEn ? "↩ Previous" : "↩ 上一题";
     btnPrev.style.visibility = idx > 0 ? "visible" : "hidden";
   }
 
@@ -5034,9 +5213,17 @@ shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
 
   // 结算与算法综合推导
   let finalMbtiResult = null;
-  function finishAndCalculate() {
+function finishAndCalculate() {
     quizView.style.display = "none";
     calcView.style.display = "block";
+    const isEn = (currentLang === "en");
+
+    // 过渡状态双语
+    const calcCatTitle = calcView.querySelector("div[style*='font-size:18px']");
+    if (calcCatTitle) calcCatTitle.textContent = isEn ? "Meow Supercomputer Modeling..." : "喵星超算中心正在聚合建模...";
+    if (document.getElementById("mbtiCalcStatus")) {
+      document.getElementById("mbtiCalcStatus").textContent = isEn ? "Deconstructing 4 behavioral dimensions..." : "正在深度解构 4 大行为维度数据...";
+    }
 
     // 统计各维度得分
     let eCount = 0, sCount = 0, tCount = 0, jCount = 0;
@@ -5051,10 +5238,30 @@ shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
     const letter4 = jCount >= 3 ? 'J' : 'P';
     const finalCode = `${letter1}${letter2}${letter3}${letter4}`;
 
-    const data = MBTI_CAT_BASE[finalCode] || MBTI_CAT_BASE["INTJ"];
+    const MBTI_EN_CARD_MAP = {
+      "INTJ": { title: "The Mastermind Sovereign", quote: "“Foolish hooman, your every move is within my calculations.”", food: "Raw-Cut Protein Beef Cubes", avoid: "Sudden forced belly rubs", habit: "Observes from wardrobe top coldly", human: "ENFP Happy Pup Owner" },
+      "INTP": { title: "Box-Dwelling Philosopher", quote: "“The volume of this box matches the exact capacity of my soul.”", food: "Slow-Simmered Chicken Broth", avoid: "Disturbing stare at blank walls", habit: "Can watch dripping faucets for hours", human: "ENTJ Visionary Leader" },
+      "ENTJ": { title: "Territory Iron Warlord", quote: "“Without my decree, not a single fly survives the night.”", food: "Premium Venison Freeze-Dried", avoid: "Meals delayed past 3 minutes", habit: "Daily patrol slapping all creatures", human: "INFP Gentle Companion" },
+      "ENTP": { title: "Physics-Debating Chaos Sprite", quote: "“I pushed that cup not out of thirst, but for gravitational proof.”", food: "Tuna Treat Dispenser Ball", avoid: "Being locked in a dull room", habit: "Knocks valuables off tables knowingly", human: "INFJ Patient Parent" },
+      "INFJ": { title: "Cyber Mystic Shaman", quote: "“I hear your silent heartbreak. Come, 3 seconds of belly time allowed.”", food: "Salmon Anti-Oxidant Puree", avoid: "Loud, screaming gatherings", habit: "Kneads gently when you are sad", human: "ENFP/ENTP Radiant Partner" },
+      "INFP": { title: "Fragile Velvet Dreamer", quote: "“Door closed so loudly... Do you not love me anymore?”", food: "Silky Goat Milk Meat Stew", avoid: "Harsh scolding & sharp eyes", habit: "Airplane ears yet loudest purrs", human: "ENFJ Nurturing Cat Mother" },
+      "ENFJ": { title: "Loving Feline Matriarch", quote: "“Hoomans are hopeless; I must tuck everyone into bed myself.”", food: "Freeze-Dried Nutrient Platter", avoid: "Family cold wars and arguments", habit: "Nightly rounds checking every bedroom", human: "INFP/ISFP Obedient Babies" },
+      "ENFP": { title: "Golden Retriever in a Cat Suit", quote: "“New human! New teaser wand! The entire world is magnificent!”", food: "Juicy Dried Minnow Treats", avoid: "Isolation and cold shoulders", habit: "Shows belly to every single stranger", human: "INTJ Grounded Guardian" },
+      "ISTJ": { title: "Strict Discipline Officer", quote: "“7:00 AM wake up, 7:15 AM feast, grooming done. Order is supreme.”", food: "Timed Precise Complete Cans", avoid: "Relocating litter or food bowls", habit: "Buries litter like a master mason", human: "ESFP Energetic Pal" },
+      "ISFJ": { title: "Warm Silent Guardian", quote: "“Work at ease; I will curl into a warm ball right beside your feet.”", food: "Gentle Nourishing Duck Bites", avoid: "Rough handling and tail grabbing", habit: "Acts as a loyal foot warmer forever", human: "ESFJ Devoted Family Host" },
+      "ESTJ": { title: "Feline Household Inspector", quote: "“Bowl empty for 3 mins! Emergency protocol: refill immediately!”", food: "Hearty Thick-Cut Meat Bites", avoid: "Disordered schedules & meal delays", habit: "Stands in hallway supervising routine", human: "ISFP Easygoing Free Soul" },
+      "ESFJ": { title: "Chief Concierge Hostess", quote: "“Welcome to our humble estate! Form an orderly line for back strokes.”", food: "Crispy Cat Grass Biscuits", avoid: "Being excluded during social visits", habit: "Sits at doorway greeting every visitor", human: "ISTP Cool Tech Hermit" },
+      "ISTP": { title: "Lone Assassin Hunter", quote: "“See that cockroach? In 0.3 seconds, it belongs to history.”", food: "High-Protein Rabbit Chews", avoid: "Excessive smothering and hugs", habit: "Tackles vacuum cleaners fearlessly", human: "ESFJ Caring Quartermaster" },
+      "ISFP": { title: "Sunny Bohemian Artist", quote: "“Why chase glory? Sunbathing on warm floor tiles is true enlightenment.”", food: "Sweet Silver Fish Stew Can", avoid: "Forced heavy exercise", habit: "Lounges wherever the sunlight moves", human: "ESTJ Orderly Estate Leader" },
+      "ESTP": { title: "Extreme Parkour Acrobat", quote: "“Speed is life! Launching from the fridge to sofa takes half a second!”", food: "Ricochet Puzzle Feeder Bites", avoid: "Blocking high vertical climbing trails", habit: "3:30 AM pull-ups on door frames", human: "ISFJ Calm Mess Cleaner" },
+      "ESFP": { title: "Spotlight Diva Superstar", quote: "“Behold this fluffy coat and luminous gaze. I am the neighborhood icon.”", food: "Juicy Salmon Lickable Treat", avoid: "Taking photos of other cats", habit: "Catwalk posture, poses for every camera", human: "ISTJ Loyal Fan Servant" }
+    };
+
+    const cardData = isEn ? (MBTI_EN_CARD_MAP[finalCode] || MBTI_EN_CARD_MAP["INTJ"]) : (MBTI_CAT_BASE[finalCode] || MBTI_CAT_BASE["INTJ"]);
+
     finalMbtiResult = {
       code: finalCode,
-      ...data,
+      ...cardData,
       scores: { eCount, sCount, tCount, jCount }
     };
 
@@ -5063,23 +5270,40 @@ shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
       resView.style.display = "block";
 
       document.getElementById("resMbtiCode").textContent = finalCode;
-      document.getElementById("resMbtiTitle").textContent = data.title;
-      document.getElementById("resMbtiQuote").textContent = data.quote;
-      document.getElementById("resMbtiFood").textContent = data.food;
-      document.getElementById("resMbtiAvoid").textContent = data.avoid;
-      document.getElementById("resMbtiHabit").textContent = data.habit;
-      document.getElementById("resMbtiHuman").textContent = data.human;
+      document.getElementById("resMbtiTitle").textContent = cardData.title;
+      document.getElementById("resMbtiQuote").textContent = cardData.quote;
+      document.getElementById("resMbtiFood").textContent = cardData.food;
+      document.getElementById("resMbtiAvoid").textContent = cardData.avoid;
+      document.getElementById("resMbtiHabit").textContent = cardData.habit;
+      document.getElementById("resMbtiHuman").textContent = cardData.human;
 
-      // 调整 4 维标尺游标位置
-      // 0~5分映射为 10%~90%（留边距防止圆点溢出两端）
-      // 选 I/N/F/P 时 (5 - count) 越大，越往右移动
-      const calcPos = (count) => {
-        // count 是左侧字母(E/S/T/J)的得分(0~5)
-        // 得分越低，说明越倾向右侧字母(I/N/F/P)，应该更靠右
-        const rightTendency = (5 - count) / 5; // 0 (极左) ~ 1 (极右)
-        return 10 + rightTendency * 80; // 限制在 10% 到 90% 之间，视觉最协调
-      };
+      // 4 维标尺文案国际化
+      const scaleRows = document.querySelectorAll(".mbti-scale-panel .scale-row");
+      if (scaleRows.length >= 4) {
+        scaleRows[0].children[0].textContent = isEn ? "Extrovert (E)" : "外向社牛 (E)";
+        scaleRows[0].children[2].textContent = isEn ? "Introvert (I)" : "内向独处 (I)";
 
+        scaleRows[1].children[0].textContent = isEn ? "Sensing (S)" : "实感吃货 (S)";
+        scaleRows[1].children[2].textContent = isEn ? "Intuition (N)" : "直觉脑洞 (N)";
+
+        scaleRows[2].children[0].textContent = isEn ? "Thinking (T)" : "原则理智 (T)";
+        scaleRows[2].children[2].textContent = isEn ? "Feeling (F)" : "软萌共情 (F)";
+
+        scaleRows[3].children[0].textContent = isEn ? "Judging (J)" : "严谨规矩 (J)";
+        scaleRows[3].children[2].textContent = isEn ? "Perceiving (P)" : "随性跑酷 (P)";
+      }
+
+      // 2x2 网格小标题双语
+      const gridIcons = document.querySelectorAll(".mbti-grid-2x2 .mbti-grid-icon");
+      if (gridIcons.length >= 4) {
+        gridIcons[0].textContent = isEn ? "🍗 Signature Diet:" : "🍗 专属干粮：";
+        gridIcons[1].textContent = isEn ? "💣 Pet Peeves:" : "💣 易炸毛雷区：";
+        gridIcons[2].textContent = isEn ? "💤 Daily Habit:" : "💤 猫生习惯：";
+        gridIcons[3].textContent = isEn ? "🤝 Ideal Human:" : "🤝 天选铲屎官：";
+      }
+
+      // 游标位置映射
+      const calcPos = (count) => 10 + ((5 - count) / 5) * 80;
       document.getElementById("dotEI").style.left = `${calcPos(eCount)}%`;
       document.getElementById("dotSN").style.left = `${calcPos(sCount)}%`;
       document.getElementById("dotTF").style.left = `${calcPos(tCount)}%`;
