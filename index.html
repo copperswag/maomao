@@ -3281,15 +3281,51 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    btnOpenCheckin?.addEventListener("click", () => {
-      requireAuth(() => {
+    btnOpenCheckin?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      console.log("--> 每日打卡被点击");
+      
+      const modal = document.getElementById("checkinModal");
+      if (!modal) {
+        console.error("未找到 checkinModal 弹窗容器！");
+        return;
+      }
+      
+      try {
         renderCheckinModal();
-        checkinModal?.classList.add("show");
-      });
-    });
-    closeCheckinBtn?.addEventListener("click", () => checkinModal?.classList.remove("show"));
-    checkinModal?.addEventListener("click", (e) => { if (e.target === checkinModal) checkinModal?.classList.remove("show"); });
+      } catch (err) {
+        console.warn("渲染打卡数据异常，继续打开弹窗:", err);
+      }
 
+      modal.classList.add("show");
+      modal.style.display = "flex";
+      modal.style.opacity = "1";
+      modal.style.visibility = "visible";
+      modal.style.pointerEvents = "auto";
+    });
+
+    closeCheckinBtn?.addEventListener("click", () => {
+      const modal = document.getElementById("checkinModal");
+      if (modal) {
+        modal.classList.remove("show");
+        modal.style.display = "";
+        modal.style.opacity = "";
+        modal.style.visibility = "";
+        modal.style.pointerEvents = "";
+      }
+    });
+
+    const checkinModalEl = document.getElementById("checkinModal");
+    checkinModalEl?.addEventListener("click", (e) => {
+      if (e.target === checkinModalEl) {
+        checkinModalEl.classList.remove("show");
+        checkinModalEl.style.display = "";
+        checkinModalEl.style.opacity = "";
+        checkinModalEl.style.visibility = "";
+        checkinModalEl.style.pointerEvents = "";
+      }
+    });
     btnDoCheckin?.addEventListener("click", () => {
       const todayStr = getTodayString();
       if (checkinData.lastCheckinDate === todayStr) return;
