@@ -2023,6 +2023,8 @@ const I18N_LOCALES = {
   en: {
     // 全局与导航
     site_title: "MeowHub | Smart Pet Care",
+    about_banner: "🐾 Welcome to MeowHub! We use IoT and cloud-native technology to help cat lovers protect fur babies across distance. Never leave your fur babies alone again.",
+    faq_main_title: "🐾 Frequently Asked Questions (FAQ)",
     nav_live: "📹 Live Stream",
     nav_rankings: "🏆 Honor Roll",
     nav_about: "ℹ️ About Us",
@@ -2308,6 +2310,90 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
   
   const baziSub = document.querySelector("#baziModal div[style*='letter-spacing:2px']");
   if (baziSub) baziSub.textContent = isEn ? "MEOW IMPERIAL ASTRONOMY · BAZI" : "喵星钦天监 · 四柱八字推衍";
+
+// 7. 关于我们与常见问题 (About Us & FAQ) 全量中英切换
+  const aboutArticle = document.querySelector(".about-article");
+  if (aboutArticle) {
+    if (isEn) {
+      aboutArticle.innerHTML = `
+        <p>MeowHub was born from genuine reflection on urban stray animal rescue and intelligent pet care. Initially, we built these real-time cloud feeding devices so we could keep watch and remotely feed community cats on schedule while traveling or working away from home.</p>
+        <p>Later, we opened our camera streams and proprietary IoT hardware controls to the public, introducing interactive live bullet chat, multi-angle camera switching, and a transparent feeding honor roll. Our hope is that cat lovers everywhere can enjoy "cyber-petting" anytime and provide a warm meal whenever cats are hungry.</p>
+        <p>Currently, our team is actively expanding smart upgrades to more rescue sanctuaries and fixed stray feeding stations. If you are interested in site partnerships, hardware improvements, or rescue feedback, feel free to get in touch!</p>
+      `;
+    } else {
+      aboutArticle.innerHTML = `
+        <p>毛毛星球（MeowHub）的灵感源于对城市流浪动物救助与智慧养宠的真诚思考。起初，我们打造这套实时云喂养设备，是为了在外出工作或差旅时，依然能够全天候照看、远程定时投喂流浪猫岛上的毛孩子。</p>
+        <p>后来，我们将摄像头视频流与自研智能硬件控制向全网公开，引入了实时互动弹幕、多点位机位切换以及透明公开的投喂功德榜，希望让更多猫友能够随时随地“赛博云吸猫”，并在猫咪饥饿时亲手送上一顿温饱。</p>
+        <p>目前，团队正在积极拓展更多救助基地与流浪猫定点投喂站的智能化升级。如果您有场地合作意向、硬件改进建议或任何救助反馈，欢迎随时与我们建立联系！</p>
+      `;
+    }
+  }
+
+  // 官方反馈与渠道标题
+  const channelTitle = document.querySelector("#viewAbout div[style*='font-size: 13px']");
+  if (channelTitle) {
+    channelTitle.textContent = isEn ? "📬 Official Channels & Feedback:" : "📬 官方交流与反馈渠道：";
+  }
+
+  // 社交药丸胶囊链接
+  const socialLinks = document.querySelectorAll(".about-social-links .about-link-pill");
+  if (socialLinks.length >= 3) {
+    socialLinks[0].textContent = isEn ? "📱 Download MeowHub App" : "📱 下载毛毛星球 App";
+    socialLinks[1].textContent = isEn ? "💬 WeChat Official: MeowHub" : "💬 官方微信公众号：毛毛星球";
+    socialLinks[2].textContent = isEn ? "💌 Email: support@meowhub.cn" : "💌 合作邮箱：support@meowhub.cn";
+  }
+
+  // 4 个手风琴 FAQ 问答
+  const faqItems = document.querySelectorAll(".faq-item");
+  if (faqItems.length >= 4) {
+    const faqDataEn = [
+      {
+        q: "1. Where are the cats? Why aren't they on camera sometimes?",
+        a: "Cats are naturally alert and crepuscular, most active around dawn and dusk. During bright or warm daytime hours, they rest in cozy shelters or hidden spots. Once they hear the feeder chime or dinner arrives, they come gathering for treats!"
+      },
+      {
+        q: "2. Will clicking feed overfeed the cats or waste food?",
+        a: "No! The system features a network-wide shared anti-overeating cooldown lock. Once any user feeds successfully, that camera locks into protection countdown. Commands cannot be sent until cooling ends, ensuring healthy and measured portions."
+      },
+      {
+        q: "3. Why don't I see kibble drop immediately after clicking feed?",
+        a: "The cameras use adaptive encrypted streaming. From capture and cloud encoding to browser decoding, there is an objective 3 to 6-second physical delay. The physical feeder dispenses within 1 second of clicking, appearing on screen moments later."
+      },
+      {
+        q: "4. How is the Feeding Honor Roll calculated?",
+        a: "Rankings are automatically calculated based on valid feed counts from signed-in users across All-Time, Past 30 Days, and Past 7 Days. Users with identical feed counts share equal rank using standard dense ranking."
+      }
+    ];
+
+    const faqDataZh = [
+      {
+        q: "1. 猫咪们去哪儿了？为什么有时镜头前看不到它们？",
+        a: "猫咪生性警觉且多喜在晨昏活动。白天光照充足或气温较高时，它们通常在舒适温暖的猫窝或隐蔽角落小憩。每当听到投喂器运转出粮的清脆响声，或者到了傍晚饭点，它们就会成群结队跑来干饭啦！"
+      },
+      {
+        q: "2. 大家都点击投喂，猫咪会不会被撑坏或浪费粮食？",
+        a: "不会的！平台底层搭载了“机位全局防过饱冷却锁”（全网共享冷却时长）。只要任意用户投喂成功一次，该机位将立即锁定进入倒计时保护，冷却期间全网所有人都无法再次下发指令，科学保障定时定量。"
+      },
+      {
+        q: "3. 为什么点击投喂成功后，画面没有马上看到猫粮掉落？",
+        a: "现场摄像头采用多码流自适应加密推流，从现场真实画面采集、视频转码到浏览器解码播放，存在约 3 到 6 秒的客观传输物理延迟。现场投喂器在点击的 1 秒内就已经精准出粮了，稍等数秒即可在画面中看到。"
+      },
+      {
+        q: "4. 投喂功德排行榜是如何排名的？",
+        a: "排行榜基于全网登录用户的有效投喂次数自动统计，分为“全部时间”、“最近 30 天”与“最近 7 天”三个时间维度。若多名猫友投喂次数相同，系统采用标准并列算法（Dense Rank），让同贡献的猫友享有并列殊荣！"
+      }
+    ];
+
+    const currentFaqData = isEn ? faqDataEn : faqDataZh;
+    faqItems.forEach((item, idx) => {
+      const qSpan = item.querySelector(".faq-question span:first-child");
+      const aDiv = item.querySelector(".faq-answer");
+      if (qSpan && currentFaqData[idx]) qSpan.textContent = currentFaqData[idx].q;
+      if (aDiv && currentFaqData[idx]) aDiv.textContent = currentFaqData[idx].a;
+    });
+  }
+
+
   
   const baziTitle = document.querySelector("#baziModal h3");
   if (baziTitle) baziTitle.textContent = isEn ? "📜 Meow I Ching Reading" : "📜 喵星周易算命帖";
