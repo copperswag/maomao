@@ -908,7 +908,88 @@
     }
     .drawer-room-item.active { background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(5, 150, 105, 0.25)); border-color: rgba(16, 185, 129, 0.6); color: #fff; }
 
-    @media (max-width: 860px) {
+  @media (max-width: 860px) {
+      .container { padding: 16px 12px 32px; }
+      .hero-title { font-size: 20px; }
+      .live-layout { display: block; margin-bottom: 16px; }
+      .room-sidebar { display: none !important; }
+      .btn-mobile-choose-room { display: inline-flex; }
+    }
+
+    /* ================= 移动端小屏专属极简精致排版优化 ================= */
+    @media (max-width: 600px) {
+      .container { padding: 12px 10px 24px; }
+      
+      /* 1. 顶部主导航 Tab 紧凑横滑，杜绝单词断行 */
+      .nav-tabs-bar {
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .nav-tabs-bar::-webkit-scrollbar { display: none; }
+      .nav-tab-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      /* 2. 顶栏右侧功能区紧凑排列 */
+      .header-right {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .badge-checkin, .btn-clerk-login, .badge-live, .honor-badge {
+        padding: 4px 10px;
+        font-size: 11px;
+      }
+
+      /* 3. 播放器工具条紧凑微缩，支持左右滑动，绝不遮挡画面与提示 */
+      .controls-overlay {
+        bottom: 8px;
+        right: 8px;
+        left: 8px;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding-bottom: 4px;
+        scrollbar-width: none;
+      }
+      .controls-overlay::-webkit-scrollbar { display: none; }
+      .player-ctrl-btn {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+      }
+
+      /* 4. 播放器底栏适配 */
+      .player-bar {
+        padding: 10px 12px;
+      }
+      .current-room-name {
+        font-size: 13px;
+      }
+      .btn-mobile-choose-room {
+        padding: 4px 10px;
+        font-size: 12px;
+      }
+
+      /* 5. 聊天室头部垂直对齐，杜绝错位挤压 */
+      .chat-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 4px;
+      }
+      .chat-header > div:last-child {
+        font-size: 11px !important;
+        opacity: 0.8;
+      }
+    }
       .container { padding: 16px 12px 32px; }
       .hero-title { font-size: 20px; }
       .live-layout { display: block; margin-bottom: 16px; }
@@ -2334,7 +2415,13 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
       ? "Long-press image on mobile to save to album or share" 
       : "手机端长按图片可直接存入相册 / 发社交网络";
   }
-  
+  const mobileChooseBtn = document.getElementById("btnOpenRoomDrawer");
+  if (mobileChooseBtn) {
+    const totalCount = roomList ? roomList.length : 4;
+    mobileChooseBtn.innerHTML = isEn 
+      ? `<span>📹 Cameras</span> <span id="mobileRoomBadge" style="opacity: 0.8; font-size: 11px;">(${totalCount}) ▾</span>`
+      : `<span>📹 选机位</span> <span id="mobileRoomBadge" style="opacity: 0.8; font-size: 11px;">(${totalCount}台) ▾</span>`;
+  }
   const downloadBtn = document.getElementById("btnDownloadApp");
   if (downloadBtn) downloadBtn.textContent = isEn ? "Download App" : "下载 App";
 
