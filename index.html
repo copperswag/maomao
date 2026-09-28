@@ -1778,10 +1778,10 @@
     <div class="drawer-panel">
       <div class="drawer-handle-bar"></div>
       <div class="drawer-header">
-        <div class="drawer-title">
-          <span>📹 选择直播机位</span>
-          <span style="font-size: 12px; color: var(--text-sub); font-weight: normal;" id="drawerTotalCount">(共4个点位)</span>
-        </div>
+       <div class="drawer-title">
+  <span id="drawerTitleText">📹 Select Live Camera</span>
+  <span style="font-size: 12px; color: var(--text-sub); font-weight: normal;" id="drawerTotalCount">(5 Total)</span>
+</div>
         <button class="drawer-close" id="closeDrawerBtn" type="button">✕</button>
       </div>
       <div class="drawer-room-list" id="drawerRoomList"></div>
@@ -1999,6 +1999,7 @@ const I18N_LOCALES = {
     loading_stream: "正在连线设备...",
     connecting_room_fmt: "正在连接 {name}...",
     loading_stream_desc: "调取自适应码流中，请稍候...",
+    drawer_title_text: "选择直播机位",
     
     // 聊天区
     chat_title: "💬 实时猫友互动区",
@@ -2127,6 +2128,8 @@ const I18N_LOCALES = {
     avatar_modal_title: "🐾 Choose Your Cat Avatar",
     avatar_modal_sub: "Pick an exclusive avatar to show off in live chat",
     btn_confirm: "Confirm",
+    drawer_title_text: "Select Live Camera",
+    
     // 播放器与投喂控制
     btn_feed_pet: "🍗 Feed Now",
     btn_tarot: "🔮 Meow Tarot",
@@ -2371,11 +2374,22 @@ function applyLanguage(lang) {
   if (noticeEl && (!noticeEl.textContent || noticeEl.textContent.includes("毛毛星球") || noticeEl.textContent.includes("MeowHub"))) {
     noticeEl.textContent = isEn ? "Welcome to MeowHub Live!" : "欢迎大家来到毛毛星球";
   }
+  
+const drawerTitleTextEl = document.getElementById("drawerTitleText");
+  if (drawerTitleTextEl) {
+    drawerTitleTextEl.textContent = isEn ? "📹 Select Live Camera" : "📹 选择直播机位";
+  }
 
+  const drawerTotalCountEl = document.getElementById("drawerTotalCount");
+  if (drawerTotalCountEl && roomList) {
+    drawerTotalCountEl.textContent = isEn ? `(${roomList.length} Total)` : `(共${roomList.length}个机位)`;
+  }
+  
   // 立即联动刷新一次段位勋章文字
   if (typeof updateHonorUI === "function") {
     updateHonorUI();
   }
+  
   // 投喂按钮双语刷新
   const btnFeedPet = document.getElementById("btnFeedPet");
   if (btnFeedPet) {
@@ -4924,8 +4938,10 @@ btnGenerateCert?.addEventListener("click", () => {
           onlineCountEl.textContent = isEn ? `${roomList.length} Live Streams` : `${roomList.length} 直播间在线`;
         }
         if (mobileRoomBadge) mobileRoomBadge.textContent = `(${roomList.length}台) ▾`;
-        if (drawerTotalCount) drawerTotalCount.textContent = `(共${roomList.length}个机位)`;
-
+        if (drawerTotalCount) {
+          const isEn = (currentLang === "en");
+          drawerTotalCount.textContent = isEn ? `(${roomList.length} Total)` : `(共${roomList.length}个机位)`;
+        }
         if (roomButtonList) {
           roomButtonList.innerHTML = "";
           roomList.forEach((room, idx) => {
