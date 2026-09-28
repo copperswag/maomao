@@ -1995,6 +1995,7 @@ const I18N_LOCALES = {
     audio_unmute: "🔇 开启声音",
     audio_mute: "🔊 静音",
     loading_stream: "正在连线设备...",
+    connecting_room_fmt: "正在连接 {name}...",
     loading_stream_desc: "调取自适应码流中，请稍候...",
     
     // 聊天区
@@ -2135,6 +2136,7 @@ const I18N_LOCALES = {
     audio_unmute: "🔇 Unmute",
     audio_mute: "🔊 Mute",
     loading_stream: "Connecting to Device...",
+    connecting_room_fmt: "Connecting to {name}...",
     loading_stream_desc: "Fetching adaptive stream, please wait...",
     
     // 聊天区
@@ -4756,7 +4758,11 @@ btnGenerateCert?.addEventListener("click", () => {
 
       if (playerEmpty) {
         playerEmpty.style.display = "grid";
-        if (emptyTitle) emptyTitle.textContent = `正在连接 ${currentRoomName}...`;
+        if (playerEmpty) {
+        playerEmpty.style.display = "grid";
+        if (emptyTitle) emptyTitle.textContent = t("connecting_room_fmt", { name: currentRoomName });
+        if (emptyCopy) emptyCopy.textContent = t("loading_stream_desc");
+      }
       }
 
       if (ezPlayer) {
