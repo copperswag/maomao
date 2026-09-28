@@ -1271,7 +1271,7 @@
 
       <div class="live-layout">
         <div class="room-sidebar">
-          <div class="sidebar-title">切换直播间</div>
+          <div class="sidebar-title" data-i18n="sidebar_title">Switch Camera</div>
           <div id="roomButtonList" style="display: flex; flex-direction: column; gap: 8px;"></div>
         </div>
 
@@ -2296,6 +2296,14 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
   const chatTitleEl = document.querySelector(".chat-title");
   if (chatTitleEl) chatTitleEl.textContent = isEn ? "💬 Live Chat Room" : "💬 实时猫友互动区";
 
+
+
+  const sidebarTitleEl = document.querySelector(".sidebar-title");
+  if (sidebarTitleEl) {
+    sidebarTitleEl.textContent = isEn ? "Switch Camera" : "切换直播间";
+  }
+
+  
   const chatTipEl = document.querySelector(".chat-header > div:last-child");
   if (chatTipEl) {
     chatTipEl.textContent = isEn 
