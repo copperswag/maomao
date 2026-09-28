@@ -2433,12 +2433,12 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
       ? "Long-press image on mobile to save to album or share" 
       : "手机端长按图片可直接存入相册 / 发社交网络";
   }
-  const mobileChooseBtn = document.getElementById("btnOpenRoomDrawer");
+ const mobileChooseBtn = document.getElementById("btnOpenRoomDrawer");
   if (mobileChooseBtn) {
-    const totalCount = roomList ? roomList.length : 4;
+    const validCount = (roomList && roomList.length > 0) ? roomList.length : 5;
     mobileChooseBtn.innerHTML = isEn 
-      ? `<span>📹 Cameras</span> <span id="mobileRoomBadge" style="opacity: 0.8; font-size: 11px;">(${totalCount}) ▾</span>`
-      : `<span>📹 选机位</span> <span id="mobileRoomBadge" style="opacity: 0.8; font-size: 11px;">(${totalCount}台) ▾</span>`;
+      ? `<span>📹 Cameras</span> <span id="mobileRoomBadge" style="opacity: 0.8; font-size: 11px;">(${validCount}) ▾</span>`
+      : `<span>📹 选机位</span> <span id="mobileRoomBadge" style="opacity: 0.8; font-size: 11px;">(${validCount}台) ▾</span>`;
   }
   const downloadBtn = document.getElementById("btnDownloadApp");
   if (downloadBtn) downloadBtn.textContent = isEn ? "Download App" : "下载 App";
@@ -4937,9 +4937,11 @@ btnGenerateCert?.addEventListener("click", () => {
           const isEn = (currentLang === "en");
           onlineCountEl.textContent = isEn ? `${roomList.length} Live Streams` : `${roomList.length} 直播间在线`;
         }
-        if (mobileRoomBadge) mobileRoomBadge.textContent = `(${roomList.length}台) ▾`;
+       const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+        if (mobileRoomBadge) {
+          mobileRoomBadge.textContent = isEn ? `(${roomList.length}) ▾` : `(${roomList.length}台) ▾`;
+        }
         if (drawerTotalCount) {
-          const isEn = (currentLang === "en");
           drawerTotalCount.textContent = isEn ? `(${roomList.length} Total)` : `(共${roomList.length}个机位)`;
         }
         if (roomButtonList) {
