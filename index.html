@@ -2214,11 +2214,32 @@ function applyLanguage(lang) {
     }
   }
 
-  // 3. 赞助弹窗标题与描述
+// 3. 赞助弹窗各文本全量双语
   const sponsorTitle = document.querySelector(".bmac-title");
   if (sponsorTitle) sponsorTitle.textContent = t("sponsor_title");
   const sponsorDesc = document.querySelector(".bmac-desc");
   if (sponsorDesc) sponsorDesc.innerHTML = t("sponsor_desc");
+
+  const closeSponsorBtn = document.getElementById("btnCloseSponsorModal");
+  if (closeSponsorBtn) closeSponsorBtn.textContent = isEn ? "✕ Close" : "✕ 关闭";
+
+  const customQtyInput = document.getElementById("inputCustomCoffee");
+  if (customQtyInput) customQtyInput.placeholder = isEn ? "Custom" : "自选";
+
+  const sponsorAmountBox = document.querySelector(".bmac-amount-display");
+  if (sponsorAmountBox) {
+    const curVal = sponsorAmountBox.querySelector("#displayTotalUsd")?.textContent || "$5";
+    sponsorAmountBox.innerHTML = `${t("sponsor_amount_label")}<span id="displayTotalUsd">${curVal}</span>`;
+  }
+
+  const sponsorFooterTip = document.querySelector(".bmac-footer-tip");
+  if (sponsorFooterTip) sponsorFooterTip.textContent = t("sponsor_footer_tip");
+
+  const btnPayEl = document.getElementById("btnProceedCheckout");
+  if (btnPayEl) {
+    const amtStr = document.getElementById("bmacPayBtnAmount")?.textContent || "$5";
+    btnPayEl.innerHTML = `${t("btn_pay_label")} <span id="bmacPayBtnAmount">${amtStr}</span>`;
+  }
 
   // 4. 输入框 Placeholder 自动替换
   const phMap = {
@@ -3820,20 +3841,41 @@ function renderCheckinModal() {
     }
 
     let latestUnlockedTier = null;
+   let latestUnlockedTier = null;
     function triggerLevelUpCelebration(tier) {
       latestUnlockedTier = tier;
+      const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+      const title = isEn ? (tier.titleEn || tier.title) : tier.title;
+      const desc = isEn ? (tier.descEn || tier.desc) : tier.desc;
+
       if (levelUpIcon) levelUpIcon.textContent = tier.icon;
-      if (levelUpTitle) levelUpTitle.textContent = `晋升受封：${tier.title}！`;
-      if (levelUpDesc) levelUpDesc.textContent = `恭喜达成【${tier.desc}】！已点亮本周专属身份勋章。`;
+      if (levelUpTitle) {
+        levelUpTitle.textContent = isEn ? `Promotion: ${title}!` : `晋升受封：${tier.title}！`;
+      }
+      if (levelUpDesc) {
+        levelUpDesc.textContent = isEn 
+          ? `Congrats on 【${desc}】! Season honor badge unlocked.` 
+          : `恭喜达成【${tier.desc}】！已点亮本周专属身份勋章。`;
+      }
+
+      if (btnGenerateCert) {
+        btnGenerateCert.textContent = isEn ? "📜 Generate & Save Certificate" : "📜 生成并保存受封证书";
+      }
+      if (closeLevelUpBtn) {
+        closeLevelUpBtn.textContent = isEn ? "Accept Honor" : "收下荣誉";
+      }
+
       levelUpModal?.classList.add("show");
       fireConfetti();
     }
-
-    btnGenerateCert?.addEventListener("click", () => {
+btnGenerateCert?.addEventListener("click", () => {
       const tier = latestUnlockedTier || getCurrentHonor();
       const canvas = certCanvas;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
+      const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+      const tierTitle = isEn ? (tier.titleEn || tier.title) : tier.title;
+
       canvas.width = 600;
       canvas.height = 800;
 
@@ -3857,7 +3899,7 @@ function renderCheckinModal() {
 
       ctx.fillStyle = "#f59e0b";
       ctx.font = "bold 26px -apple-system, sans-serif";
-      ctx.fillText("毛毛星球 · 周赛季受封证书", 300, 180);
+      ctx.fillText(isEn ? "MeowHub · Season Honor Certificate" : "毛毛星球 · 周赛季受封证书", 300, 180);
 
       ctx.fillStyle = "#9ca3af";
       ctx.font = "13px sans-serif";
@@ -3866,23 +3908,28 @@ function renderCheckinModal() {
       const userNick = getUserFixedNickname();
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 28px -apple-system, sans-serif";
-      ctx.fillText(`兹授予：${userNick}`, 300, 290);
+      ctx.fillText(isEn ? `Awarded to: ${userNick}` : `兹授予：${userNick}`, 300, 290);
 
       ctx.fillStyle = "#34d399";
       ctx.font = "bold 34px -apple-system, sans-serif";
-      ctx.fillText(`【 ${tier.title} 】`, 300, 360);
+      ctx.fillText(`【 ${tierTitle} 】`, 300, 360);
 
       ctx.fillStyle = "#d1d5db";
       ctx.font = "15px sans-serif";
-      ctx.fillText("感谢您在毛毛星球本赛季的温情守护与不离陪伴。", 300, 430);
-      ctx.fillText("特授予此赛季荣誉称号，愿爱与善意常伴每一只流浪生灵！", 300, 460);
+      if (isEn) {
+        ctx.fillText("In recognition of your warm care and companionship this season.", 300, 430);
+        ctx.fillText("May love and kindness shelter every stray feline across the globe!", 300, 460);
+      } else {
+        ctx.fillText("感谢您在毛毛星球本赛季的温情守护与不离陪伴。", 300, 430);
+        ctx.fillText("特授予此赛季荣誉称号，愿爱与善意常伴每一只流浪生灵！", 300, 460);
+      }
 
       const mins = Math.floor(staySeconds / 60);
-      const nowStr = new Date().toLocaleDateString('zh-CN');
+      const nowStr = new Date().toLocaleDateString(isEn ? 'en-US' : 'zh-CN');
       ctx.fillStyle = "#9ca3af";
       ctx.font = "14px monospace";
-      ctx.fillText(`本周陪伴时长：${mins} 分钟 (${staySeconds} 秒)`, 300, 530);
-      ctx.fillText(`受封认证日期：${nowStr}`, 300, 560);
+      ctx.fillText(isEn ? `Weekly Stay: ${mins} mins (${staySeconds}s)` : `本周陪伴时长：${mins} 分钟 (${staySeconds} 秒)`, 300, 530);
+      ctx.fillText(isEn ? `Certified Date: ${nowStr}` : `受封认证日期：${nowStr}`, 300, 560);
 
       ctx.fillStyle = "#ef4444";
       ctx.beginPath();
@@ -3891,18 +3938,18 @@ function renderCheckinModal() {
 
       ctx.fillStyle = "#ffffff";
       ctx.font = "bold 13px sans-serif";
-      ctx.fillText("毛毛星球", 300, 645);
-      ctx.fillText("官方印鉴", 300, 663);
+      ctx.fillText(isEn ? "MEOW" : "毛毛星球", 300, 645);
+      ctx.fillText(isEn ? "SEAL" : "官方印鉴", 300, 663);
 
       ctx.fillStyle = "#6b7280";
       ctx.font = "11px sans-serif";
-      ctx.fillText("别让你家毛孩子再成为留守儿童了", 300, 735);
+      ctx.fillText(isEn ? "Never leave your fur babies alone again" : "别让你家毛孩子再成为留守儿童了", 300, 735);
 
       const dataUrl = canvas.toDataURL("image/png");
       if (polaroidImg) polaroidImg.src = dataUrl;
       if (downloadPolaroidBtn) {
         downloadPolaroidBtn.href = dataUrl;
-        downloadPolaroidBtn.download = `meow_cert_${tier.title}_${Date.now()}.png`;
+        downloadPolaroidBtn.download = `meow_cert_${tierTitle}_${Date.now()}.png`;
       }
       levelUpModal?.classList.remove("show");
       polaroidModal?.classList.add("show");
@@ -3942,7 +3989,20 @@ function renderCheckinModal() {
 
       if (modalSeasonLabel) modalSeasonLabel.textContent = t("honor_season_prefix", { season: currentSeasonKey });
       if (modalHonorTitle) modalHonorTitle.textContent = currentTitle;
-      if (modalStayTimeText) modalStayTimeText.textContent = t("honor_stay_fmt", { mins: mins, sec: staySeconds });
+      // 陪伴时长与历史印记标签双语化
+      const stayStatEl = document.querySelector("#honorModal .honor-stay-stat");
+      if (stayStatEl) {
+        const timeVal = t("honor_stay_fmt", { mins: mins, sec: staySeconds });
+        stayStatEl.innerHTML = isEn 
+          ? `Weekly Stay: <span id="modalStayTimeText" style="color: #34d399; font-weight: 700;">${timeVal}</span>`
+          : `本周陪伴时长：<span id="modalStayTimeText" style="color: #34d399; font-weight: 700;">${timeVal}</span>`;
+      }
+
+      const crownLabelEl = document.querySelector("#honorModal .crown-stamp-box > span:first-child");
+      if (crownLabelEl) {
+        crownLabelEl.textContent = isEn ? "👑 Island Deity Guardian Stars:" : "👑 历史猫岛守护神印记：";
+      }
+
       if (modalCrownCount) modalCrownCount.textContent = `${crownStamps} ${isEn ? "Stars" : "枚"}`;
 
       if (currentIdx < HONOR_TIERS.length - 1) {
@@ -5636,9 +5696,18 @@ function finishAndCalculate() {
 
   function updatePrice(val) {
     currentUsd = val;
-    const str = currentMode === "monthly" ? "$5/月" : `$${currentUsd}`;
+    const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+    const modeStr = isEn ? "$5/mo" : "$5/月";
+    const str = currentMode === "monthly" ? modeStr : `$${currentUsd}`;
     if (displayTotal) displayTotal.textContent = `$${currentUsd}`;
-    if (payBtnAmount) payBtnAmount.textContent = str;
+    if (payBtnAmount) {
+      const payLabel = isEn ? "💖 Support" : "💖 支持";
+      payBtnAmount.textContent = str;
+      const btnPayEl = document.getElementById("btnProceedCheckout");
+      if (btnPayEl) {
+        btnPayEl.innerHTML = `${payLabel} <span id="bmacPayBtnAmount">${str}</span>`;
+      }
+    }
   }
 
   // 模式切换
