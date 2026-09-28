@@ -908,15 +908,24 @@
     }
     .drawer-room-item.active { background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(5, 150, 105, 0.25)); border-color: rgba(16, 185, 129, 0.6); color: #fff; }
 
-  @media (max-width: 860px) {
+ /* ================= PC 端默认规则（大于 860px）：左侧机位常驻，隐藏选机位按钮 ================= */
+    .room-sidebar {
+      display: flex !important;
+    }
+    .btn-mobile-choose-room {
+      display: none !important;
+    }
+
+    /* ================= 平板与移动端通用规则（<= 860px）：隐藏左侧栏，开启选机位按钮 ================= */
+    @media (max-width: 860px) {
       .container { padding: 16px 12px 32px; }
       .hero-title { font-size: 20px; }
       .live-layout { display: block; margin-bottom: 16px; }
       .room-sidebar { display: none !important; }
-      .btn-mobile-choose-room { display: inline-flex; }
+      .btn-mobile-choose-room { display: inline-flex !important; }
     }
 
-    /* ================= 移动端小屏专属极简精致排版优化 ================= */
+    /* ================= 移动端小屏极简精致排版（<= 600px） ================= */
     @media (max-width: 600px) {
       .container { padding: 12px 10px 24px; }
       
@@ -947,15 +956,15 @@
         font-size: 11px;
       }
 
-      /* 3. 播放器工具条紧凑微缩，支持左右滑动，绝不遮挡画面与提示 */
+      /* 3. 播放器工具条紧凑微缩，单行横向平滑滚动，绝不遮挡画面与提示 */
       .controls-overlay {
-        bottom: 8px;
-        right: 8px;
-        left: 8px;
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        justify-content: flex-start;
+        bottom: 8px !important;
+        right: 8px !important;
+        left: 8px !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        justify-content: flex-start !important;
         padding-bottom: 4px;
         scrollbar-width: none;
       }
@@ -975,8 +984,8 @@
         font-size: 13px;
       }
       .btn-mobile-choose-room {
-        padding: 4px 10px;
-        font-size: 12px;
+        padding: 4px 10px !important;
+        font-size: 12px !important;
       }
 
       /* 5. 聊天室头部垂直对齐，杜绝错位挤压 */
@@ -989,12 +998,6 @@
         font-size: 11px !important;
         opacity: 0.8;
       }
-    }
-      .container { padding: 16px 12px 32px; }
-      .hero-title { font-size: 20px; }
-      .live-layout { display: block; margin-bottom: 16px; }
-      .room-sidebar { display: none !important; }
-      .btn-mobile-choose-room { display: inline-flex; }
     }
 
   /* 小猫算命（古典宣纸命帖）专属样式 */
@@ -4755,13 +4758,9 @@ btnGenerateCert?.addEventListener("click", () => {
         }
       }, 8000);
 
-      if (playerEmpty) {
-        playerEmpty.style.display = "grid";
-        if (playerEmpty) {
+     if (playerEmpty) {
         playerEmpty.style.display = "grid";
         if (emptyTitle) emptyTitle.textContent = t("connecting_room_fmt", { name: currentRoomName });
-      
-      }
       }
 
       if (ezPlayer) {
