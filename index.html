@@ -2171,10 +2171,14 @@ function t(key, params = {}) {
 }
 
 // 自动映射表：免去手动改数百行 HTML，直接由引擎按 ID 与 Class 精确刷新
+// 自动映射表：免去手动改数百行 HTML，直接由引擎按 ID 与 Class 精确刷新
 function applyLanguage(lang) {
   currentLang = lang;
   localStorage.setItem("meow_app_lang", lang);
   document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+
+  // 关键：将 isEn 的声明置顶，确保下方所有逻辑均可正常访问
+  const isEn = (currentLang === "en");
 
   // 1. 静态 data-i18n 属性映射
   document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -2257,9 +2261,6 @@ function applyLanguage(lang) {
   const btnLabel = document.getElementById("currentLangLabel");
   if (btnLabel) btnLabel.textContent = currentLang === "zh" ? "EN" : "中";
 
-  // 6. 网页 Title
-  document.title = t("site_title");
-  const isEn = (currentLang === "en");
   // 顶栏胶囊与在线状态双语刷新
   const checkinBtnEl = document.getElementById("btnOpenCheckin");
   if (checkinBtnEl) {
