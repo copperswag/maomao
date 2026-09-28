@@ -375,7 +375,7 @@
       color: var(--text-main); background: rgba(9, 10, 15, 0.88); backdrop-filter: blur(4px); z-index: 5;
     }
     .empty-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
-    .empty-copy { font-size: 13px; color: var(--text-sub); }
+   .empty-copy { display: none !important; }
 
     .player-bar {
       padding: 14px 20px; display: flex; justify-content: space-between; align-items: center;
@@ -1376,7 +1376,6 @@
             <div class="card-empty" id="playerEmpty">
               <div>
                 <div class="empty-title" id="emptyTitle">正在连线设备...</div>
-                <p class="empty-copy" id="emptyCopy">调取自适应码流中，请稍候...</p>
               </div>
             </div>
           </div>
@@ -2284,7 +2283,7 @@ function applyLanguage(lang) {
     "btnClerkSignIn": "btn_signin",
     // 播放器与控制
     "btnFeedPet": "btn_feed_pet", "btnOpenTarot": "btn_tarot", "btnOpenBazi": "btn_bazi", "btnOpenMbti": "btn_mbti", "snapshotBtn": "btn_snapshot",
-    "emptyTitle": "loading_stream", "emptyCopy": "loading_stream_desc",
+   "emptyTitle": "loading_stream",
     // 赞助弹窗
     "tabSupportOnce": "tab_support_once", "tabSupportMonthly": "tab_support_monthly",
     // 塔罗弹窗
@@ -4761,7 +4760,7 @@ btnGenerateCert?.addEventListener("click", () => {
         if (playerEmpty) {
         playerEmpty.style.display = "grid";
         if (emptyTitle) emptyTitle.textContent = t("connecting_room_fmt", { name: currentRoomName });
-        if (emptyCopy) emptyCopy.textContent = t("loading_stream_desc");
+      
       }
       }
 
