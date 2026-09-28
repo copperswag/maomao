@@ -2426,6 +2426,15 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
   if (downloadBtn) downloadBtn.textContent = isEn ? "Download App" : "下载 App";
 
   const footerSlogan = document.querySelector(".footer-box p");
+  const footerAppTitle = document.querySelector(".footer-box h3");
+  if (footerAppTitle) {
+    footerAppTitle.textContent = isEn ? "MeowHub App" : "毛毛星球 App";
+  }
+
+  // 联动刷新排行榜底栏文案
+  if (typeof updateMyRankStickyBar === "function") {
+    updateMyRankStickyBar();
+  }
   if (footerSlogan) footerSlogan.textContent = isEn ? "Never leave your fur babies alone again" : "别让你家毛孩子再成为留守儿童了";
   
   
@@ -3229,13 +3238,14 @@ document.addEventListener("DOMContentLoaded", () => {
       myRankData: null
     };
 
-    function updateMyRankStickyBar() {
+function updateMyRankStickyBar() {
+      const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
       const u = ClerkAuth.getUser();
       if (!u) {
         if (myBarAvatar) myBarAvatar.textContent = "🐾";
-        if (myBarName) myBarName.textContent = "未登录猫友";
-        if (myBarRankTip) myBarRankTip.textContent = "登录后可查看我的专属战绩";
-        if (myBarRight) myBarRight.innerHTML = '<button class="btn-login-to-rank" onclick="openClerkSignInModal()">立即登录</button>';
+        if (myBarName) myBarName.textContent = t("my_rank_guest");
+        if (myBarRankTip) myBarRankTip.textContent = t("my_rank_guest_tip");
+        if (myBarRight) myBarRight.innerHTML = `<button class="btn-login-to-rank" onclick="openClerkSignInModal()">${t("btn_login_rank")}</button>`;
         return;
       }
 
@@ -3247,18 +3257,27 @@ document.addEventListener("DOMContentLoaded", () => {
       if (myBarName) myBarName.textContent = u.nickname;
 
       if (rankState.myRankData) {
-        if (myBarRankTip) myBarRankTip.innerHTML = `当前全站并列第 <b style="color: #fbbf24; font-size: 14px;">${rankState.myRankData.rank}</b> 名`;
+        if (myBarRankTip) {
+          myBarRankTip.innerHTML = isEn 
+            ? `Ranked <b style="color: #fbbf24; font-size: 14px;">#${rankState.myRankData.rank}</b> overall`
+            : `当前全站并列第 <b style="color: #fbbf24; font-size: 14px;">${rankState.myRankData.rank}</b> 名`;
+        }
         if (myBarRight) {
           myBarRight.innerHTML = `
             <div style="text-align: right;">
               <span style="font-size: 18px; font-weight: 800; color: #10b981; font-family: monospace;">${rankState.myRankData.feedCount}</span>
-              <span style="font-size: 12px; color: var(--text-sub);"> 次投喂</span>
+              <span style="font-size: 12px; color: var(--text-sub);"> ${t("rank_unit_times")}</span>
             </div>
           `;
         }
       } else {
-        if (myBarRankTip) myBarRankTip.textContent = "暂未上榜，快去直播间为毛孩子加餐吧！";
-        if (myBarRight) myBarRight.innerHTML = '<button class="btn-login-to-rank" onclick="document.getElementById(\'tabNavLive\')?.click()">去投喂</button>';
+        if (myBarRankTip) {
+          myBarRankTip.textContent = isEn ? "Not ranked yet. Treat the kitties in live room!" : "暂未上榜，快去直播间为毛孩子加餐吧！";
+        }
+        if (myBarRight) {
+          const feedBtnText = isEn ? "Feed Now" : "去投喂";
+          myBarRight.innerHTML = `<button class="btn-login-to-rank" onclick="document.getElementById('tabNavLive')?.click()">${feedBtnText}</button>`;
+        }
       }
     }
 
@@ -3286,7 +3305,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </td>
           <td style="text-align: right;">
             <span class="rank-count-val">${item.feedCount}</span>
-            <span style="font-size: 12px; color: var(--text-sub); margin-left: 2px;">次</span>
+            <span style="font-size: 12px; color: var(--text-sub); margin-left: 2px;"> ${t("rank_unit_times")}</span>
           </td>
         `;
         rankTableBody.appendChild(tr);
@@ -3321,7 +3340,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (rankLoadingTrigger) {
               if (!rankState.hasMore) {
-                rankLoadingTrigger.textContent = "— 已展示全部上榜猫友 —";
+                rankLoadingTrigger.textContent = t("rank_loaded_all");
               } else {
                 rankLoadingTrigger.textContent = "下拉自动加载更多...";
               }
