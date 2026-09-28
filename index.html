@@ -1680,12 +1680,12 @@
   <div class="app-modal" id="avatarModal">
     <div class="modal-card-box">
       <div class="honor-modal-header">
-        <div class="honor-current-title">🐾 选择你的猫咪头像</div>
-        <div class="honor-stay-stat">挑选一个专属头像，在弹幕互动中展现个性吧</div>
+        <div class="honor-current-title" data-i18n="avatar_modal_title">🐾 Choose Your Cat Avatar</div>
+        <div class="honor-stay-stat" data-i18n="avatar_modal_sub">Pick an exclusive avatar to show off in live chat</div>
       </div>
       <div class="avatar-grid" id="avatarGrid"></div>
       <div style="padding: 0 20px 20px; text-align: center;">
-        <button id="closeAvatarBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button">确定</button>
+        <button id="closeAvatarBtn" class="btn-modal-action primary" style="width: 100%; justify-content: center;" type="button" data-i18n="btn_confirm">Confirm</button>
       </div>
     </div>
   </div>
@@ -1900,7 +1900,9 @@ const I18N_LOCALES = {
     sidebar_title: "切换直播间",
     mobile_select_room: "📹 选机位",
     total_stations_fmt: "共{n}个机位",
-    
+    avatar_modal_title: "🐾 选择你的猫咪头像",
+    avatar_modal_sub: "挑选一个专属头像，在弹幕互动中展现个性吧",
+    btn_confirm: "确定",
     // 播放器与投喂控制
     btn_feed_pet: "🍗 立即投喂",
     btn_tarot: "🔮 喵星塔罗",
@@ -2038,7 +2040,9 @@ const I18N_LOCALES = {
     sidebar_title: "Switch Camera",
     mobile_select_room: "📹 Cameras",
     total_stations_fmt: "Total {n} Cameras",
-    
+    avatar_modal_title: "🐾 Choose Your Cat Avatar",
+    avatar_modal_sub: "Pick an exclusive avatar to show off in live chat",
+    btn_confirm: "Confirm",
     // 播放器与投喂控制
     btn_feed_pet: "🍗 Feed Now",
     btn_tarot: "🔮 Meow Tarot",
@@ -2470,6 +2474,15 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
     slotTags[1].textContent = isEn ? "【Now · State】" : "【当下 · 境况】";
     slotTags[2].textContent = isEn ? "【Future · Vision】" : "【未来 · 启示】";
   }
+  // 9. 头像选择弹窗双语兜底
+  const avatarTitleEl = document.querySelector("#avatarModal .honor-current-title");
+  if (avatarTitleEl) avatarTitleEl.textContent = t("avatar_modal_title");
+
+  const avatarSubEl = document.querySelector("#avatarModal .honor-stay-stat");
+  if (avatarSubEl) avatarSubEl.textContent = t("avatar_modal_sub");
+
+  const closeAvatarBtnEl = document.getElementById("closeAvatarBtn");
+  if (closeAvatarBtnEl) closeAvatarBtnEl.textContent = t("btn_confirm");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
