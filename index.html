@@ -1250,11 +1250,11 @@
           <div id="clerk-user-avatar-slot"></div>
         </div>
 
-        <button class="badge-checkin" id="btnOpenCheckin" type="button">📅 每日打卡 (<span id="checkinStreakCount">0</span>天)</button>
+        <button class="badge-checkin" id="btnOpenCheckin" type="button">📅 Daily Check-in (<span id="checkinStreakCount">0</span>d)</button>
         <span class="honor-badge" id="myHonorBadge" title="点击查看本周赛季成就">🌱 路过猫奴 (0m) ⓘ</span>
         <div class="badge-live">
           <div class="pulse-dot"></div>
-          <span id="onlineCount">3 直播间在线</span>
+          <span id="onlineCount">3 Live Streams</span>
         </div>
       </div>
     </header>
@@ -1310,7 +1310,7 @@
             </div>
             <span class="badge-live">
               <div class="pulse-dot"></div>
-              <span>LIVE 实时直连</span>
+              <span>LIVE Connected</span>
             </span>
           </div>
         </div>
@@ -1318,8 +1318,8 @@
 
       <div class="chat-section">
         <div class="chat-header">
-          <div class="chat-title">💬 实时猫友互动区</div>
-          <div style="font-size: 12px; color: var(--text-sub);">双击视频画面攒功德 · 发送【开饭/鱼干/撒花/下雨】触发彩蛋 🐾</div>
+          <div class="chat-title">💬 Live Chat Room</div>
+          <div style="font-size: 12px; color: var(--text-sub);">Double-tap screen for merits · Type feast, fish, rain for surprises 🐾</div>
         </div>
 
         <div class="chat-messages" id="chatList">
@@ -2159,7 +2159,7 @@ const I18N_LOCALES = {
   }
 };
 
-let currentLang = localStorage.getItem("meow_app_lang") || (navigator.language.startsWith("zh") ? "zh" : "en");
+let currentLang = localStorage.getItem("meow_app_lang") || "en";
 
 function t(key, params = {}) {
   const dict = I18N_LOCALES[currentLang] || I18N_LOCALES.zh;
@@ -4788,7 +4788,10 @@ btnGenerateCert?.addEventListener("click", () => {
         roomList = rawRooms;
 
         const onlineCountEl = document.getElementById("onlineCount");
-        if (onlineCountEl) onlineCountEl.textContent = `${roomList.length} 直播间在线`;
+        if (onlineCountEl) {
+          const isEn = (currentLang === "en");
+          onlineCountEl.textContent = isEn ? `${roomList.length} Live Streams` : `${roomList.length} 直播间在线`;
+        }
         if (mobileRoomBadge) mobileRoomBadge.textContent = `(${roomList.length}台) ▾`;
         if (drawerTotalCount) drawerTotalCount.textContent = `(共${roomList.length}个机位)`;
 
