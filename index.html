@@ -4238,13 +4238,13 @@ btnGenerateCert?.addEventListener("click", () => {
     }
     fetchNotice();
 
-    const BOT_NAMES = [
+    // 中文环境机器人词库
+    const BOT_NAMES_ZH = [
       "猫猫教信徒", "吸猫专业户", "橘猫大军团长", "三花天下第一", "今天也要摸猫",
       "赛博铲屎官", "罐头赞助商", "喵呜星人", "佛系云养猫", "工位偷猫选手",
       "大橘为重", "毛茸茸爱好者", "软萌收割机", "猫尾巴摇摇", "小鱼干采购员"
     ];
-
-    const BOT_MESSAGES = [
+    const BOT_MESSAGES_ZH = [
       "咪咪快来吃好吃的~ 🍗",
       "今天天气不错，小猫都在晒太阳呢 ☀️",
       "这只小猫好萌呀，想抱走！",
@@ -4262,17 +4262,48 @@ btnGenerateCert?.addEventListener("click", () => {
       "刚刚跑过去的是哪只呀？"
     ];
 
+    // 英文环境机器人词库
+    const BOT_NAMES_EN = [
+      "CatBeliever", "CyberHooman", "OrangeTabbyFan", "CannedTreatKing", "FelineLover_99",
+      "OfficeCatStalker", "PawProtector", "FluffyFanatic", "WhiskerWatcher", "MeowGuardian",
+      "TunaHunter", "SleepyKittyFan", "PurrEnjoyer", "BellyRubMaster", "DailyVisitor"
+    ];
+    const BOT_MESSAGES_EN = [
+      "Come get some tasty treats, kitties! 🍗",
+      "Lovely day for cats to sunbathe! ☀️",
+      "Such a sweetheart! Want to pet so badly 🥰",
+      "Daily meow check-in +1 🐾",
+      "Enjoy your feast, little cutie! 🐟",
+      "Healed by adorable kitties once again ❤️",
+      "Wish I could reach through the screen to pet them~",
+      "Watching them feast is so satisfying!",
+      "Hello to all cat lovers in the room! 👋",
+      "Smart feeding shelters are such a wonderful project!",
+      "Waiting for the calico kitty to show up 👀",
+      "Very alert and lively today!",
+      "Cyber feeding brings so much joy 🎉",
+      "Which kitty just dashed past the camera?",
+      "Good kitty, eat well and grow strong! 💖"
+    ];
+
     let botTimer = null;
 
     function triggerBotComment() {
-      const randomName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
-      const randomText = BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)];
+      const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+      
+      const names = isEn ? BOT_NAMES_EN : BOT_NAMES_ZH;
+      const msgs = isEn ? BOT_MESSAGES_EN : BOT_MESSAGES_ZH;
+      const localeCode = isEn ? "en-US" : "zh-CN";
+
+      const randomName = names[Math.floor(Math.random() * names.length)];
+      const randomText = msgs[Math.floor(Math.random() * msgs.length)];
       const randomAvatar = AVATAR_LIST[Math.floor(Math.random() * AVATAR_LIST.length)];
+
       const botMsg = {
         id: "bot_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4),
         name: randomName,
         text: randomText,
-        time: new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        time: new Date().toLocaleTimeString(localeCode, { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
         avatar: randomAvatar,
         isBot: true
       };
