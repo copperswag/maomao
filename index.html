@@ -1012,6 +1012,10 @@
   color: #fef3c7;
   display: flex;
   flex-direction: column;
+  @keyframes bazi-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 }
 .bazi-input-group {
   display: flex;
@@ -1813,21 +1817,30 @@
           <div style="flex:1;">
             <label style="font-size:12px; font-weight:700; color:#fbbf24;">🎨 毛色五行：</label>
             <select id="baziCatColor" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;">
-              <option value="纯橘">大橘 (金火·富贵旺财)</option>
-              <option value="玄猫">玄猫 (玄水·辟邪镇煞)</option>
-              <option value="三花">三花 (全木火·福泽无疆)</option>
-              <option value="狸花">狸花 (青木·捕猎战神)</option>
-              <option value="白猫">素白 (兑金·高冷出尘)</option>
-              <option value="奶牛">奶牛 (水火相济·灵动神经)</option>
+              <option value="橘色">橘色 (大橘/橘白)</option>
+              <option value="黑白">黑白 (奶牛/八字脸)</option>
+              <option value="纯黑">纯黑 (黑猫/玄猫)</option>
+              <option value="纯白">纯白 (白猫/临清狮子)</option>
+              <option value="灰猫">灰猫 (蓝猫/烟灰)</option>
+              <option value="狸花">狸花 (虎斑/棕褐)</option>
+              <option value="三花">三花 (三色/玳瑁)</option>
             </select>
           </div>
           <div style="flex:1;">
-            <label style="font-size:12px; font-weight:700; color:#fbbf24;">⏳ 出生时节：</label>
+            <label style="font-size:12px; font-weight:700; color:#fbbf24;" id="baziSeasonLabel">⏳ 出生月份：</label>
             <select id="baziSeason" style="width:100%; background:rgba(0,0,0,0.35); border:1px solid #b45309; color:#fef3c7; border-radius:8px; padding:8px; box-sizing:border-box;">
-              <option value="孟春">孟春 (初春苏醒)</option>
-              <option value="仲夏">仲夏 (向阳舒展)</option>
-              <option value="金秋">金秋 (贴膘丰收)</option>
-              <option value="隆冬">隆冬 (盘窝冬眠)</option>
+              <option value="1月">1 月 (摩羯/水瓶 · 初雪萌生)</option>
+              <option value="2月">2 月 (水瓶/双鱼 · 迎春破土)</option>
+              <option value="3月">3 月 (双鱼/白羊 · 桃李苏醒)</option>
+              <option value="4月">4 月 (白羊/金牛 · 暖阳舒展)</option>
+              <option value="5月">5 月 (金牛/双子 · 绿荫逐蝶)</option>
+              <option value="6月">6 月 (双子/巨蟹 · 盛夏抓蝉)</option>
+              <option value="7月">7 月 (巨蟹/狮子 · 卧席纳凉)</option>
+              <option value="8月">8 月 (狮子/处女 · 暮夏清风)</option>
+              <option value="9月">9 月 (处女/天秤 · 贴膘金秋)</option>
+              <option value="10月">10 月 (天秤/天蝎 · 枫红囤粮)</option>
+              <option value="11月">11 月 (天蝎/射手 · 初冬盘窝)</option>
+              <option value="12月">12 月 (射手/摩羯 · 炉边长眠)</option>
             </select>
           </div>
         </div>
@@ -1836,6 +1849,13 @@
           <button id="btnDoBaziRandom" class="btn-modal-action" style="flex:1; justify-content:center;" type="button">🎲 拈指一算</button>
         </div>
       </div>
+      <!-- 钦天监排盘过渡动效区 -->
+      <div id="baziLoadingBox" style="display:none; text-align:center; padding:28px 10px;">
+        <div style="font-size:42px; display:inline-block; animation:bazi-spin 1.8s linear infinite;">☯️</div>
+        <div id="baziLoadingTitle" style="font-size:16px; font-weight:800; color:#fbbf24; margin:14px 0 6px;">喵星钦天监奉旨排盘中...</div>
+        <div id="baziLoadingSub" style="font-size:12px; color:rgba(254,243,199,0.7);">正在推衍毛色五行与命宫星位...</div>
+      </div>
+      
 
       <!-- 结果命帖 -->
       <div id="baziResultBox" style="display:none; background:#fef3c7; color:#451a03; border-radius:12px; border:4px double #78350f; padding:16px; margin-top:14px; text-align:left; position:relative;">
@@ -2554,21 +2574,40 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
   }
 
   const selColor = document.getElementById("baziCatColor");
-  if (selColor && selColor.options.length >= 6) {
-    selColor.options[0].text = isEn ? "Orange (Gold/Fire · Wealth)" : "大橘 (金火·富贵旺财)";
-    selColor.options[1].text = isEn ? "Black (Water · Ward Off Evil)" : "玄猫 (玄水·辟邪镇煞)";
-    selColor.options[2].text = isEn ? "Calico (Wood/Fire · Infinite Blessing)" : "三花 (全木火·福泽无疆)";
-    selColor.options[3].text = isEn ? "Tabby (Wood · Hunting God)" : "狸花 (青木·捕猎战神)";
-    selColor.options[4].text = isEn ? "White (Metal · Noble & Elegant)" : "素白 (兑金·高冷出尘)";
-    selColor.options[5].text = isEn ? "Tuxedo (Water/Fire · Quirky Spirit)" : "奶牛 (水火相济·灵动神经)";
+  if (selColor && selColor.options.length >= 7) {
+    selColor.options[0].text = isEn ? "Orange / Ginger" : "橘色 (大橘/橘白)";
+    selColor.options[1].text = isEn ? "Black & White (Tuxedo)" : "黑白 (奶牛/八字脸)";
+    selColor.options[2].text = isEn ? "Pure Black" : "纯黑 (黑猫/玄猫)";
+    selColor.options[3].text = isEn ? "Pure White" : "纯白 (白猫/临清狮子)";
+    selColor.options[4].text = isEn ? "Grey / Blue" : "灰猫 (蓝猫/烟灰)";
+    selColor.options[5].text = isEn ? "Tabby / Striped" : "狸花 (虎斑/棕褐)";
+    selColor.options[6].text = isEn ? "Calico / Tortie" : "三花 (三色/玳瑁)";
   }
 
   const selSeason = document.getElementById("baziSeason");
-  if (selSeason && selSeason.options.length >= 4) {
-    selSeason.options[0].text = isEn ? "Early Spring (Awakening)" : "孟春 (初春苏醒)";
-    selSeason.options[1].text = isEn ? "Midsummer (Sunbathing)" : "仲夏 (向阳舒展)";
-    selSeason.options[2].text = isEn ? "Golden Autumn (Harvest)" : "金秋 (贴膘丰收)";
-    selSeason.options[3].text = isEn ? "Deep Winter (Hibernation)" : "隆冬 (盘窝冬眠)";
+  if (selSeason) {
+    const monthsEn = [
+      "Jan (Cap/Aqu · New Born)", "Feb (Aqu/Pis · Early Spring)", "Mar (Pis/Ari · Blooming)",
+      "Apr (Ari/Tau · Warm Sun)", "May (Tau/Gem · Butterfly Hunter)", "Jun (Gem/Can · Midsummer)",
+      "Jul (Can/Leo · Sun Lounger)", "Aug (Leo/Vir · Late Summer Breeze)", "Sep (Vir/Lib · Golden Autumn)",
+      "Oct (Lib/Sco · Harvest Feast)", "Nov (Sco/Sag · Cozy Nester)", "Dec (Sag/Cap · Winter Slumber)"
+    ];
+    const monthsZh = [
+      "1 月 (摩羯/水瓶 · 初雪萌生)", "2 月 (水瓶/双鱼 · 迎春破土)", "3 月 (双鱼/白羊 · 桃李苏醒)",
+      "4 月 (白羊/金牛 · 暖阳舒展)", "5 月 (金牛/双子 · 绿荫逐蝶)", "6 月 (双子/巨蟹 · 盛夏抓蝉)",
+      "7 月 (巨蟹/狮子 · 卧席纳凉)", "8 月 (狮子/处女 · 暮夏清风)", "9 月 (处女/天秤 · 贴膘金秋)",
+      "10 月 (天秤/天蝎 · 枫红囤粮)", "11 月 (天蝎/射手 · 初冬盘窝)", "12 月 (射手/摩羯 · 炉边长眠)"
+    ];
+    for (let i = 0; i < 12; i++) {
+      if (selSeason.options[i]) {
+        selSeason.options[i].text = isEn ? monthsEn[i] : monthsZh[i];
+      }
+    }
+  }
+
+  const seasonLabelEl = document.getElementById("baziSeasonLabel");
+  if (seasonLabelEl) {
+    seasonLabelEl.textContent = isEn ? "⏳ Birth Month:" : "⏳ 出生月份：";
   }
 
   // 8. 小猫塔罗弹窗全面双语刷新
@@ -5178,96 +5217,122 @@ shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
 
   let currentBaziInfo = null;
 
- function executeBazi(nameInput, color, season) {
-    const isEn = (currentLang === "en");
+function executeBazi(nameInput, color, season) {
+    const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
     const defaultName = isEn ? "Kitty" : "咪咪";
     const finalName = nameInput.trim() || (typeof currentRoomName !== "undefined" ? currentRoomName : defaultName);
 
-    let hash = 0;
-    const seed = `${finalName}_${color}_${season}`;
-    for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) % 100000;
-    const item = BAZI_DATA_BASE[Math.abs(hash) % BAZI_DATA_BASE.length];
+    const loadingBox = document.getElementById("baziLoadingBox");
+    const loadTitle = document.getElementById("baziLoadingTitle");
+    const loadSub = document.getElementById("baziLoadingSub");
+    const calcBtn = document.getElementById("btnDoBaziCalc");
+    const randBtn = document.getElementById("btnDoBaziRandom");
 
-    // 获取当前选中的下拉框英文显示文本（若在英文模式下）
-    const selColorEl = document.getElementById("baziCatColor");
-    const selSeasonEl = document.getElementById("baziSeason");
-    const displayColor = isEn && selColorEl ? selColorEl.options[selColorEl.selectedIndex]?.text.split(" (")[0] : color;
-    const displaySeason = isEn && selSeasonEl ? selSeasonEl.options[selSeasonEl.selectedIndex]?.text.split(" (")[0] : season;
+    // 1. 隐藏旧结果、展开推演加载、禁用按钮防重复点击
+    if (resBox) resBox.style.display = "none";
+    if (btnSave) btnSave.style.display = "none";
+    if (calcBtn) calcBtn.disabled = true;
+    if (randBtn) randBtn.disabled = true;
 
-    // 英文版命帖判词映射
-    const BAZI_EN_MAP = {
-      0: {
-        title: "【I Ching · Hidden Dragon in the Deep】",
-        quote: "“Hidden within the carton, unseen; once the meat aroma spreads, it leaps into the sky.”",
-        source: "《I Ching · Hexagram Qian》: 'Hidden dragon, do not act; yang is below.'",
-        text: "This feline has deep internal power and masters the art of patience. Napping in cardboard boxes by day gathers cosmic energy. When twilight arrives, its zoomies unleash true sovereign majesty.",
-        noble: "Can-Opening Human", avoid: "Vacuums, Bath Basin"
-      },
-      1: {
-        title: "【Hexagram Kun · Bountiful Earth & Heavy Paws】",
-        quote: "“A chubby belly brings vast peace. Heavy fur grounded, summoning prosperity.”",
-        source: "《I Ching · Hexagram Kun》: 'The earth's capacity is vast; a noble soul carries all with virtue.'",
-        text: "Blessed with endless food fortune and a full moon belly. Walking with steady, imperial strides, this cat is a sacred guardian of wealth. Every pound gained amplifies home luck and comfort.",
-        noble: "Snack-Serving Patron", avoid: "Diet Kibble"
-      },
-      2: {
-        title: "【Classic of Poetry · Elegant Willow & Gentle Water】",
-        quote: "“Graceful calls by the riverbank. Tender fish, a cat's true delight.”",
-        source: "《Classic of Poetry · Guan Ju》",
-        text: "Naturally gifted with poetic charm and water-wood serenity. Eyes clear as autumn springs, steps as gentle as willow wisps. Repays every gentle stroke with purring kneading, adored by all humankind.",
-        noble: "Gentle Brushing Companion", avoid: "Rough Tail Pulling"
+    if (loadingBox) {
+      if (loadTitle) loadTitle.textContent = isEn ? "Imperial Astronomy Divining..." : "喵星钦天监奉旨排盘中...";
+      if (loadSub) loadSub.textContent = isEn ? "Analyzing coat elements and birth season alignment..." : "正在推衍毛色五行与生辰命宫...";
+      loadingBox.style.display = "block";
+    }
+
+    // 2. 0.7秒后切换阶段性推演提示
+    setTimeout(() => {
+      if (loadSub) {
+        loadSub.textContent = isEn ? "Calculating noble allies and feline destiny charts..." : "正在排定命盘吉凶与合拍贵人...";
       }
-    };
+    }, 700);
 
-    const baziIdx = Math.abs(hash) % BAZI_DATA_BASE.length;
-    const enItem = BAZI_EN_MAP[baziIdx] || BAZI_EN_MAP[0];
+    // 3. 1.4秒后揭晓命帖
+    setTimeout(() => {
+      if (loadingBox) loadingBox.style.display = "none";
+      if (calcBtn) calcBtn.disabled = false;
+      if (randBtn) randBtn.disabled = false;
 
-    const outTitle = isEn ? enItem.title : item.title;
-    const outQuote = isEn ? enItem.quote : item.quote;
-    const outSource = isEn ? enItem.source : item.source;
-    const outText = isEn ? enItem.text : item.text;
-    const outNoble = isEn ? enItem.noble : item.noble;
-    const outAvoid = isEn ? enItem.avoid : item.avoid;
+      let hash = 0;
+      const seed = `${finalName}_${color}_${season}`;
+      for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) % 100000;
+      const item = BAZI_DATA_BASE[Math.abs(hash) % BAZI_DATA_BASE.length];
 
-    currentBaziInfo = { 
-      name: finalName, 
-      color: displayColor, 
-      season: displaySeason, 
-      title: outTitle,
-      quote: outQuote,
-      source: outSource,
-      text: outText,
-      noble: outNoble,
-      avoid: outAvoid
-    };
+      const selColorEl = document.getElementById("baziCatColor");
+      const selSeasonEl = document.getElementById("baziSeason");
+      const displayColor = isEn && selColorEl ? selColorEl.options[selColorEl.selectedIndex]?.text.split(" (")[0] : color;
+      const displaySeason = isEn && selSeasonEl ? selSeasonEl.options[selSeasonEl.selectedIndex]?.text.split(" (")[0] : season;
 
-    // 命帖卡片 DOM 写入
-    const catInfoLabel = isEn ? "Fated Subject: " : "命主尊讳：";
-    const catInfoTail = isEn ? ` (${displayColor} · Born in ${displaySeason})` : ` (${color} · 岁在${season})`;
-    document.getElementById("outBaziCatInfo").textContent = `${finalName}${catInfoTail}`;
-    
-    document.getElementById("outBaziTitle").textContent = outTitle;
-    document.getElementById("outBaziQuote").textContent = outQuote;
-    
-    const sourceLabel = isEn ? "<b>【Classical Origin】</b>" : "<b>【经史本旨】</b>";
-    document.getElementById("outBaziText").innerHTML = `${sourceLabel} ${outSource}<br>${outText}`;
-    
-    const noblePrefix = isEn ? "✦ Fated Ally: " : "✦ 合拍贵人：";
-    const avoidPrefix = isEn ? " | ✦ To Avoid: " : " | ✦ 避忌煞星：";
-    const nobleContainer = document.getElementById("outBaziNoble")?.parentElement;
-    if (nobleContainer) {
-      nobleContainer.innerHTML = `${noblePrefix}<b id="outBaziNoble" style="color:#991b1b;">${outNoble}</b>${avoidPrefix}<b id="outBaziAvoid">${outAvoid}</b>`;
-    }
+      const BAZI_EN_MAP = {
+        0: {
+          title: "【I Ching · Hidden Dragon in the Deep】",
+          quote: "“Hidden within the carton, unseen; once the meat aroma spreads, it leaps into the sky.”",
+          source: "《I Ching · Hexagram Qian》: 'Hidden dragon, do not act; yang is below.'",
+          text: "This feline has deep internal power and masters the art of patience. Napping in cardboard boxes by day gathers cosmic energy. When twilight arrives, its zoomies unleash true sovereign majesty.",
+          noble: "Can-Opening Human", avoid: "Vacuums, Bath Basin"
+        },
+        1: {
+          title: "【Hexagram Kun · Bountiful Earth & Heavy Paws】",
+          quote: "“A chubby belly brings vast peace. Heavy fur grounded, summoning prosperity.”",
+          source: "《I Ching · Hexagram Kun》: 'The earth's capacity is vast; a noble soul carries all with virtue.'",
+          text: "Blessed with endless food fortune and a full moon belly. Walking with steady, imperial strides, this cat is a sacred guardian of wealth. Every pound gained amplifies home luck and comfort.",
+          noble: "Snack-Serving Patron", avoid: "Diet Kibble"
+        },
+        2: {
+          title: "【Classic of Poetry · Elegant Willow & Gentle Water】",
+          quote: "“Graceful calls by the riverbank. Tender fish, a cat's true delight.”",
+          source: "《Classic of Poetry · Guan Ju》",
+          text: "Naturally gifted with poetic charm and water-wood serenity. Eyes clear as autumn springs, steps as gentle as willow wisps. Repays every gentle stroke with purring kneading, adored by all humankind.",
+          noble: "Gentle Brushing Companion", avoid: "Rough Tail Pulling"
+        }
+      };
 
-    // 印章文字
-    const sealEl = document.querySelector("#baziResultBox div[style*='border:2px solid #b91c1c']");
-    if (sealEl) {
-      sealEl.innerHTML = isEn ? "IMPERIAL<br>MEOW" : "钦天监<br>猫命帖";
-    }
+      const baziIdx = Math.abs(hash) % BAZI_DATA_BASE.length;
+      const enItem = BAZI_EN_MAP[baziIdx] || BAZI_EN_MAP[0];
 
-    if (resBox) resBox.style.display = "block";
-    if (btnSave) btnSave.style.display = "inline-flex";
-    if (typeof fireConfetti === "function") fireConfetti();
+      const outTitle = isEn ? enItem.title : item.title;
+      const outQuote = isEn ? enItem.quote : item.quote;
+      const outSource = isEn ? enItem.source : item.source;
+      const outText = isEn ? enItem.text : item.text;
+      const outNoble = isEn ? enItem.noble : item.noble;
+      const outAvoid = isEn ? enItem.avoid : item.avoid;
+
+      currentBaziInfo = { 
+        name: finalName, 
+        color: displayColor, 
+        season: displaySeason, 
+        title: outTitle,
+        quote: outQuote,
+        source: outSource,
+        text: outText,
+        noble: outNoble,
+        avoid: outAvoid
+      };
+
+      const catInfoTail = isEn ? ` (${displayColor} · Born in ${displaySeason})` : ` (${color} · 岁在${season})`;
+      document.getElementById("outBaziCatInfo").textContent = `${finalName}${catInfoTail}`;
+      document.getElementById("outBaziTitle").textContent = outTitle;
+      document.getElementById("outBaziQuote").textContent = outQuote;
+      
+      const sourceLabel = isEn ? "<b>【Classical Origin】</b>" : "<b>【经史本旨】</b>";
+      document.getElementById("outBaziText").innerHTML = `${sourceLabel} ${outSource}<br>${outText}`;
+      
+      const noblePrefix = isEn ? "✦ Fated Ally: " : "✦ 合拍贵人：";
+      const avoidPrefix = isEn ? " | ✦ To Avoid: " : " | ✦ 避忌煞星：";
+      const nobleContainer = document.getElementById("outBaziNoble")?.parentElement;
+      if (nobleContainer) {
+        nobleContainer.innerHTML = `${noblePrefix}<b id="outBaziNoble" style="color:#991b1b;">${outNoble}</b>${avoidPrefix}<b id="outBaziAvoid">${outAvoid}</b>`;
+      }
+
+      const sealEl = document.querySelector("#baziResultBox div[style*='border:2px solid #b91c1c']");
+      if (sealEl) {
+        sealEl.innerHTML = isEn ? "IMPERIAL<br>MEOW" : "钦天监<br>猫命帖";
+      }
+
+      if (resBox) resBox.style.display = "block";
+      if (btnSave) btnSave.style.display = "inline-flex";
+      if (typeof fireConfetti === "function") fireConfetti();
+    }, 1400);
   }
 
   btnCalc?.addEventListener("click", () => {
@@ -5278,8 +5343,8 @@ shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
   });
 
   btnRand?.addEventListener("click", () => {
-    const colors = ["纯橘", "玄猫", "三花", "狸花", "白猫", "奶牛"];
-    const seasons = ["孟春", "仲夏", "金秋", "隆冬"];
+    const colors = ["橘色", "黑白", "纯黑", "纯白", "灰猫", "狸花", "三花"];
+    const seasons = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
     const rc = colors[Math.floor(Math.random() * colors.length)];
     const rs = seasons[Math.floor(Math.random() * seasons.length)];
     const cEl = document.getElementById("baziCatColor");
