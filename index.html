@@ -1498,7 +1498,7 @@
 
           <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--card-border);">
             <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 8px;">📬 官方交流与反馈渠道：</div>
-            <div class="about-social-links">
+          <div class="about-social-links">
               <a href="https://agreement.meowhub.cn/live_room_share.html" target="_blank" rel="noopener noreferrer" class="about-link-pill">📱 下载毛毛星球 App</a>
               <span class="about-link-pill" style="color: #10b981; cursor: default;">💬 官方微信公众号：毛毛星球app</span>
               <span class="about-link-pill" style="color: #fbbf24; cursor: default;">💌 合作邮箱：cooper@qingmalin.cn</span>
@@ -1575,7 +1575,7 @@
               </div>
             </div>
 
-            <div class="faq-item">
+           <div class="faq-item">
               <div class="faq-question">
                 <span>7. 遇到系统异常、故障或想提功能建议怎么联系？</span>
                 <span class="faq-arrow">▼</span>
@@ -1585,10 +1585,10 @@
                 • 官方微信公众号：<b>毛毛星球app</b><br>
                 • 意见与合作邮箱：<b>cooper@qingmalin.cn</b><br>
                 反馈时建议附上您的机位名称、发生时间以及相关截图，技术团队会第一时间排查跟进！
-             </div>
+              </div>
+      </div>
     </div>
   </div>
-</div>
 </div>
     <div class="footer-box">
       <div>
@@ -2547,82 +2547,86 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
   const socialLinks = document.querySelectorAll(".about-social-links .about-link-pill");
   if (socialLinks.length >= 3) {
     socialLinks[0].textContent = isEn ? "📱 Download MeowHub App" : "📱 下载毛毛星球 App";
-    socialLinks[1].textContent = isEn ? "💬 WeChat Official: MeowHub" : "💬 官方微信公众号：毛毛星球";
-    socialLinks[2].textContent = isEn ? "💌 Email: support@meowhub.cn" : "💌 合作邮箱：support@meowhub.cn";
+    socialLinks[1].textContent = isEn ? "💬 WeChat Official: MeowHub App" : "💬 官方微信公众号：毛毛星球app";
+    socialLinks[2].textContent = isEn ? "💌 Email: cooper@qingmalin.cn" : "💌 合作邮箱：cooper@qingmalin.cn";
   }
 
-  // 4 个手风琴 FAQ 问答
+// 7 个手风琴 FAQ 问答
   const faqItems = document.querySelectorAll(".faq-item");
-  if (faqItems.length >= 7) {
-    const faqDataEn = [
-      {
-        q: "1. Where are the cats? Why aren't they on camera sometimes?",
-        a: "Cats are naturally alert and crepuscular, most active around dawn and dusk. During bright or warm daytime hours, they rest in cozy shelters or hidden spots. Once they hear the feeder chime or dinner arrives, they come gathering for treats!"
-      },
-      {
-        q: "2. Will clicking feed overfeed the cats or waste food?",
-        a: "No! The system features a network-wide shared anti-overeating cooldown lock. Once any user feeds successfully, that camera locks into protection countdown. Commands cannot be sent until cooling ends, ensuring healthy and measured portions."
-      },
-      {
-        q: "3. Why don't I see kibble drop immediately after clicking feed?",
-        a: "The cameras use adaptive encrypted streaming. From capture and cloud encoding to browser decoding, there is an objective 3 to 6-second physical delay. The physical feeder dispenses within 1 second of clicking, appearing on screen moments later."
-      },
-      {
-        q: "4. How is the Feeding Honor Roll calculated?",
-        a: "Rankings are automatically calculated based on valid feed counts from signed-in users across All-Time, Past 30 Days, and Past 7 Days. Users with identical feed counts share equal rank using standard dense ranking."
-      },
-      {
-        q: "5. Who covers all the operating expenses of this project?",
-        a: "All expenses for this project are currently supported by MeowHub. No joke, the operational and hardware costs add up fast, so your generous donations are crucial to help us keep this project running sustainably.<br><br>In our live streams, cloud feeding controls and interactive features are completely free and open to everyone. If you appreciate our rescue efforts, feel free to tap '☕ Sponsor' at the top to treat the kitties to canned snacks—every single donation goes directly toward shelter maintenance and kibble replenishment!"
-      },
-      {
-        q: "6. Can my rescue sanctuary, cattery, or cats be featured on stream?",
-        a: "Warmly welcomed! MeowHub is actively expanding partner feeding stations and intelligent shelter upgrades across the country.<br><br>If you manage a stray cat sanctuary, animal rescue center, cat cafe, or community feeding post with stable network connectivity and power, please reach out via our official WeChat or Email. Once verified, we will arrange smart hardware deployment and live streaming integration."
-      },
-      {
-        q: "7. How do I report bugs, system issues, or suggest new features?",
-        a: "If you encounter offline cameras, feeding anomalies, video stutter, or have creative feature ideas, please reach out directly through our official channels:<br>• Official WeChat Account: <b>毛毛星球app</b><br>• Inquiries & Feedback Email: <b>cooper@qingmalin.cn</b><br>When reporting, please include the camera name, approximate time of occurrence, and relevant screenshots for rapid diagnosis!"
-      }
-    ];
+  const faqDataEn = [
+    {
+      q: "1. Where are the cats? Why aren't they on camera sometimes?",
+      a: "Cats are naturally alert and crepuscular, most active around dawn and dusk. During bright or warm daytime hours, they rest in cozy shelters or hidden spots. Once they hear the feeder chime or dinner arrives, they come gathering for treats!"
+    },
+    {
+      q: "2. Will clicking feed overfeed the cats or waste food?",
+      a: "No! The system features a network-wide shared anti-overeating cooldown lock. Once any user feeds successfully, that camera locks into protection countdown. Commands cannot be sent until cooling ends, ensuring healthy and measured portions."
+    },
+    {
+      q: "3. Why don't I see kibble drop immediately after clicking feed?",
+      a: "The cameras use adaptive encrypted streaming. From capture and cloud encoding to browser decoding, there is an objective 3 to 6-second physical delay. The physical feeder dispenses within 1 second of clicking, appearing on screen moments later."
+    },
+    {
+      q: "4. How is the Feeding Honor Roll calculated?",
+      a: "Rankings are automatically calculated based on valid feed counts from signed-in users across All-Time, Past 30 Days, and Past 7 Days. Users with identical feed counts share equal rank using standard dense ranking."
+    },
+    {
+      q: "5. Who covers all the operating expenses of this project?",
+      a: "All expenses for this project are currently supported by MeowHub. No joke, the operational and hardware costs add up fast, so your generous donations are crucial to help us keep this project running sustainably.<br><br>In our live streams, cloud feeding controls and interactive features are completely free and open to everyone. If you appreciate our rescue efforts, feel free to tap '☕ Sponsor' at the top to treat the kitties to canned snacks—every single donation goes directly toward shelter maintenance and kibble replenishment!"
+    },
+    {
+      q: "6. Can my rescue sanctuary, cattery, or cats be featured on stream?",
+      a: "Warmly welcomed! MeowHub is actively expanding partner feeding stations and intelligent shelter upgrades across the country.<br><br>If you manage a stray cat sanctuary, animal rescue center, cat cafe, or community feeding post with stable network connectivity and power, please reach out via our official WeChat or Email. Once verified, we will arrange smart hardware deployment and live streaming integration."
+    },
+    {
+      q: "7. How do I report bugs, system issues, or suggest new features?",
+      a: "If you encounter offline cameras, feeding anomalies, video stutter, or have creative feature ideas, please reach out directly through our official channels:<br>• Official WeChat Account: <b>毛毛星球app</b><br>• Inquiries & Feedback Email: <b>cooper@qingmalin.cn</b><br>When reporting, please include the camera name, approximate time of occurrence, and relevant screenshots for rapid diagnosis!"
+    }
+  ];
 
-    const faqDataZh = [
-      {
-        q: "1. 猫咪们去哪儿了？为什么有时镜头前看不到它们？",
-        a: "猫咪生性警觉且多喜在晨昏活动。白天光照充足或气温较高时，它们通常在舒适温暖的猫窝或隐蔽角落小憩。每当听到投喂器运转出粮的清脆响声，或者到了傍晚饭点，它们就会成群结队跑来干饭啦！"
-      },
-      {
-        q: "2. 大家都点击投喂，猫咪会不会被撑坏或浪费粮食？",
-        a: "不会的！平台底层搭载了“机位全局防过饱冷却锁”（全网共享冷却时长）。只要任意用户投喂成功一次，该机位将立即锁定进入倒计时保护，冷却期间全网所有人都无法再次下发指令，科学保障定时定量。"
-      },
-      {
-        q: "3. 为什么点击投喂成功后，画面没有马上看到猫粮掉落？",
-        a: "现场摄像头采用多码流自适应加密推流，从现场真实画面采集、视频转码到浏览器解码播放，存在约 3 到 6 秒的客观传输物理延迟。现场投喂器在点击的 1 秒内就已经精准出粮了，稍等数秒即可在画面中看到。"
-      },
-      {
-        q: "4. 投喂功德排行榜是如何排名的？",
-        a: "排行榜基于全网登录用户的有效投喂次数自动统计，分为“全部时间”、“最近 30 天”与“最近 7 天”三个时间维度。若多名猫友投喂次数相同，系统采用标准并列算法（Dense Rank），让同贡献的猫友享有并列殊荣！"
-      },
-      {
-        q: "5. 该项目的运营费用由谁承担？",
-        a: "该项目所有费用目前均由毛毛星球支持。不开玩笑，项目的成本不是闹着玩的，所以，希望大家可以捐助让我们可以持久运营下去。<br><br>在直播间里，云端投喂与互动体验完全向大众开放；如果您认可我们的救助行动，欢迎点击顶栏的“☕ 爱心赞助”请毛孩子们加个罐头，每一笔赞助都会用于救助基地维护与口粮采购！"
-      },
-      {
-        q: "6. 我的救助基地/猫舍或猫咪可以接入直播吗？",
-        a: "非常欢迎！毛毛星球正在全国范围内拓展更多定点投喂站与智能化升级合作。<br><br>如果您是流浪猫救助基地、猫咪收容所、猫咖或社区爱心投喂点的负责人，且现场具备稳定的网络与安装环境，欢迎通过官方公众号或邮箱联系我们，审核评估通过后即可安排智能设备对接与直播接入。"
-      },
-      {
-        q: "7. 遇到系统异常、故障或想提功能建议怎么联系？",
-        a: "如遇设备离线、出粮异常、视频卡顿等问题，或有新玩法创意，请直接联系我们的官方渠道：<br>• 官方微信公众号：<b>毛毛星球app</b><br>• 意见与合作邮箱：<b>cooper@qingmalin.cn</b><br>反馈时建议附上您的机位名称、发生时间以及相关截图，技术团队会第一时间排查跟进！"
-      }
-    ];
-    const currentFaqData = isEn ? faqDataEn : faqDataZh;
-    faqItems.forEach((item, idx) => {
+  const faqDataZh = [
+    {
+      q: "1. 猫咪们去哪儿了？为什么有时镜头前看不到它们？",
+      a: "猫咪生性警觉且多喜在晨昏活动。白天光照充足或气温较高时，它们通常在舒适温暖的猫窝或隐蔽角落小憩。每当听到投喂器运转出粮的清脆响声，或者到了傍晚饭点，它们就会成群结队跑来干饭啦！"
+    },
+    {
+      q: "2. 大家都点击投喂，猫咪会不会被撑坏或浪费粮食？",
+      a: "不会的！平台底层搭载了“机位全局防过饱冷却锁”（全网共享冷却时长）。只要任意用户投喂成功一次，该机位将立即锁定进入倒计时保护，冷却期间全网所有人都无法再次下发指令，科学保障定时定量。"
+    },
+    {
+      q: "3. 为什么点击投喂成功后，画面没有马上看到猫粮掉落？",
+      a: "现场摄像头采用多码流自适应加密推流，从现场真实画面采集、视频转码到浏览器解码播放，存在约 3 到 6 秒的客观传输物理延迟。现场投喂器在点击的 1 秒内就已经精准出粮了，稍等数秒即可在画面中看到。"
+    },
+    {
+      q: "4. 投喂功德排行榜是如何排名的？",
+      a: "排行榜基于全网登录用户的有效投喂次数自动统计，分为“全部时间”、“最近 30 天”与“最近 7 天”三个时间维度。若多名猫友投喂次数相同，系统采用标准并列算法（Dense Rank），让同贡献的猫友享有并列殊荣！"
+    },
+    {
+      q: "5. 该项目的运营费用由谁承担？",
+      a: "该项目所有费用目前均由毛毛星球支持。不开玩笑，项目的成本不是闹着玩的，所以，希望大家可以捐助让我们可以持久运营下去。<br><br>在直播间里，云端投喂与互动体验完全向大众开放；如果您认可我们的救助行动，欢迎点击顶栏的“☕ 爱心赞助”请毛孩子们加个罐头，每一笔赞助都会用于救助基地维护与口粮采购！"
+    },
+    {
+      q: "6. 我的救助基地/猫舍或猫咪可以接入直播吗？",
+      a: "非常欢迎！毛毛星球正在全国范围内拓展更多定点投喂站与智能化升级合作。<br><br>如果您是流浪猫救助基地、猫咪收容所、猫咖或社区爱心投喂点的负责人，且现场具备稳定的网络与安装环境，欢迎通过官方公众号或邮箱联系我们，审核评估通过后即可安排智能设备对接与直播接入。"
+    },
+    {
+      q: "7. 遇到系统异常、故障或想提功能建议怎么联系？",
+      a: "如遇设备离线、出粮异常、视频卡顿等问题，或有新玩法创意，请直接联系我们的官方渠道：<br>• 官方微信公众号：<b>毛毛星球app</b><br>• 意见与合作邮箱：<b>cooper@qingmalin.cn</b><br>反馈时建议附上您的机位名称、发生时间以及相关截图，技术团队会第一时间排查跟进！"
+    }
+  ];
+
+  const currentFaqData = isEn ? faqDataEn : faqDataZh;
+  faqItems.forEach((item, idx) => {
+    if (idx < currentFaqData.length) {
       const qSpan = item.querySelector(".faq-question span:first-child");
       const aDiv = item.querySelector(".faq-answer");
-      if (qSpan && currentFaqData[idx]) qSpan.textContent = currentFaqData[idx].q;
-      if (aDiv && currentFaqData[idx]) aDiv.innerHTML = currentFaqData[idx].a;
-    });
-  }
+      if (qSpan) qSpan.textContent = currentFaqData[idx].q;
+      if (aDiv) aDiv.innerHTML = currentFaqData[idx].a;
+    } else {
+      // 容错处理：如果 HTML 里多写了第 8 个未定义卡片，直接隐藏掉防止破绽
+      item.style.display = "none";
+    }
+  });
 
 
   
