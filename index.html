@@ -564,8 +564,10 @@
       padding: 0 20px; font-size: 13px; line-height: 1.7; color: var(--text-sub); border-top: 1px solid transparent;
     }
     .faq-item.open .faq-answer {
-      max-height: 200px; padding: 14px 20px 18px; border-top-color: rgba(255, 255, 255, 0.04);
-    }
+  max-height: 350px;
+  padding: 14px 20px 18px;
+  border-top-color: rgba(255, 255, 255, 0.04);
+}
 
     /* ================= 核心弹窗通用样式 ================= */
     .app-modal {
@@ -1498,8 +1500,8 @@
             <div style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 8px;">📬 官方交流与反馈渠道：</div>
             <div class="about-social-links">
               <a href="https://agreement.meowhub.cn/live_room_share.html" target="_blank" rel="noopener noreferrer" class="about-link-pill">📱 下载毛毛星球 App</a>
-              <span class="about-link-pill" style="color: #10b981; cursor: default;">💬 官方微信公众号：毛毛星球</span>
-              <span class="about-link-pill" style="color: #fbbf24; cursor: default;">💌 合作邮箱：support@meowhub.cn</span>
+              <span class="about-link-pill" style="color: #10b981; cursor: default;">💬 官方微信公众号：毛毛星球app</span>
+              <span class="about-link-pill" style="color: #fbbf24; cursor: default;">💌 合作邮箱：cooper@qingmalin.cn</span>
             </div>
           </div>
         </div>
@@ -1546,12 +1548,48 @@
               <div class="faq-answer">
                 排行榜基于全网登录用户的有效投喂次数自动统计，分为“全部时间”、“最近 30 天”与“最近 7 天”三个时间维度。若多名猫友投喂次数相同，系统采用标准并列算法（Dense Rank），让同贡献的猫友享有并列殊荣！
               </div>
+              <div class="faq-item">
+              <div class="faq-question">
+                <span>5. 该项目如何保持运转</span>
+                <span class="faq-arrow">▼</span>
+              </div>
+             <div class="faq-item">
+              <div class="faq-question">
+                <span>5. 该项目的运营费用由谁承担？</span>
+                <span class="faq-arrow">▼</span>
+              </div>
+              <div class="faq-answer">
+                该项目所有费用目前均由毛毛星球支持。不开玩笑，项目的成本不是闹着玩的，所以，希望大家可以捐助让我们可以持久运营下去。<br><br>
+                在直播间里，云端投喂与互动体验完全向大众开放；如果您认可我们的救助行动，欢迎点击顶栏的“☕ 爱心赞助”请毛孩子们加个罐头，每一笔赞助都会用于救助基地维护与口粮采购！
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
+            <div class="faq-item">
+              <div class="faq-question">
+                <span>6. 我的救助基地/猫舍或猫咪可以接入直播吗？</span>
+                <span class="faq-arrow">▼</span>
+              </div>
+              <div class="faq-answer">
+                非常欢迎！毛毛星球正在全国范围内拓展更多定点投喂站与智能化升级合作。<br><br>
+                如果您是流浪猫救助基地、猫咪收容所、猫咖或社区爱心投喂点的负责人，且现场具备稳定的网络与安装环境，欢迎通过官方公众号或邮箱联系我们，审核评估通过后即可安排智能设备对接与直播接入。
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <div class="faq-question">
+                <span>7. 遇到系统异常、故障或想提功能建议怎么联系？</span>
+                <span class="faq-arrow">▼</span>
+              </div>
+              <div class="faq-answer">
+                如遇设备离线、出粮异常、视频卡顿等问题，或有新玩法创意，请直接联系我们的官方渠道：<br>
+                • 官方微信公众号：<b>毛毛星球app</b><br>
+                • 意见与合作邮箱：<b>cooper@qingmalin.cn</b><br>
+                反馈时建议附上您的机位名称、发生时间以及相关截图，技术团队会第一时间排查跟进！
+             </div>
+    </div>
+  </div>
+</div>
+</div>
     <div class="footer-box">
       <div>
         <h3 style="font-size: 15px; margin-bottom: 4px;">毛毛星球 App</h3>
@@ -2515,7 +2553,7 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
 
   // 4 个手风琴 FAQ 问答
   const faqItems = document.querySelectorAll(".faq-item");
-  if (faqItems.length >= 4) {
+  if (faqItems.length >= 7) {
     const faqDataEn = [
       {
         q: "1. Where are the cats? Why aren't they on camera sometimes?",
@@ -2532,6 +2570,18 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
       {
         q: "4. How is the Feeding Honor Roll calculated?",
         a: "Rankings are automatically calculated based on valid feed counts from signed-in users across All-Time, Past 30 Days, and Past 7 Days. Users with identical feed counts share equal rank using standard dense ranking."
+      },
+      {
+        q: "5. Who covers all the operating expenses of this project?",
+        a: "All expenses for this project are currently supported by MeowHub. No joke, the operational and hardware costs add up fast, so your generous donations are crucial to help us keep this project running sustainably.<br><br>In our live streams, cloud feeding controls and interactive features are completely free and open to everyone. If you appreciate our rescue efforts, feel free to tap '☕ Sponsor' at the top to treat the kitties to canned snacks—every single donation goes directly toward shelter maintenance and kibble replenishment!"
+      },
+      {
+        q: "6. Can my rescue sanctuary, cattery, or cats be featured on stream?",
+        a: "Warmly welcomed! MeowHub is actively expanding partner feeding stations and intelligent shelter upgrades across the country.<br><br>If you manage a stray cat sanctuary, animal rescue center, cat cafe, or community feeding post with stable network connectivity and power, please reach out via our official WeChat or Email. Once verified, we will arrange smart hardware deployment and live streaming integration."
+      },
+      {
+        q: "7. How do I report bugs, system issues, or suggest new features?",
+        a: "If you encounter offline cameras, feeding anomalies, video stutter, or have creative feature ideas, please reach out directly through our official channels:<br>• Official WeChat Account: <b>毛毛星球app</b><br>• Inquiries & Feedback Email: <b>cooper@qingmalin.cn</b><br>When reporting, please include the camera name, approximate time of occurrence, and relevant screenshots for rapid diagnosis!"
       }
     ];
 
@@ -2551,15 +2601,26 @@ btnFeedPet.innerHTML = isEn ? "🍗 Feed Now" : "🍗 立即投喂";
       {
         q: "4. 投喂功德排行榜是如何排名的？",
         a: "排行榜基于全网登录用户的有效投喂次数自动统计，分为“全部时间”、“最近 30 天”与“最近 7 天”三个时间维度。若多名猫友投喂次数相同，系统采用标准并列算法（Dense Rank），让同贡献的猫友享有并列殊荣！"
+      },
+      {
+        q: "5. 该项目的运营费用由谁承担？",
+        a: "该项目所有费用目前均由毛毛星球支持。不开玩笑，项目的成本不是闹着玩的，所以，希望大家可以捐助让我们可以持久运营下去。<br><br>在直播间里，云端投喂与互动体验完全向大众开放；如果您认可我们的救助行动，欢迎点击顶栏的“☕ 爱心赞助”请毛孩子们加个罐头，每一笔赞助都会用于救助基地维护与口粮采购！"
+      },
+      {
+        q: "6. 我的救助基地/猫舍或猫咪可以接入直播吗？",
+        a: "非常欢迎！毛毛星球正在全国范围内拓展更多定点投喂站与智能化升级合作。<br><br>如果您是流浪猫救助基地、猫咪收容所、猫咖或社区爱心投喂点的负责人，且现场具备稳定的网络与安装环境，欢迎通过官方公众号或邮箱联系我们，审核评估通过后即可安排智能设备对接与直播接入。"
+      },
+      {
+        q: "7. 遇到系统异常、故障或想提功能建议怎么联系？",
+        a: "如遇设备离线、出粮异常、视频卡顿等问题，或有新玩法创意，请直接联系我们的官方渠道：<br>• 官方微信公众号：<b>毛毛星球app</b><br>• 意见与合作邮箱：<b>cooper@qingmalin.cn</b><br>反馈时建议附上您的机位名称、发生时间以及相关截图，技术团队会第一时间排查跟进！"
       }
     ];
-
     const currentFaqData = isEn ? faqDataEn : faqDataZh;
     faqItems.forEach((item, idx) => {
       const qSpan = item.querySelector(".faq-question span:first-child");
       const aDiv = item.querySelector(".faq-answer");
       if (qSpan && currentFaqData[idx]) qSpan.textContent = currentFaqData[idx].q;
-      if (aDiv && currentFaqData[idx]) aDiv.textContent = currentFaqData[idx].a;
+      if (aDiv && currentFaqData[idx]) aDiv.innerHTML = currentFaqData[idx].a;
     });
   }
 
