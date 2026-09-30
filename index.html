@@ -1541,6 +1541,8 @@
             </div>
 
             <div class="faq-item">
+              <!-- 第 4 题 -->
+            <div class="faq-item">
               <div class="faq-question">
                 <span>4. 投喂功德排行榜是如何排名的？</span>
                 <span class="faq-arrow">▼</span>
@@ -1548,12 +1550,10 @@
               <div class="faq-answer">
                 排行榜基于全网登录用户的有效投喂次数自动统计，分为“全部时间”、“最近 30 天”与“最近 7 天”三个时间维度。若多名猫友投喂次数相同，系统采用标准并列算法（Dense Rank），让同贡献的猫友享有并列殊荣！
               </div>
-              <div class="faq-item">
-              <div class="faq-question">
-                <span>5. 该项目如何保持运转</span>
-                <span class="faq-arrow">▼</span>
-              </div>
-             <div class="faq-item">
+            </div>
+
+            <!-- 第 5 题 -->
+            <div class="faq-item">
               <div class="faq-question">
                 <span>5. 该项目的运营费用由谁承担？</span>
                 <span class="faq-arrow">▼</span>
@@ -1564,6 +1564,7 @@
               </div>
             </div>
 
+            <!-- 第 6 题 -->
             <div class="faq-item">
               <div class="faq-question">
                 <span>6. 我的救助基地/猫舍或猫咪可以接入直播吗？</span>
@@ -1575,7 +1576,8 @@
               </div>
             </div>
 
-           <div class="faq-item">
+            <!-- 第 7 题 -->
+            <div class="faq-item">
               <div class="faq-question">
                 <span>7. 遇到系统异常、故障或想提功能建议怎么联系？</span>
                 <span class="faq-arrow">▼</span>
@@ -1586,6 +1588,7 @@
                 • 意见与合作邮箱：<b>cooper@qingmalin.cn</b><br>
                 反馈时建议附上您的机位名称、发生时间以及相关截图，技术团队会第一时间排查跟进！
               </div>
+            </div>
       </div>
     </div>
   </div>
@@ -2886,13 +2889,16 @@ document.addEventListener("DOMContentLoaded", () => {
     tabNavAbout?.addEventListener("click", () => switchView(tabNavAbout, viewAbout));
 
     // FAQ 手风琴点击折叠逻辑
+    // FAQ 手风琴精准独立折叠逻辑
     document.querySelectorAll(".faq-question").forEach(q => {
-      q.addEventListener("click", () => {
-        const item = q.parentElement;
-        item?.classList.toggle("open");
-      });
+      q.onclick = function(e) {
+        e.stopPropagation();
+        const item = this.closest(".faq-item");
+        if (item) {
+          item.classList.toggle("open");
+        }
+      };
     });
-
 // =========================================================================
     // 小猫塔罗牌：22张猫咪大阿卡那全量体系 · 圣三角时空流向排盘引擎
     // =========================================================================
