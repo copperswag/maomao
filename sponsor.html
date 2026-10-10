@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>毛毛星球 MeowHub | 会员与爱心赞助</title>
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card-bg: rgba(22, 27, 34, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-sub: #9ca3af;
+      --accent-green: #10b981;
+      --gold: #f59e0b;
+      --pink: #ec4899;
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12), transparent 45%),
+        radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 35%);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+
+    /* 顶部导航 */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 32px;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-action-nav {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-sub);
+      padding: 7px 16px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-action-nav:hover {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* 双列栅格核心布局 (对齐参考图) */
+    .sponsor-layout {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .sponsor-layout { grid-template-columns: 1fr; }
+    }
+
+    /* 卡片通用样式 */
+    .panel-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      backdrop-filter: blur(16px);
+      margin-bottom: 24px;
+    }
+
+    .panel-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 左栏：关于与成本公开信 */
+    .about-text {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.8;
+    }
+
+    .about-text p { margin-bottom: 12px; }
+    .about-text b { color: #fff; }
+
+    .cost-breakdown-box {
+      margin-top: 16px;
+      padding: 14px;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px dashed rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .cost-breakdown-box li {
+      margin-left: 18px;
+      margin-bottom: 6px;
+      color: var(--text-sub);
+    }
+
+    /* 左栏：近期赞助人动态墙 */
+    .supporter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .supporter-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+    }
+
+    .supporter-avatar {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      border-radius: 50%;
+      background: rgba(245, 158, 11, 0.15);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .supporter-body { flex: 1; }
+
+    .supporter-header-line {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge-member {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      font-weight: 700;
+    }
+
+    .supporter-message {
+      font-size: 12px;
+      color: var(--text-sub);
+      margin-top: 4px;
+    }
+
+    .supporter-date {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* 右栏：会员守护者卡片 */
+    .member-cover-img {
+      width: 100%;
+      height: 160px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1e1b4b, #0f172a);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .member-cover-img span { font-size: 48px; }
+
+    .price-pill-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .price-large {
+      font-size: 26px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .price-large small {
+      font-size: 14px;
+      color: var(--text-sub);
+      font-weight: normal;
+    }
+
+    .btn-cta-pink {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #ec4899, #d946ef);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(236, 72, 153, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-cta-pink:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    /* 右栏：单次随喜打赏卡片 */
+    .tip-qty-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .tip-qty-btn {
+      flex: 1;
+      padding: 9px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tip-qty-btn:hover { background: rgba(255, 255, 255, 0.1); }
+    .tip-qty-btn.active {
+      background: #f59e0b;
+      border-color: #f59e0b;
+      color: #000;
+    }
+
+    .form-input-text {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+
+    .form-input-text:focus { border-color: #f59e0b; }
+
+    .btn-cta-yellow {
+      width: 100%;
+      padding: 12px;
+      background: #f59e0b;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-cta-yellow:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    .secure-checkout-tag {
+      text-align: center;
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- 顶部导航 -->
+    <header>
+      <a href="index.html" class="logo-group">
+        <div class="logo-icon">🐾</div>
+        <div class="logo-text">MeowHub <span style="font-weight: 300; opacity: 0.6;">Supporters</span></div>
+      </a>
+
+      <div class="header-actions">
+        <button class="btn-action-nav" id="btnToggleLang" type="button">🌐 <span id="langLabel">EN</span></button>
+        <a href="index.html" class="btn-action-nav" id="btnBackLive">📹 返回直播间</a>
+      </div>
+    </header>
+
+    <!-- 核心两列网格 -->
+    <main class="sponsor-layout">
+      <!-- 左列：公开信与近期赞助动态 -->
+      <section>
+        <div class="panel-card">
+          <h2 class="panel-title" id="txtAboutTitle">🐾 关于毛毛星球与赞助支持</h2>
+          <div class="about-text" id="txtAboutContent">
+            <p>
+              毛毛星球（MeowHub）是一项专注于城市流浪动物保护与远程交互喂养的公益实践项目。起初，我们设计这套实时物联网云喂食器，只是为了在出差加班时，依然能照料猫岛上的毛孩子们。
+            </p>
+            <p>
+              现在，所有摄像头的视频流与出粮按键<b>对全网 100% 永久免费开放</b>，我们坚决不在核心喂食功能前设立任何付费墙。然而，随着接入点位与观众增加，服务器、带宽和猫粮的每月固定开销也在逐步递增。
+            </p>
+            <div class="cost-breakdown-box">
+              <b style="color: #fbbf24;">💡 赞助资金主要用于以下每月固定基建：</b>
+              <ul style="margin-top: 8px;">
+                <li>24小时现场机位多码流视频中继与推流带宽</li>
+                <li>Cloudflare Worker 边缘节点与服务器数据库运维</li>
+                <li>救助基地现场专用优质猫粮、主食罐头与营养冻干储备</li>
+                <li>定点流浪猫救助站智能硬件装配与巡检维护</li>
+              </ul>
+            </div>
+            <p style="margin-top: 14px; font-size: 13px; color: #94a3b8;">
+              您的每一笔支持，都是守护毛孩子们在这个冬天吃饱穿暖的最坚实后盾！
+            </p>
+          </div>
+        </div>
+
+        <!-- 近期赞助墙 -->
+        <div class="panel-card">
+          <h2 class="panel-title" id="txtRecentTitle">💖 近期爱心支持者 (Recent Supporters)</h2>
+          <div class="supporter-list" id="supporterListContainer">
+            <!-- 初始展示数据 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 右列：会员加入与单次支持 -->
+      <aside>
+    
+      <!-- 会员订阅卡片 -->
+        <div class="panel-card">
+          <h2 class="panel-title" id="txtMemberTitle">👑 成为猫咪守护者 (Become a Member)</h2>
+          <div class="member-cover-img">
+            <span>🐱</span>
+            <div style="font-size: 12px; color: #c084fc; font-weight: 700; margin-top: 4px;">MeowHub Guardian Club</div>
+          </div>
+
+          <!-- 新增：月付 / 年付周期切换器 -->
+          <div style="display: flex; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 10px; margin-bottom: 14px;">
+            <button id="btnMemberCycleMonthly" type="button" style="flex: 1; padding: 7px; border-radius: 8px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; background: #ec4899; color: #fff;">按月守护 ($5/月)</button>
+            <button id="btnMemberCycleAnnual" type="button" style="flex: 1; padding: 7px; border-radius: 8px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; background: transparent; color: var(--text-sub);">按年守护 ($50/年 优惠)</button>
+          </div>
+
+          <div class="price-pill-row">
+            <div>
+              <div style="font-weight: 800; color: #fff;" id="txtMemberPlanName">Cat Supporter</div>
+              <div style="font-size: 12px; color: #10b981;" id="txtMemberCycleSub">按月周期守护 · 随时可退订</div>
+            </div>
+            <div class="price-large" id="txtMemberPriceDisplay">$5 <small>/月</small></div>
+          </div>
+
+          <p style="font-size: 12px; color: var(--text-sub); line-height: 1.6; margin-bottom: 16px;" id="txtMemberBenefit">
+            每月按期为流浪猫咪提供口粮保障并分担系统推流服务器开销。所有互动功能依旧完全免费，您将收获全网最纯粹的爱心功德！
+          </p>
+
+          <a href="#" class="btn-cta-pink" id="btnJoinMembership" target="_blank" rel="noopener noreferrer">
+            <span>💖</span> <span id="txtBtnJoin">加入会员 $5/月</span>
+          </a>
+        </div>
+
+          <div class="price-pill-row">
+            <div>
+              <div style="font-weight: 800; color: #fff;" id="txtMemberPlanName">Cat Supporter</div>
+              <div style="font-size: 12px; color: #10b981;">按月周期守护 · 随时可退订</div>
+            </div>
+            <div class="price-large">$5 <small>/月</small></div>
+          </div>
+
+          <p style="font-size: 12px; color: var(--text-sub); line-height: 1.6; margin-bottom: 16px;" id="txtMemberBenefit">
+            每月按期为流浪猫咪提供口粮保障并分担系统推流服务器开销。所有互动功能依旧完全免费，您将收获全网最纯粹的爱心功德！
+          </p>
+
+          <a href="#" class="btn-cta-pink" id="btnJoinMembership" target="_blank" rel="noopener noreferrer">
+            <span>💖</span> <span id="txtBtnJoin">加入会员 $5/月</span>
+          </a>
+        </div>
+
+        <!-- 快速单次支持卡片 -->
+        <div class="panel-card">
+          <h2 class="panel-title" id="txtTipTitle">☕ 随喜单次赞助 (One-time Tip)</h2>
+          <div class="tip-qty-group">
+            <button class="tip-qty-btn" data-val="3">$3</button>
+            <button class="tip-qty-btn active" data-val="5">$5</button>
+            <button class="tip-qty-btn" data-val="10">$10</button>
+          </div>
+
+          <input type="text" id="tipInputName" class="form-input-text" placeholder="您的称呼 (选填)" maxlength="20" />
+          <textarea id="tipInputMsg" class="form-input-text" style="height: 60px; resize: none;" placeholder="给毛孩子们留一句温暖的话... (选填)" maxlength="100"></textarea>
+
+          <button class="btn-cta-yellow" id="btnSubmitTip" type="button">
+            <span>🍗</span> <span id="txtBtnTip">支持 $5 罐头</span>
+          </button>
+
+          <div class="secure-checkout-tag">
+            🔒 由 Creem 提供全球安全结账 · 支持银行卡 / Apple Pay / Google Pay
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. Creem 结算链接配置 (待 Creem 后台产品审核通过后替换为真实链接)
+    // =========================================================================
+    // 映射 Creem 后台创建的真实支付链接
+    const CREEM_CHECKOUT_LINKS = {
+      "monthly_5": "https://creem.io/", // $5/月 会员链接
+      "annual_50": "https://creem.io/", // $50/年 会员链接 (新增)
+      "once_3": "https://creem.io/",    // $3 单次链接
+      "once_5": "https://creem.io/",    // $5 单次链接
+      "once_10": "https://creem.io/"    // $10 单次链接
+    };
+
+    // =========================================================================
+    // 2. 初始近期支持者动态流 (Social Proof 信任体系)
+    // =========================================================================
+    const RECENT_SUPPORTERS = [
+      { name: "匿名猫友", badge: "Cat Supporter", amount: "$5/mo", msg: "感谢团队持续维护直播设备，希望毛孩子冬天有饱饭吃！", time: "2天前", timeEn: "2d ago" },
+      { name: "Suzhou_Cloud", badge: "One-time Tip", amount: "$5", msg: "给现场小猫加个大鸡腿 🍗", time: "3天前", timeEn: "3d ago" },
+      { name: "CyberHooman", badge: "Cat Supporter", amount: "$5/mo", msg: "Keep this awesome stream alive! Truly love watching them.", time: "5天前", timeEn: "5d ago" },
+      { name: "大橘巡逻官", badge: "One-time Tip", amount: "$10", msg: "支持流浪猫定点投喂站智能化升级！", time: "1周前", timeEn: "1w ago" }
+    ];
+
+    function renderSupporters(isEn) {
+      const container = document.getElementById("supporterListContainer");
+      if (!container) return;
+      container.innerHTML = "";
+      RECENT_SUPPORTERS.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "supporter-item";
+        row.innerHTML = `
+          <div class="supporter-avatar">🐾</div>
+          <div class="supporter-body">
+            <div class="supporter-header-line">
+              <span><b>${item.name}</b> <span class="badge-member">${item.badge}</span></span>
+              <span class="supporter-date">${isEn ? item.timeEn : item.time}</span>
+            </div>
+            <div class="supporter-message">“${item.msg}”</div>
+          </div>
+        `;
+        container.appendChild(row);
+      });
+    }
+
+    // =========================================================================
+    // 3. 语言切换与字典
+    // =========================================================================
+    let currentLang = localStorage.getItem("meow_app_lang") || "zh";
+
+    function updateLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem("meow_app_lang", lang);
+      const isEn = lang === "en";
+      document.getElementById("langLabel").textContent = isEn ? "中" : "EN";
+      document.getElementById("btnBackLive").textContent = isEn ? "📹 Back to Stream" : "📹 返回直播间";
+
+      // 文本更新
+      document.getElementById("txtAboutTitle").textContent = isEn ? "🐾 About MeowHub & Sponsorship" : "🐾 关于毛毛星球与赞助支持";
+      document.getElementById("txtRecentTitle").textContent = isEn ? "💖 Recent Supporters" : "💖 近期爱心支持者 (Recent Supporters)";
+      document.getElementById("txtMemberTitle").textContent = isEn ? "👑 Become a Member" : "👑 成为猫咪守护者 (Become a Member)";
+      document.getElementById("txtTipTitle").textContent = isEn ? "☕ One-time Tip" : "☕ 随喜单次赞助 (One-time Tip)";
+      document.getElementById("txtMemberPlanName").textContent = isEn ? "Cat Supporter" : "Cat Supporter · 猫咪守护者";
+      document.getElementById("txtBtnJoin").textContent = isEn ? "Join for $5/mo" : "加入会员 $5/月";
+      
+      const tipBtnText = document.getElementById("txtBtnTip");
+      if (tipBtnText) {
+        tipBtnText.textContent = isEn ? `Support $${selectedTipAmount}` : `支持 $${selectedTipAmount} 罐头`;
+      }
+
+      document.getElementById("tipInputName").placeholder = isEn ? "Your Name (Optional)" : "您的称呼 (选填)";
+      document.getElementById("tipInputMsg").placeholder = isEn ? "Leave a cheer note for kitties... (Optional)" : "给毛孩子们留一句温暖的话... (选填)";
+
+      renderSupporters(isEn);
+      updateMemberCycleUI();
+    }
+
+    // =========================================================================
+    // 4. 按钮交互与跳转处理
+    // =========================================================================
+    let selectedTipAmount = 5;
+
+    // 单次档位切换
+    document.querySelectorAll(".tip-qty-btn").forEach(btn => {
+      btn.addEventListener("click", function() {
+        document.querySelectorAll(".tip-qty-btn").forEach(b => b.classList.remove("active"));
+        this.classList.add("active");
+        selectedTipAmount = Number(this.dataset.val);
+        const isEn = currentLang === "en";
+        document.getElementById("txtBtnTip").textContent = isEn ? `Support $${selectedTipAmount}` : `支持 $${selectedTipAmount} 罐头`;
+      });
+    });
+
+    // 会员点击跳转
+   // =========================================================================
+    // 会员周期切换（按月 / 按年）与动态跳转
+    // =========================================================================
+    let selectedMemberCycle = "monthly"; // "monthly" 或 "annual"
+
+    const btnCycleMonthly = document.getElementById("btnMemberCycleMonthly");
+    const btnCycleAnnual = document.getElementById("btnMemberCycleAnnual");
+    const priceDisplay = document.getElementById("txtMemberPriceDisplay");
+    const cycleSubText = document.getElementById("txtMemberCycleSub");
+    const btnJoinText = document.getElementById("txtBtnJoin");
+
+    function updateMemberCycleUI() {
+      const isEn = (currentLang === "en");
+      if (selectedMemberCycle === "monthly") {
+        btnCycleMonthly.style.background = "#ec4899";
+        btnCycleMonthly.style.color = "#fff";
+        btnCycleAnnual.style.background = "transparent";
+        btnCycleAnnual.style.color = "var(--text-sub)";
+
+        priceDisplay.innerHTML = `$5 <small>${isEn ? "/mo" : "/月"}</small>`;
+        cycleSubText.textContent = isEn ? "Monthly pledge · Cancel anytime" : "按月周期守护 · 随时可退订";
+        btnJoinText.textContent = isEn ? "Join for $5/mo" : "加入会员 $5/月";
+      } else {
+        btnCycleAnnual.style.background = "#ec4899";
+        btnCycleAnnual.style.color = "#fff";
+        btnCycleMonthly.style.background = "transparent";
+        btnCycleMonthly.style.color = "var(--text-sub)";
+
+        priceDisplay.innerHTML = `$50 <small>${isEn ? "/yr ($4.17/mo)" : "/年 (约$4.17/月)"}</small>`;
+        cycleSubText.textContent = isEn ? "Annual pledge · Save ~17%" : "按年长期守护 · 立省约 17%";
+        btnJoinText.textContent = isEn ? "Join for $50/year" : "加入年度会员 $50/年";
+      }
+    }
+
+    btnCycleMonthly?.addEventListener("click", () => {
+      selectedMemberCycle = "monthly";
+      updateMemberCycleUI();
+    });
+
+    btnCycleAnnual?.addEventListener("click", () => {
+      selectedMemberCycle = "annual";
+      updateMemberCycleUI();
+    });
+
+    // 会员点击跳转：动态匹配 monthly_5 或 annual_50
+    document.getElementById("btnJoinMembership")?.addEventListener("click", function(e) {
+      e.preventDefault();
+      const targetKey = selectedMemberCycle === "annual" ? "annual_50" : "monthly_5";
+      const targetUrl = CREEM_CHECKOUT_LINKS[targetKey];
+      if (targetUrl && targetUrl !== "https://creem.io/") {
+        window.open(targetUrl, "_blank", "noopener,noreferrer");
+      } else {
+        const cycleName = selectedMemberCycle === "annual" ? "$50/年" : "$5/月";
+        alert(currentLang === "en" 
+          ? `Creem checkout link (${cycleName}) is connecting. Please check back shortly!` 
+          : `Creem 会员收银通道 (${cycleName}) 联调中，稍后开放！`);
+      }
+    });
+
+    // 单次点击跳转
+    document.getElementById("btnSubmitTip")?.addEventListener("click", function() {
+      const targetKey = `once_${selectedTipAmount}`;
+      const targetUrl = CREEM_CHECKOUT_LINKS[targetKey];
+      const name = document.getElementById("tipInputName")?.value.trim() || "神秘爱心猫友";
+      const msg = document.getElementById("tipInputMsg")?.value.trim() || "";
+
+      if (targetUrl && targetUrl !== "https://creem.io/") {
+        const u = new URL(targetUrl);
+        u.searchParams.set("custom_name", name);
+        if (msg) u.searchParams.set("custom_message", msg);
+        window.open(u.toString(), "_blank", "noopener,noreferrer");
+      } else {
+        alert(currentLang === "en" ? `[Preview] Support $${selectedTipAmount} from ${name}. Checkout link connecting!` : `【测试预览】来自【${name}】的 $${selectedTipAmount} 赞助，收银链接联调中！`);
+      }
+    });
+
+    // 语言切换监听
+    document.getElementById("btnToggleLang")?.addEventListener("click", () => {
+      updateLanguage(currentLang === "zh" ? "en" : "zh");
+    });
+
+    // 启动初始化
+    updateLanguage(currentLang);
+  </script>
+</body>
+</html>
