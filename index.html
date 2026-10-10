@@ -1326,7 +1326,7 @@
         <button class="nav-tab-btn active" id="tabNavLive" data-i18n="nav_live" type="button">📹 实时直播</button>
         <button class="nav-tab-btn" id="tabNavRankings" data-i18n="nav_rankings" type="button">🏆 投喂榜单</button>
         <button class="nav-tab-btn" id="tabNavAbout" data-i18n="nav_about" type="button">ℹ️ 关于我们</button>
-        <button class="nav-tab-btn" id="btnOpenSponsor" data-i18n="nav_sponsor" style="color: #fbbf24;" type="button">☕ 爱心赞助</button>
+       <a class="nav-tab-btn" id="btnOpenSponsor" data-i18n="nav_sponsor" style="color: #fbbf24; text-decoration: none;" href="sponsor.html" target="_blank" rel="noopener noreferrer">☕ 爱心赞助</a>
       </nav>
 
       <div class="header-right">
@@ -1666,68 +1666,6 @@
     </div>
   </div>
 
-<!-- ================= 守护会员与爱心支持弹窗 (Membership & Supporter) ================= -->
-  <div class="app-modal" id="sponsorModal">
-    <div class="bmac-modal-box">
-      <div class="bmac-header">
-        <div class="bmac-avatar-badge">🐾</div>
-        <h3 class="bmac-title" data-i18n="sponsor_title">加入毛毛星球守护者</h3>
-        <p class="bmac-desc" data-i18n="sponsor_desc">
-          所有机位互动投喂<b>对全网 100% 免费开放</b>！您的加入将直接协助承担项目的月度固定基建开支：视频推流中继带宽、服务器运维与救助基地口粮补给。
-        </p>
-      </div>
-
-      <!-- 模式切换：按月守护 vs 一次性赞助 -->
-      <div class="bmac-mode-tabs">
-        <button class="bmac-tab-btn active" id="tabSupportMonthly" type="button">👑 按月会员 ($5/月)</button>
-        <button class="bmac-tab-btn" id="tabSupportOnce" type="button">☕ 一次性赞助</button>
-      </div>
-
-      <!-- 按月支持说明区（默认展示） -->
-      <div id="panelSupportMonthly" style="padding: 6px 0 14px;">
-        <div class="bmac-monthly-card">
-          <div style="font-size: 17px; font-weight: 800; color: #fbbf24;" id="monthlyCardTitle">Cat Supporter · $5 / 月</div>
-          <div style="font-size: 12px; color: var(--text-sub); margin-top: 6px; line-height: 1.6;" id="monthlyCardDesc">
-            每月自动为流浪毛孩子提供稳定的口粮与推流服务器支持。无任何付费墙门槛，随时可取消。
-          </div>
-        </div>
-      </div>
-
-      <!-- 一次性打赏选区（默认隐藏） -->
-      <div id="panelSupportOnce" style="display: none; padding-bottom: 12px;">
-        <div class="bmac-coffee-row">
-          <span class="bmac-coffee-icon">🥫</span>
-          <span class="bmac-multiply">×</span>
-          <div class="bmac-qty-group">
-            <button class="bmac-qty-btn" data-price="3" type="button">$3</button>
-            <button class="bmac-qty-btn active" data-price="5" type="button">$5</button>
-            <button class="bmac-qty-btn" data-price="10" type="button">$10</button>
-          </div>
-        </div>
-
-        <div class="bmac-amount-display">
-          赞助金额：<span id="displayTotalUsd">$5</span>
-        </div>
-      </div>
-
-      <!-- 赞助留言输入框 -->
-      <div class="bmac-message-area">
-        <input type="text" id="sponsorInputName" class="bmac-input" placeholder="您的昵称 (选填)" maxlength="20" />
-        <textarea id="sponsorInputMsg" class="bmac-textarea" placeholder="给现场小猫留一句鼓励的话吧... (选填)" maxlength="100" rows="2"></textarea>
-      </div>
-
-    <!-- 支付按钮 -->
-      <button id="btnProceedCheckout" class="btn-bmac-pay" type="button">
-        💖 <span id="bmacPayBtnText">加入会员 $5/月</span>
-      </button>
-
-      <div class="bmac-footer-tip" data-i18n="sponsor_footer_tip">
-        🔒 由 Creem 提供全球安全结账 · 支持银行卡 / Apple Pay / Google Pay
-      </div>
-
-      <button id="btnCloseSponsorModal" class="btn-bmac-close" type="button">✕ 关闭</button>
-    </div>
-  </div>
   <!-- 原有打卡弹窗 -->
   <div class="app-modal" id="checkinModal">
     <div class="modal-card-box">
@@ -6010,99 +5948,19 @@ function finishAndCalculate() {
   let currentUsd = 5;
 
   // 映射 Creem 后台创建的真实支付链接（创建好后填入对应的 URL 即可）
-  const CHECKOUT_LINKS = {
-    "once_3": "",    // $3 一次性链接
-    "once_5": "",    // $5 一次性链接
-    "once_10": "",   // $10 一次性链接
-    "monthly_5": ""  // $5/月 会员守护者订阅链接
-  };
+(function() {
+      // 目标赞助/会员独立页面地址
+      const SPONSOR_PAGE_URL = "https://creem.io/"; // 填入你的 Creem 会员主页或店铺链接
 
- function updatePriceUI() {
-    const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
-    if (currentMode === "monthly") {
-      if (payBtnText) payBtnText.textContent = isEn ? "Join for $5/mo" : "加入会员 $5/月";
-    } else {
-      if (displayTotal) displayTotal.textContent = `$${currentUsd}`;
-      if (payBtnText) payBtnText.textContent = isEn ? `Support $${currentUsd}` : `确认支持 $${currentUsd}`;
-    }
-  }
-
-  // 模式切换
-  tabMonthly?.addEventListener("click", () => {
-    currentMode = "monthly";
-    tabMonthly.classList.add("active");
-    tabOnce.classList.remove("active");
-    panelMonthly.style.display = "block";
-    panelOnce.style.display = "none";
-    updatePriceUI();
-  });
-
-  tabOnce?.addEventListener("click", () => {
-    currentMode = "once";
-    tabOnce.classList.add("active");
-    tabMonthly.classList.remove("active");
-    panelOnce.style.display = "block";
-    panelMonthly.style.display = "none";
-    updatePriceUI();
-  });
-
-  // 单次档位点击
-  qtyBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      qtyBtns.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentUsd = Number(btn.dataset.price);
-      updatePriceUI();
-    });
-  });
-
-  btnOpen?.addEventListener("click", () => {
-    const u = (typeof ClerkAuth !== "undefined") ? ClerkAuth.getUser() : null;
-    if (u && inputName && !inputName.value) {
-      inputName.value = u.nickname;
-    }
-    modal?.classList.add("show");
-  });
-
-  btnClose?.addEventListener("click", () => modal?.classList.remove("show"));
-  modal?.addEventListener("click", (e) => {
-    if (e.target === modal) modal?.classList.remove("show");
-  });
-
-  // 点击支付跳转 Creem
-  btnPay?.addEventListener("click", () => {
-    const key = currentMode === "monthly" ? "monthly_5" : `once_${currentUsd}`;
-    const directLink = CHECKOUT_LINKS[key];
-
-    const supporterName = inputName?.value.trim() || "神秘爱心猫友";
-    const supporterMsg = inputMsg?.value.trim() || "";
-
-    if (directLink && directLink.startsWith("https://")) {
-      const url = new URL(directLink);
-      url.searchParams.set("custom_name", supporterName);
-      if (supporterMsg) url.searchParams.set("custom_message", supporterMsg);
-      window.open(url.toString(), "_blank", "noopener,noreferrer");
-      return;
-    }
-
-    // 尚未填入真实 Creem 链接时的提示
-    const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
-    const isConfirm = confirm(
-      isEn 
-        ? `[Creem Sandbox Preview]\nTier: ${currentMode === 'monthly' ? 'Monthly Guardian ($5/mo)' : `One-time ($${currentUsd})`}\nName: ${supporterName}\n\nLive feeding is 100% free for everyone. Donations keep the servers and feeders running.\n\nSimulate celebratory confetti & danmaku?`
-        : `【Creem 支付测试联调】\n模式：${currentMode === 'monthly' ? '按月守护 ($5/月)' : `一次性赞助 ($${currentUsd})`}\n赞助人：${supporterName}\n\n毛毛星球所有投喂功能对全网永久免费。赞助款用于维护服务器与救助口粮。\n\n是否模拟触发【赞助感谢】弹幕与撒花？`
-    );
-
-    if (isConfirm) {
-      modal?.classList.remove("show");
-      if (typeof fireConfetti === "function") fireConfetti();
-      if (typeof triggerDanmakuEasterEgg === "function") triggerDanmakuEasterEgg("balloon");
-      if (typeof shootDanmaku === "function") {
-        shootDanmaku(`🎉 感谢【${supporterName}】支持毛毛星球基建运转！${supporterMsg ? `“${supporterMsg}”` : ''}`, true);
+      const sponsorLink = document.getElementById("btnOpenSponsor");
+      if (sponsorLink) {
+        sponsorLink.href = SPONSOR_PAGE_URL;
+        sponsorLink.onclick = function() {
+          // 保留点击时在本地触发一次撒花庆祝彩蛋
+          if (typeof fireConfetti === "function") fireConfetti();
+        };
       }
-    }
-  });
-})();
+    })();
   </script>
 </body>
 </html>
