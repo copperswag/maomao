@@ -360,6 +360,7 @@
     </header>
 
     <!-- 核心两列网格 -->
+    <!-- 核心两列网格 -->
     <main class="sponsor-layout">
       <!-- 左列：公开信与近期赞助动态 -->
       <section>
@@ -391,15 +392,14 @@
         <div class="panel-card">
           <h2 class="panel-title" id="txtRecentTitle">💖 近期爱心支持者 (Recent Supporters)</h2>
           <div class="supporter-list" id="supporterListContainer">
-            <!-- 初始展示数据 -->
+            <!-- 动态渲染数据 -->
           </div>
         </div>
       </section>
 
-      <!-- 右列：会员加入与单次支持 -->
+      <!-- 右列：会员守护者卡片 + 快速单次支持卡片 (严格同列) -->
       <aside>
-    
-      <!-- 会员订阅卡片 -->
+        <!-- 1. 会员订阅卡片 (支持按月/按年切换) -->
         <div class="panel-card">
           <h2 class="panel-title" id="txtMemberTitle">👑 成为猫咪守护者 (Become a Member)</h2>
           <div class="member-cover-img">
@@ -407,7 +407,7 @@
             <div style="font-size: 12px; color: #c084fc; font-weight: 700; margin-top: 4px;">MeowHub Guardian Club</div>
           </div>
 
-          <!-- 新增：月付 / 年付周期切换器 -->
+          <!-- 月付 / 年付周期切换器 -->
           <div style="display: flex; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 10px; margin-bottom: 14px;">
             <button id="btnMemberCycleMonthly" type="button" style="flex: 1; padding: 7px; border-radius: 8px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; background: #ec4899; color: #fff;">按月守护 ($5/月)</button>
             <button id="btnMemberCycleAnnual" type="button" style="flex: 1; padding: 7px; border-radius: 8px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; background: transparent; color: var(--text-sub);">按年守护 ($50/年 优惠)</button>
@@ -430,30 +430,13 @@
           </a>
         </div>
 
-          <div class="price-pill-row">
-            <div>
-              <div style="font-weight: 800; color: #fff;" id="txtMemberPlanName">Cat Supporter</div>
-              <div style="font-size: 12px; color: #10b981;">按月周期守护 · 随时可退订</div>
-            </div>
-            <div class="price-large">$5 <small>/月</small></div>
-          </div>
-
-          <p style="font-size: 12px; color: var(--text-sub); line-height: 1.6; margin-bottom: 16px;" id="txtMemberBenefit">
-            每月按期为流浪猫咪提供口粮保障并分担系统推流服务器开销。所有互动功能依旧完全免费，您将收获全网最纯粹的爱心功德！
-          </p>
-
-          <a href="#" class="btn-cta-pink" id="btnJoinMembership" target="_blank" rel="noopener noreferrer">
-            <span>💖</span> <span id="txtBtnJoin">加入会员 $5/月</span>
-          </a>
-        </div>
-
-        <!-- 快速单次支持卡片 -->
+        <!-- 2. 快速单次支持卡片 (与会员卡同在一列) -->
         <div class="panel-card">
           <h2 class="panel-title" id="txtTipTitle">☕ 随喜单次赞助 (One-time Tip)</h2>
           <div class="tip-qty-group">
-            <button class="tip-qty-btn" data-val="3">$3</button>
-            <button class="tip-qty-btn active" data-val="5">$5</button>
-            <button class="tip-qty-btn" data-val="10">$10</button>
+            <button class="tip-qty-btn" data-val="3" type="button">$3</button>
+            <button class="tip-qty-btn active" data-val="5" type="button">$5</button>
+            <button class="tip-qty-btn" data-val="10" type="button">$10</button>
           </div>
 
           <input type="text" id="tipInputName" class="form-input-text" placeholder="您的称呼 (选填)" maxlength="20" />
