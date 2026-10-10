@@ -1716,7 +1716,7 @@
         <textarea id="sponsorInputMsg" class="bmac-textarea" placeholder="给现场小猫留一句鼓励的话吧... (选填)" maxlength="100" rows="2"></textarea>
       </div>
 
-      <!-- 支付按钮 -->
+    <!-- 支付按钮 -->
       <button id="btnProceedCheckout" class="btn-bmac-pay" type="button">
         💖 <span id="bmacPayBtnText">加入会员 $5/月</span>
       </button>
@@ -2393,10 +2393,14 @@ function applyLanguage(lang) {
   const sponsorFooterTip = document.querySelector(".bmac-footer-tip");
   if (sponsorFooterTip) sponsorFooterTip.textContent = t("sponsor_footer_tip");
 
-  const btnPayEl = document.getElementById("btnProceedCheckout");
-  if (btnPayEl) {
-    const amtStr = document.getElementById("bmacPayBtnAmount")?.textContent || "$5";
-    btnPayEl.innerHTML = `${t("btn_pay_label")} <span id="bmacPayBtnAmount">${amtStr}</span>`;
+ const payBtnText = document.getElementById("bmacPayBtnText");
+  if (payBtnText) {
+    if (typeof currentMode !== "undefined" && currentMode === "monthly") {
+      payBtnText.textContent = isEn ? "Join for $5/mo" : "加入会员 $5/月";
+    } else {
+      const amt = (typeof currentUsd !== "undefined") ? currentUsd : 5;
+      payBtnText.textContent = isEn ? `Support $${amt}` : `确认支持 $${amt}`;
+    }
   }
 
   // 4. 输入框 Placeholder 自动替换
@@ -6013,7 +6017,7 @@ function finishAndCalculate() {
     "monthly_5": ""  // $5/月 会员守护者订阅链接
   };
 
-  function updatePriceUI() {
+ function updatePriceUI() {
     const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
     if (currentMode === "monthly") {
       if (payBtnText) payBtnText.textContent = isEn ? "Join for $5/mo" : "加入会员 $5/月";
