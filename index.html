@@ -5949,14 +5949,11 @@ function finishAndCalculate() {
 
   // 映射 Creem 后台创建的真实支付链接（创建好后填入对应的 URL 即可）
 (function() {
-      // 目标赞助/会员独立页面地址
-      const SPONSOR_PAGE_URL = "https://creem.io/"; // 填入你的 Creem 会员主页或店铺链接
-
+      // 外部赞助独立页面跳转配置
       const sponsorLink = document.getElementById("btnOpenSponsor");
       if (sponsorLink) {
-        sponsorLink.href = SPONSOR_PAGE_URL;
+        sponsorLink.href = "sponsor.html";
         sponsorLink.onclick = function() {
-          // 保留点击时在本地触发一次撒花庆祝彩蛋
           if (typeof fireConfetti === "function") fireConfetti();
         };
       }
