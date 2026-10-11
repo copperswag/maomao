@@ -572,14 +572,13 @@
 
   <script>
     // =========================================================================
-    // 1. Creem 结算链接配置 (已绑定你在控制台创建的 5 个商品)
-    // =========================================================================
+   // 映射 Creem 真实支付链接 (注意：去除 www.，严格使用 https://creem.io/...)
     const CREEM_CHECKOUT_LINKS = {
-      "monthly_5": "https://www.creem.io/payment/prod_6Rtz97H68NtZ1wpKqgzC7p",
-      "annual_50": "https://www.creem.io/payment/prod_6PhGkuu5MwIFa7zHcvXDWb",
-      "once_3": "https://www.creem.io/payment/prod_7V4RG0LQeQMFX1JSNCEsp9",
-      "once_5": "https://www.creem.io/payment/prod_1whvsakvQ5v08Nsh9lece9",
-      "once_10": "https://www.creem.io/payment/prod_5sCQRjsvU7Q5GNuiLxzBmh"
+      "monthly_5": "https://creem.io/payment/prod_6Rtz97H68NtZ1wpKqgzC7p",
+      "annual_50": "https://creem.io/payment/prod_6PhGkuu5MwIFa7zHcvXDWb",
+      "once_3": "https://creem.io/payment/prod_7V4RG0LQeQMFX1JSNCEsp9",
+      "once_5": "https://creem.io/payment/prod_1whvsakvQ5v08Nsh9lece9",
+      "once_10": "https://creem.io/payment/prod_5sCQRjsvU7Q5GNuiLxzBmh"
     };
 
     // =========================================================================
@@ -864,7 +863,7 @@
       }
     });
 
-    // 单次点击：附带参数并呼起居中模态窗
+   // 单次点击：附带参数并呼起居中模态窗
     document.getElementById("btnSubmitTip")?.addEventListener("click", function() {
       const targetKey = `once_${selectedTipAmount}`;
       const targetUrl = CREEM_CHECKOUT_LINKS[targetKey];
@@ -874,7 +873,7 @@
       if (targetUrl) {
         try {
           const u = new URL(targetUrl);
-          u.searchParams.set("custom_name", name);
+          if (name) u.searchParams.set("custom_name", name);
           if (msg) u.searchParams.set("custom_message", msg);
           openCreemModal(u.toString());
         } catch (err) {
