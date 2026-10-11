@@ -5775,7 +5775,25 @@ function finishAndCalculate() {
       "ESTP": { title: "Extreme Parkour Acrobat", quote: "“Speed is life! Launching from the fridge to sofa takes half a second!”", food: "Ricochet Puzzle Feeder Bites", avoid: "Blocking high vertical climbing trails", habit: "3:30 AM pull-ups on door frames", human: "ISFJ Calm Mess Cleaner" },
       "ESFP": { title: "Spotlight Diva Superstar", quote: "“Behold this fluffy coat and luminous gaze. I am the neighborhood icon.”", food: "Juicy Salmon Lickable Treat", avoid: "Taking photos of other cats", habit: "Catwalk posture, poses for every camera", human: "ISTJ Loyal Fan Servant" }
     };
-
+// 补齐 16 型猫咪 MBTI 中文人格基础图鉴
+    const MBTI_CAT_BASE = {
+      "INTJ": { title: "幕后高冷军师猫", quote: "“愚蠢的两脚兽，你的一举一动都在本座算计之中。”", food: "原切冻干牛排", avoid: "突然抱起强行吸肚子", habit: "在柜顶俯瞰两脚兽日常", human: "ENFP 快乐小狗型主人" },
+      "INTP": { title: "纸箱沉思哲学家", quote: "“这个纸箱的容积，刚好能装下我对宇宙的终极思考。”", food: "慢熬鸡汤冻干羹", avoid: "打断它对白墙的发呆", habit: "盯着滴水的水龙头两小时", human: "ENTJ 宏观战略家长" },
+      "ENTJ": { title: "领地铁血霸主猫", quote: "“只要本座巡逻所及之处，绝无一只活苍蝇能过夜。”", food: "高端生骨肉鹿肉主粮", avoid: "开饭推迟超过 3 分钟", habit: "挨个给同居两脚兽发猫拳", human: "INFP 温柔顺从型伙伴" },
+      "ENTP": { title: "物理破壁拆迁精", quote: "“推翻这个水杯，纯粹为了验证重力加速度的存在。”", food: "漏食球金枪鱼冻干", avoid: "关在毫无玩具的房间", habit: "故意当着面把小物件拨下桌", human: "INFJ 耐心佛系家长" },
+      "INFJ": { title: "通灵赛博萨满猫", quote: "“我已经看穿了你的委屈，准你把脸埋在肚皮上 3 秒。”", food: "三文鱼抗氧化营养泥", avoid: "喧闹嘈杂的聚会场合", habit: "感应到悲伤时默默跑来贴贴", human: "ENFP/ENTP 热情探索者" },
+      "INFP": { title: "天鹅绒敏感诗人", quote: "“今天关门声音那么大，你是不是不再爱本喵了？”", food: "羊奶炖肉舒润慕斯", avoid: "大声斥责与严厉眼神", habit: "飞机耳但呼噜声比谁都响", human: "ENFJ 温暖猫妈妈型主人" },
+      "ENFJ": { title: "慈爱大家长猫妈", quote: "“愚蠢的人类根本照顾不好自己，今晚必须由我把他们哄睡。”", food: "全价多拼均衡主粮", avoid: "家人冷战与争吵对抗", habit: "深夜巡回检查每个卧室门", human: "INFP/ISFP 听话乖宝" },
+      "ENFP": { title: "猫皮金毛社牛犬", quote: "“哇！新的人类！新的逗猫棒！这世界太美好了！”", food: "香脆小银鱼脆脆棒", avoid: "被关禁闭与无人理睬", habit: "向每一个新上门的客人亮肚皮", human: "INTJ 稳重靠谱管家" },
+      "ISTJ": { title: "铁面巡逻纪律官", quote: "“早7点闹钟，7点15分干饭，舔毛按部就班，秩序高于一切。”", food: "定时定量精准主食罐", avoid: "随意更换猫砂与餐碗位置", habit: "像泥瓦匠一样严格规范埋砂", human: "ESFP 活力互补好友" },
+      "ISFJ": { title: "暖心默默守望者", quote: "“你安心加班，本喵就在你脚边蜷成暖烘烘的小毛球。”", food: "温和好消化鸭肉泥", avoid: "粗暴拽毛与打扰睡眠", habit: "长年扮演暖脚炉忠实陪伴", human: "ESFJ 尽心尽职生活委员" },
+      "ESTJ": { title: "大内严苛总管猫", quote: "“粮碗空了整整3分钟！立刻启动一级催饭应急方案！”", food: "大颗粒厚切纯肉块", avoid: "不规律的生活作息与拖堂", habit: "蹲坐在过道正中央监督日常", human: "ISFP 随性佛系好室友" },
+      "ESFJ": { title: "八面玲珑外交官", quote: "“欢迎光临！摸背请排队，人人有份不要挤哦~”", food: "鲜草烘焙化毛夹心酥", avoid: "社交场合被冷落隔离", habit: "在玄关迎送每一位出入人类", human: "ISTP 极客技术阿宅" },
+      "ISTP": { title: "独行冷面刺客猫", quote: "“看见那只蟑螂了吗？0.3秒后，它就属于历史了。”", food: "高蛋白兔肉干主食条", avoid: "过度的亲昵与过度拥抱", habit: "徒爪正面硬刚扫地机器人", human: "ESFJ 细心周到后勤官" },
+      "ISFP": { title: "暖阳松弛艺术家", quote: "“争名逐利有何用？在地板晒透太阳才是猫生终极真理。”", food: "甜美多汁银鱼炖罐", avoid: "高强度强迫运动与跑酷", habit: "阳光照到哪块地砖就瘫在哪", human: "ESTJ 有条不紊护法者" },
+      "ESTP": { title: "极限跑酷暴走族", quote: "“速度就是生命！从冰箱弹射到沙发只需半秒钟！”", food: "益智弹力喂食球口粮", avoid: "封锁高处跑酷立体通道", habit: "凌晨三点半在门框上做引体向上", human: "ISFJ 善后清理大师" },
+      "ESFP": { title: "顶流闪耀大明星", quote: "“看看这油亮的毛发与清澈的眼眸，本喵就是全小区顶流。”", food: "特级三文鱼鲜肉慕斯", avoid: "当着它的面拍别的小猫", habit: "猫步轻盈，面对镜头自动摆姿势", human: "ISTJ 忠实铁粉两脚兽" }
+    };
     const cardData = isEn ? (MBTI_EN_CARD_MAP[finalCode] || MBTI_EN_CARD_MAP["INTJ"]) : (MBTI_CAT_BASE[finalCode] || MBTI_CAT_BASE["INTJ"]);
 
     finalMbtiResult = {
