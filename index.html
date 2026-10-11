@@ -527,17 +527,41 @@
     }
 
     /* ================= 关于我们模块样式（卡片式 + 手风琴 FAQ） ================= */
-    .about-wrapper { max-width: 860px; margin: 0 auto; }
+    .about-wrapper { 
+      max-width: 860px; 
+      margin: 0 auto; 
+    }
     .about-card {
-      background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius);
-      padding: 28px; margin-bottom: 20px; backdrop-filter: blur(12px);
+      background: var(--card-bg); 
+      border: 1px solid var(--card-border); 
+      border-radius: var(--radius);
+      padding: 28px; 
+      margin-bottom: 24px; 
+      backdrop-filter: blur(16px);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
     }
     .about-banner {
-      background: rgba(16, 185, 129, 0.1); border: 1px dashed rgba(16, 185, 129, 0.4);
-      border-radius: 12px; padding: 14px 18px; font-size: 14px; color: #34d399; margin-bottom: 20px; line-height: 1.6;
+      background: rgba(16, 185, 129, 0.1); 
+      border: 1px dashed rgba(16, 185, 129, 0.4);
+      border-radius: 12px; 
+      padding: 14px 18px; 
+      font-size: 14px; 
+      color: #34d399; 
+      margin-bottom: 20px; 
+      line-height: 1.6;
     }
-    .about-article { font-size: 14px; line-height: 1.8; color: var(--text-main); }
-    .about-article p { margin-bottom: 14px; }
+    .about-article { 
+      font-size: 14px; 
+      line-height: 1.85; 
+      color: #e5e7eb; 
+      letter-spacing: 0.2px;
+    }
+    .about-article p { 
+      margin-bottom: 14px; 
+    }
+    .about-article p:last-child {
+      margin-bottom: 0;
+    }
     .about-social-links { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
     .about-link-pill {
       display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(255, 255, 255, 0.05);
