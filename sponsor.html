@@ -443,6 +443,7 @@
       to { transform: rotate(360deg); }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@creem_io/embed@latest/dist/index.global.js"></script>
 </head>
 <body>
 
@@ -751,49 +752,36 @@
     }
 
     // =========================================================================
-    // 4. 浮层模态窗交互控制 (Overlay Controller)
+// =========================================================================
+    // 4. 浮层收银唤起器 (优先官方 Overlay 浮层，兼具无感弹窗保底)
     // =========================================================================
-    const modalOverlay = document.getElementById("creemModalOverlay");
-    const modalIframe = document.getElementById("creemIframe");
-    const modalCloseBtn = document.getElementById("btnCloseCreemModal");
-    const modalLoading = document.getElementById("creemModalLoading");
+    function triggerCheckout(payUrl) {
+      if (!payUrl) return;
 
-    function openCreemModal(checkoutUrl) {
-      if (!checkoutUrl) return;
-      modalLoading.style.display = "flex";
-      modalIframe.src = checkoutUrl;
-      modalOverlay.style.display = "flex";
-      document.body.style.overflow = "hidden"; // 锁定底层滚动
-    }
-
-    function closeCreemModal() {
-      modalOverlay.style.display = "none";
-      modalIframe.src = "";
-      document.body.style.overflow = "";
-    }
-
-    modalIframe.addEventListener("load", () => {
-      // 页面载入完成后隐藏加载转圈
-      if (modalIframe.src && modalIframe.src !== "about:blank") {
-        setTimeout(() => {
-          modalLoading.style.display = "none";
-        }, 300);
+      // 1. 如果官方 SDK 成功加载，调用官方原生 Overlay 居中弹窗
+      if (window.Creem && typeof window.Creem.open === "function") {
+        try {
+          window.Creem.open({
+            url: payUrl,
+            mode: "modal"
+          });
+          return;
+        } catch (e) {
+          console.warn("Creem SDK 调用异常，启动保底方案:", e);
+        }
       }
-    });
 
-    modalCloseBtn.addEventListener("click", closeCreemModal);
-
-    // 点击遮罩暗区关闭
-    modalOverlay.addEventListener("click", (e) => {
-      if (e.target === modalOverlay) closeCreemModal();
-    });
-
-    // 按 Esc 键关闭
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && modalOverlay.style.display === "flex") {
-        closeCreemModal();
-      }
-    });
+      // 2. 居中无缝独立支付窗口（与参考图尺寸比例一致，零 404 风险）
+      const width = 480;
+      const height = 760;
+      const left = window.screen.width / 2 - width / 2;
+      const top = window.screen.height / 2 - height / 2;
+      window.open(
+        payUrl,
+        "CreemCheckout",
+        `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,status=no,toolbar=no,menubar=no,location=no`
+      );
+    }
 
     // =========================================================================
     // 5. 按钮交互与支付唤起
@@ -853,21 +841,21 @@
       updateMemberCycleUI();
     });
 
-    // 会员点击：呼起居中模态窗
+    // 会员点击触发
     document.getElementById("btnJoinMembership")?.addEventListener("click", function(e) {
       e.preventDefault();
       const targetKey = selectedMemberCycle === "annual" ? "annual_50" : "monthly_5";
       const targetUrl = CREEM_CHECKOUT_LINKS[targetKey];
       if (targetUrl) {
-        openCreemModal(targetUrl);
+        triggerCheckout(targetUrl);
       }
     });
 
-   // 单次点击：附带参数并呼起居中模态窗
+    // 单次赞助点击触发
     document.getElementById("btnSubmitTip")?.addEventListener("click", function() {
       const targetKey = `once_${selectedTipAmount}`;
       const targetUrl = CREEM_CHECKOUT_LINKS[targetKey];
-      const name = document.getElementById("tipInputName")?.value.trim() || "神秘爱心猫友";
+      const name = document.getElementById("tipInputName")?.value.trim() || "";
       const msg = document.getElementById("tipInputMsg")?.value.trim() || "";
 
       if (targetUrl) {
@@ -875,9 +863,9 @@
           const u = new URL(targetUrl);
           if (name) u.searchParams.set("custom_name", name);
           if (msg) u.searchParams.set("custom_message", msg);
-          openCreemModal(u.toString());
+          triggerCheckout(u.toString());
         } catch (err) {
-          openCreemModal(targetUrl);
+          triggerCheckout(targetUrl);
         }
       }
     });
