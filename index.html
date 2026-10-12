@@ -5122,6 +5122,7 @@ btnGenerateCert?.addEventListener("click", () => {
     });
 
     // 远程投喂：带上用户信息写入排行榜流水
+   // 远程投喂：带上用户信息写入排行榜流水
     if (btnFeedPet) {
       btnFeedPet.addEventListener("click", () => {
         requireAuth(async () => {
@@ -5164,7 +5165,6 @@ btnGenerateCert?.addEventListener("click", () => {
 
               // 延时 5 秒触发（对齐视频推流物理延迟，画面正好出粮）
               setTimeout(() => {
-                const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
                 alert(t("feed_success_msg"));
                 shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
                 triggerDanmakuEasterEgg("food");
@@ -5174,28 +5174,24 @@ btnGenerateCert?.addEventListener("click", () => {
                   resetAndLoadRankings();
                 }
               }, 5000);
-            }
-              // 全网共享拦截：提示他人还在吃，并同步剩余秒数倒计时（国际化）
+            } else if (json.code === 429) {
+              // 全网共享拦截：提示他人还在吃，并同步剩余秒数倒计时
               const remain = json.remainingCooldown || 15;
               alert(t("feed_error_lock", { name: currentRoomName, waitSec: remain }));
               startBtnCooldown(remain);
             } else {
               alert(json.msg || "投喂失败");
               btnFeedPet.disabled = false;
-              btnFeedPet.textContent = "🍗 立即投喂";
+              btnFeedPet.textContent = getFeedButtonDefaultText();
             }
           } catch (e) {
-            alert("网络异常，投喂指令发送失败");
+            alert("网络异常，投喂指令发送失败: " + (e.message || ""));
             btnFeedPet.disabled = false;
-            btnFeedPet.textContent = "🍗 立即投喂";
+            btnFeedPet.textContent = getFeedButtonDefaultText();
           }
         });
       });
     }
-
-    initPage();
-    // ==========================================
-// ==========================================
 // 强力直连挂载：小猫算命系统
 // ==========================================
 (function() {
