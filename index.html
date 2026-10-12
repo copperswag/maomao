@@ -5367,24 +5367,50 @@ function executeBazi(nameInput, color, season) {
       if (typeof fireConfetti === "function") fireConfetti();
     }, 1400);
   }
+btnCalc?.addEventListener("click", () => {
+    const inputEl = document.getElementById("baziCatName");
+    const name = inputEl?.value.trim() || "";
+    const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
 
-  btnCalc?.addEventListener("click", () => {
-    const name = document.getElementById("baziCatName")?.value || "";
+    if (!name) {
+      alert(isEn ? "Please enter your cat's name first!" : "请先输入爱猫的芳名哦！");
+      if (inputEl) {
+        inputEl.focus();
+        inputEl.style.borderColor = "#ef4444";
+        setTimeout(() => {
+          inputEl.style.borderColor = "#b45309";
+        }, 1500);
+      }
+      return;
+    }
+
     const color = document.getElementById("baziCatColor")?.value || "纯橘";
     const season = document.getElementById("baziSeason")?.value || "孟春";
     executeBazi(name, color, season);
   });
 
   btnRand?.addEventListener("click", () => {
+    const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+    const randomNamesZh = ["咪咪", "大橘", "雪球", "汤圆", "奥利奥", "花花", "小黑", "麻薯", "旺财", "年糕"];
+    const randomNamesEn = ["Mimi", "Luna", "Milo", "Oreo", "Simba", "Bella", "Charlie", "Mochi", "Cleo", "Pumpkin"];
+    
+    const nameList = isEn ? randomNamesEn : randomNamesZh;
+    const rName = nameList[Math.floor(Math.random() * nameList.length)];
+    
     const colors = ["橘色", "黑白", "纯黑", "纯白", "灰猫", "狸花", "三花"];
     const seasons = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
     const rc = colors[Math.floor(Math.random() * colors.length)];
     const rs = seasons[Math.floor(Math.random() * seasons.length)];
+    
+    const inputEl = document.getElementById("baziCatName");
     const cEl = document.getElementById("baziCatColor");
     const sEl = document.getElementById("baziSeason");
+    
+    if (inputEl) inputEl.value = rName;
     if (cEl) cEl.value = rc;
     if (sEl) sEl.value = rs;
-    executeBazi("", rc, rs);
+    
+    executeBazi(rName, rc, rs);
   });
   btnSave?.addEventListener("click", () => {
     if (!currentBaziInfo) return;
