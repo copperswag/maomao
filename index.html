@@ -5158,20 +5158,23 @@ btnGenerateCert?.addEventListener("click", () => {
             const json = await res.json();
 
             if (json.code === 200) {
-alert(t("feed_success_msg"));
-shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
-              triggerDanmakuEasterEgg("food");
-              shootDanmaku(`🎉 感谢猫友【${userNick}】为现场毛孩子投喂了猫粮！`, true);
-
-              // 启动本地全网倒计时
+              // 立即启动本地全网倒计时，防止用户重复连续点击
               const cdTime = json.cooldownSec || activeRoom.cooldownSec || 30;
               startBtnCooldown(cdTime);
 
-              // 如果已在排行榜页面，投喂成功后自动重拉榜单数据
-              if (viewRankings && viewRankings.classList.contains("active")) {
-                resetAndLoadRankings();
-              }
-           } else if (json.code === 429) {
+              // 延时 5 秒触发（对齐视频推流物理延迟，画面正好出粮）
+              setTimeout(() => {
+                const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
+                alert(t("feed_success_msg"));
+                shootDanmaku(t("feed_danmaku_success", { user: userNick }), true);
+                triggerDanmakuEasterEgg("food");
+
+                // 如果已在排行榜页面，投喂成功后自动重拉榜单数据
+                if (viewRankings && viewRankings.classList.contains("active")) {
+                  resetAndLoadRankings();
+                }
+              }, 5000);
+            }
               // 全网共享拦截：提示他人还在吃，并同步剩余秒数倒计时（国际化）
               const remain = json.remainingCooldown || 15;
               alert(t("feed_error_lock", { name: currentRoomName, waitSec: remain }));
@@ -5373,7 +5376,7 @@ btnCalc?.addEventListener("click", () => {
     const isEn = (typeof currentLang !== "undefined" && currentLang === "en");
 
     if (!name) {
-      alert(isEn ? "Please enter your cat's name first!" : "请先输入爱猫的芳名哦！");
+      alert(isEn ? "Please enter your cat's name first!" : "请先输入小猫名字哦！");
       if (inputEl) {
         inputEl.focus();
         inputEl.style.borderColor = "#ef4444";
