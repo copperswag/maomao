@@ -543,12 +543,15 @@
           <input type="text" id="tipInputName" class="form-input-text" placeholder="您的称呼 (选填)" maxlength="20" />
           <textarea id="tipInputMsg" class="form-input-text" style="height: 60px; resize: none;" placeholder="给毛孩子们留一句温暖的话... (选填)" maxlength="100"></textarea>
 
-          <button class="btn-cta-yellow" id="btnSubmitTip" type="button">
-            <span>🍗</span> <span id="txtBtnTip">支持 $5 罐头</span>
-          </button>
+         <button class="btn-cta-yellow" id="btnSubmitTip" type="button">
+  <span>💖</span> <span id="txtBtnTip">随喜支持 $5</span>
+</button>
 
           <div class="secure-checkout-tag">
             🔒 由 Creem 提供全球安全结账 · 支持银行卡 / Apple Pay / Google Pay
+          </div>
+          <div class="secure-disclaimer-tag" id="sponsorDisclaimerText" style="text-align: center; font-size: 11px; color: #64748b; margin-top: 8px; line-height: 1.5;">
+            ※ 赞助款项属于对服务器与开源基建的自愿无偿资助，不设退款，感谢猫友理解与支持！
           </div>
         </div>
       </aside>
@@ -604,7 +607,7 @@
         lang_btn: "EN",
         back_live: "📹 返回直播间",
         about_title: "🐾 关于毛毛星球与赞助支持",
-        about_p1: "毛毛星球（MeowHub）是一项专注于城市流浪动物保护与远程交互喂养的公益实践项目。起初，我们设计这套实时物联网云喂食器，只是为了在出差加班时，依然能照料猫岛上的毛孩子们。",
+        about_p1: "毛毛星球（MeowHub）是一项专注于城市流浪动物保护与远程交互喂养的公益实践项目。起初，我们打造这套实时云喂养设备，是为了在外出工作或差旅时，依然能够全天候照看、远程投喂毛孩子。",
         about_p2: "现在，所有摄像头的视频流与出粮按键<b>对全网 100% 永久免费开放</b>，我们坚决不在核心喂食功能前设立任何付费墙。然而，随着接入点位与观众增加，服务器、带宽和猫粮的每月固定开销也在逐步递增。",
         cost_lead: "💡 赞助资金主要用于以下每月固定基建：",
         cost_1: "24小时现场机位多码流视频中继与推流带宽",
@@ -623,17 +626,18 @@
         ph_msg: "给毛孩子们留一句温暖的话... (选填)",
         secure_tip: "🔒 由 Creem 提供全球安全结账 · 支持银行卡 / Apple Pay / Google Pay",
         loading_checkout: "正在连接安全收银台..."
+        disclaimer_tip: "※ 赞助款项属于对服务器与开源基建的自愿无偿资助，不设退款，感谢猫友理解与支持！",
       },
       en: {
         lang_btn: "中",
         back_live: "📹 Back to Stream",
         about_title: "🐾 About MeowHub & Sponsorship",
-        about_p1: "MeowHub is a public welfare project dedicated to urban stray animal care and interactive remote feeding. Initially, we built these IoT feeders so we could care for community cats while working away from home.",
+        about_p1: "MeowHub is a public-interest project dedicated to urban stray animal care and interactive remote feeding. Initially, we built these real-time cloud-feeding devices so we could keep watch around the clock and remotely care for our fur babies while traveling or working away from home.",
         about_p2: "Today, all camera live streams and feeding controls are <b>100% free and open to everyone forever</b>. We refuse to put core feeding features behind a paywall. However, monthly recurring costs for video bandwidth, cloud hosting, and cat food continue to rise.",
         cost_lead: "💡 Sponsorship directly funds our recurring infrastructure:",
         cost_1: "24/7 multi-bitrate live video streaming relay and camera bandwidth",
         cost_2: "Cloudflare Workers edge APIs, database, and server upkeep",
-        cost_3: "Nutritious kibble, premium canned wet food, and freeze-dried treats",
+        cost_3: "IoT smart feeder maintenance and hardware deployment at rescue stations",
         cost_4: "Smart feeder hardware assembly and deployment at rescue shelters",
         about_p3: "Every pledge keeps our servers running and keeps stray kitties warmly nourished this winter!",
         recent_title: "💖 Recent Supporters",
@@ -647,6 +651,7 @@
         ph_msg: "Leave a cheer note for kitties... (Optional)",
         secure_tip: "🔒 Powered by Creem · Safe Checkout with Card / Apple Pay / Google Pay",
         loading_checkout: "Connecting to secure checkout..."
+      disclaimer_tip: "※ Sponsorship is a voluntary contribution towards server infrastructure and is non-refundable. Thank you for your support!",
       }
     };
 
@@ -718,11 +723,13 @@
 
       const tipBtnText = document.getElementById("txtBtnTip");
       if (tipBtnText) {
-        tipBtnText.textContent = isEn ? `Support $${selectedTipAmount}` : `支持 $${selectedTipAmount} 罐头`;
-      }
+  tipBtnText.textContent = isEn ? `Support $${selectedTipAmount}` : `随喜支持 $${selectedTipAmount}`;
 
       const secureTag = document.querySelector(".secure-checkout-tag");
       if (secureTag) secureTag.textContent = dict.secure_tip;
+
+      const disclaimerTag = document.getElementById("sponsorDisclaimerText");
+      if (disclaimerTag) disclaimerTag.textContent = dict.disclaimer_tip;
 
       const loadingText = document.getElementById("creemModalLoadingText");
       if (loadingText) loadingText.textContent = dict.loading_checkout;
